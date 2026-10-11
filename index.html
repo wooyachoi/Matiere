@@ -2596,6 +2596,42 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 }
 </style>
 
+<style id="rescue-frame-repair3-final">
+/* ===== V11 UI FRAME REPAIR 3 : final photo aperture =====
+   핵심:
+   1) 정적 상점 미리보기(data-card-stage)에도 동일한 안전영역 적용
+   2) 프레임과 이름 플레이트를 가리는 바깥 매트 영역을 크게 축소
+   3) 프레임은 항상 최상단, 이름은 그 위 텍스트 레이어 유지
+*/
+.rarity-card-stage,.owned-card-mini,.squad-slot-card{isolation:isolate!important;}
+.card-frame-image,.squad-slot-card img.frame{z-index:20!important;pointer-events:none!important;}
+.player-card-name{z-index:25!important;}
+.player-photo-layer,.squad-photo-holder{z-index:2!important;overflow:hidden!important;clip-path:none!important;border:0!important;box-shadow:none!important;}
+.player-photo-layer::after,.player-photo-layer.has-photo::after{display:none!important;content:none!important;}
+.player-photo-layer,.player-photo-layer.has-photo{background:transparent!important;border-radius:1.5%!important;}
+.player-photo-layer img,.squad-photo-holder img.photo{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;border:0!important;box-shadow:none!important;transform:none!important;}
+.player-photo-layer .photo-placeholder{position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;background:#0b1623!important;border:0!important;box-shadow:none!important;border-radius:1.5%!important;}
+
+/* SHOP preview cards */
+[data-card-stage="normal"] .player-photo-layer,
+[data-rarity-card="normal"] .player-photo-layer{left:15.8%!important;top:19.6%!important;width:68.4%!important;height:41.8%!important;}
+[data-card-stage="star"] .player-photo-layer,
+[data-rarity-card="star"] .player-photo-layer{left:16.4%!important;top:20.2%!important;width:67.2%!important;height:41.0%!important;}
+[data-card-stage="legend"] .player-photo-layer,
+[data-rarity-card="legend"] .player-photo-layer{left:16.4%!important;top:20.4%!important;width:67.2%!important;height:40.8%!important;}
+[data-card-stage="best"] .player-photo-layer,
+[data-rarity-card="best"] .player-photo-layer{left:17.6%!important;top:21.6%!important;width:64.8%!important;height:38.0%!important;}
+[data-card-stage="coach"] .player-photo-layer,
+[data-rarity-card="coach"] .player-photo-layer{left:16.8%!important;top:20.8%!important;width:66.4%!important;height:40.2%!important;}
+
+/* Squad mini cards keep same safer aperture */
+.squad-slot-card[data-rarity-card="normal"] .squad-photo-holder{left:15.8%!important;top:19.6%!important;width:68.4%!important;height:41.8%!important;}
+.squad-slot-card[data-rarity-card="star"] .squad-photo-holder,
+.squad-slot-card[data-rarity-card="legend"] .squad-photo-holder{left:16.4%!important;top:20.2%!important;width:67.2%!important;height:41.0%!important;}
+.squad-slot-card[data-rarity-card="best"] .squad-photo-holder{left:17.6%!important;top:21.6%!important;width:64.8%!important;height:38.0%!important;}
+.squad-slot-card[data-rarity-card="coach"] .squad-photo-holder{left:16.8%!important;top:20.8%!important;width:66.4%!important;height:40.2%!important;}
+.squad-photo-holder{background:transparent!important;border-radius:1.5%!important;}
+</style>
 </head>
 <body>
 
@@ -7217,6 +7253,12 @@ function scheduleAttendanceMidnight(){
   attendanceTimer=setTimeout(()=>{showAttendanceRewardPopup();refreshRouletteStatus();scheduleAttendanceMidnight();},msUntilNextKstMidnight());
 }
 document.getElementById("attendanceRewardClaimBtn")?.addEventListener("click",claimAttendanceReward);
+/* ===== V11 UI FRAME REPAIR 3 : compatibility ===== */
+function updateRouletteCounter(){
+  const legacy=document.getElementById('rouletteCounter');
+  if(legacy) legacy.textContent='';
+  return true;
+}
 function renderFootballHub(){
   const st=loadFootballState(), rp=getFootballRP(), count=Object.values(st.squad||{}).filter(Boolean).length;
   const rpEl=document.getElementById("footballRp"), nameEl=document.getElementById("footballTeamName"), countEl=document.getElementById("footballTeamCount"), coachEl=document.getElementById("footballCoachLabel"), prog=document.getElementById("footballTeamProgress");
@@ -7688,8 +7730,9 @@ async function buyCardFrame(rarity){
     if(!card)throw new Error('카드 구매 응답이 없습니다.');
     if(Number.isFinite(Number(data?.rp_balance)))localStorage.setItem(rpBalanceStorageKey(),String(Number(data.rp_balance)));
     await loadServerCards(true);
-    await syncAchievements(true);
-    renderFootballHub(); updateCardShopUI();
+    try{ await syncAchievements(true); }catch(syncError){ console.warn('Achievement sync skipped after purchase', syncError); }
+    try{ renderFootballHub(); }catch(uiError){ console.warn('renderFootballHub skipped after purchase', uiError); }
+    try{ updateCardShopUI(); }catch(shopUiError){ console.warn('updateCardShopUI skipped after purchase', shopUiError); }
     closePlayerCardShop();
     await playCardPurchaseEffect(rarity);
     openCardEditor(card.id);
