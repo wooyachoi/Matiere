@@ -2752,6 +2752,70 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 }
 </style>
 
+
+<style id="rescue-card-matte-v12">
+/*
+  V12 CARD MATTE FIX
+  - 메인 사진 크기는 그대로 유지
+  - 프레임의 투명 사진창 전체를 같은 사진의 부드러운 배경으로 채워
+    사진 아래/주변에 남던 큰 검은 직사각형을 제거
+  - 이름판은 침범하지 않음
+*/
+.card-photo-backdrop{
+  position:absolute;
+  z-index:1;
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+  filter:blur(7px) brightness(.72) saturate(.9);
+  transform:scale(1.025);
+  transform-origin:center;
+  pointer-events:none;
+  overflow:hidden;
+}
+.player-photo-layer{z-index:3!important;}
+.card-frame-image{z-index:30!important;}
+.player-card-name{z-index:35!important;}
+
+/* 프레임의 실제 투명 사진창 전체 */
+[data-rarity-card="normal"] .card-photo-backdrop{
+  left:12.4%;top:18.0%;width:75.2%;height:59.2%;
+}
+[data-rarity-card="star"] .card-photo-backdrop{
+  left:12.8%;top:19.0%;width:74.4%;height:58.2%;
+}
+[data-rarity-card="legend"] .card-photo-backdrop{
+  left:12.8%;top:19.1%;width:74.4%;height:58.1%;
+}
+[data-rarity-card="best"] .card-photo-backdrop{
+  left:13.6%;top:20.6%;width:72.8%;height:56.5%;
+}
+[data-rarity-card="coach"] .card-photo-backdrop{
+  left:13.0%;top:20.0%;width:74.0%;height:57.3%;
+}
+
+/* 메인 사진은 직전 버전 크기를 유지 */
+[data-rarity-card="normal"] .player-photo-layer{
+  left:13.2%!important;top:18.8%!important;width:73.6%!important;height:52.8%!important;
+}
+[data-rarity-card="star"] .player-photo-layer{
+  left:13.5%!important;top:20.2%!important;width:73.0%!important;height:51.4%!important;
+}
+[data-rarity-card="legend"] .player-photo-layer{
+  left:13.5%!important;top:20.4%!important;width:73.0%!important;height:51.2%!important;
+}
+[data-rarity-card="best"] .player-photo-layer{
+  left:14.2%!important;top:21.8%!important;width:71.6%!important;height:49.8%!important;
+}
+[data-rarity-card="coach"] .player-photo-layer{
+  left:13.8%!important;top:21.0%!important;width:72.4%!important;height:50.8%!important;
+}
+
+.squad-slot-card .card-photo-backdrop{z-index:1;}
+.squad-photo-holder{z-index:3!important;}
+.squad-slot-card img.frame{z-index:30!important;}
+</style>
+
 </head>
 <body>
 
@@ -3218,7 +3282,7 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
         <div class="attendance-reward-icon">✓</div>
         <h2 id="attendanceRewardTitle">오늘의 출석 보상</h2>
         <p id="attendanceRewardDate" class="attendance-reward-date"></p>
-        <div class="attendance-reward-amount" id="attendanceRewardAmount">+100 RP</div>
+        <div class="attendance-reward-amount" id="attendanceRewardAmount">+200 RP</div>
         <p id="attendanceRewardStreak" class="attendance-reward-streak"></p>
         <button type="button" class="attendance-reward-claim" id="attendanceRewardClaimBtn">보상 받기</button>
       </div>
@@ -7398,49 +7462,72 @@ async function loadRpHistory(){
 /* ============ ACHIEVEMENT-BASED GAME REWARDS ============ */
 function awardSuccessfulGameRP(){ return 0; }
 
-/* ============ DAILY ATTENDANCE REWARD ============ */
-const ATTENDANCE_KEY="rescue_attendance_v1";
-const ATTENDANCE_REWARD=100;
-const STREAK_REWARD=0;
+/* ============ DAILY ATTENDANCE REWARD · SERVER ACCOUNT-WIDE ============ */
+const ATTENDANCE_REWARD=200;
 let attendancePopupOpen=false;
 let attendanceTimer=null;
+let attendanceClaimBusy=false;
+
 function kstParts(date=new Date()){
   const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(date);
-  const out={}; parts.forEach(p=>out[p.type]=p.value); return out;
+  return Object.fromEntries(parts.filter(p=>p.type!=="literal").map(p=>[p.type,p.value]));
 }
-function kstDateKey(date=new Date()){const p=kstParts(date);return `${p.year}-${p.month}-${p.day}`;}
-function kstDateLabel(date=new Date()){const p=kstParts(date);return `${p.year}.${p.month}.${p.day}`;}
-function attendanceStorageKey(){return currentUser?.id?ATTENDANCE_KEY+"_"+currentUser.id:ATTENDANCE_KEY+"_guest";}
-function loadAttendance(){try{return Object.assign({lastDate:null,streak:0,pendingDate:null,pendingStreak:0},JSON.parse(localStorage.getItem(attendanceStorageKey())||"{}"));}catch(e){return {lastDate:null,streak:0,pendingDate:null,pendingStreak:0};}}
-function saveAttendance(st){localStorage.setItem(attendanceStorageKey(),JSON.stringify(st));}
-function previousKstDateKey(dateKey){const [y,m,d]=dateKey.split("-").map(Number);const dt=new Date(Date.UTC(y,m-1,d-1));return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,"0")}-${String(dt.getUTCDate()).padStart(2,"0")}`;}
-function prepareAttendanceForToday(){
-  if(!currentUser)return null; const today=kstDateKey(); const st=loadAttendance();
-  if(st.pendingDate===today)return st; if(st.lastDate===today)return null;
-  const streak=st.lastDate===previousKstDateKey(today)?Number(st.streak||0)+1:1;
-  st.pendingDate=today; st.pendingStreak=streak; saveAttendance(st); return st;
+function kstDateKey(){const p=kstParts();return `${p.year}-${p.month}-${p.day}`;}
+function kstDateLabel(){const p=kstParts();return `${p.year}.${p.month}.${p.day}`;}
+
+async function showAttendanceRewardPopup(){
+  if(!currentUser?.id || attendancePopupOpen)return;
+  try{
+    const {data,error}=await supabaseClient.rpc('rescue_attendance_status');
+    if(error)throw error;
+    if(data?.claimed_today)return;
+
+    const overlay=document.getElementById("attendanceRewardOverlay");
+    if(!overlay)return;
+    document.getElementById("attendanceRewardDate").textContent=kstDateLabel()+" · KST";
+    document.getElementById("attendanceRewardAmount").textContent=`+${ATTENDANCE_REWARD.toLocaleString()} RP`;
+    document.getElementById("attendanceRewardStreak").textContent="계정당 하루 1회 · 다른 기기에서 로그인해도 중복 지급되지 않습니다.";
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden","false");
+    attendancePopupOpen=true;
+  }catch(e){
+    console.warn("Attendance status sync skipped",e);
+  }
 }
-function showAttendanceRewardPopup(){
-  if(!currentUser||attendancePopupOpen)return;
-  const already=loadAttendance(), today=kstDateKey();
-  if(already.lastDate===today)return;
-  const st=prepareAttendanceForToday(); if(!st)return;
-  const overlay=document.getElementById("attendanceRewardOverlay"); if(!overlay)return;
-  const streak=Number(st.pendingStreak||1), bonus=streak%7===0?STREAK_REWARD:0, total=ATTENDANCE_REWARD+bonus;
-  document.getElementById("attendanceRewardDate").textContent=kstDateLabel()+" · KST";
-  document.getElementById("attendanceRewardAmount").textContent=`+${total.toLocaleString()} RP`;
-  document.getElementById("attendanceRewardStreak").textContent=`${streak}일 연속 출석`;
-  overlay.classList.add("show"); overlay.setAttribute("aria-hidden","false"); attendancePopupOpen=true;
+
+async function claimAttendanceReward(){
+  if(attendanceClaimBusy || !currentUser?.id)return;
+  attendanceClaimBusy=true;
+  const btn=document.getElementById("attendanceRewardClaimBtn");
+  if(btn)btn.disabled=true;
+  try{
+    const {data,error}=await supabaseClient.rpc('rescue_claim_daily_attendance');
+    if(error)throw error;
+
+    if(Number.isFinite(Number(data?.rp_balance))){
+      localStorage.setItem(rpBalanceStorageKey(),String(Number(data.rp_balance)));
+    }
+    const overlay=document.getElementById("attendanceRewardOverlay");
+    if(overlay){
+      overlay.classList.remove("show");
+      overlay.setAttribute("aria-hidden","true");
+    }
+    attendancePopupOpen=false;
+    renderFootballHub();
+    await refreshServerRP();
+
+    if(data?.claimed===false){
+      alert("오늘 출석 보상은 이미 이 계정으로 지급되었습니다.");
+    }
+  }catch(e){
+    console.warn("Attendance claim failed",e);
+    alert("출석 보상을 지급하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+  }finally{
+    attendanceClaimBusy=false;
+    if(btn)btn.disabled=false;
+  }
 }
-function claimAttendanceReward(){
-  if(!attendancePopupOpen||!currentUser)return; const st=loadAttendance(), today=kstDateKey();
-  if(st.pendingDate!==today)return; const streak=Number(st.pendingStreak||1);
-  const total=ATTENDANCE_REWARD+(streak%7===0?STREAK_REWARD:0);
-  setFootballRP(getFootballRP()+total);
-  st.lastDate=today; st.streak=streak; st.pendingDate=null; st.pendingStreak=0; saveAttendance(st);
-  const overlay=document.getElementById("attendanceRewardOverlay"); if(overlay){overlay.classList.remove("show");overlay.setAttribute("aria-hidden","true");}
-  attendancePopupOpen=false; renderFootballHub();
-}
+
 function msUntilNextKstMidnight(){
   const p=kstParts(); const [y,m,d]=[Number(p.year),Number(p.month),Number(p.day)];
   const targetUtc=Date.UTC(y,m-1,d+1,0,0,0)-9*60*60*1000;
@@ -7448,9 +7535,14 @@ function msUntilNextKstMidnight(){
 }
 function scheduleAttendanceMidnight(){
   if(attendanceTimer)clearTimeout(attendanceTimer);
-  attendanceTimer=setTimeout(()=>{showAttendanceRewardPopup();refreshRouletteStatus();scheduleAttendanceMidnight();},msUntilNextKstMidnight());
+  attendanceTimer=setTimeout(()=>{
+    attendancePopupOpen=false;
+    showAttendanceRewardPopup();
+    scheduleAttendanceMidnight();
+  },msUntilNextKstMidnight());
 }
 document.getElementById("attendanceRewardClaimBtn")?.addEventListener("click",claimAttendanceReward);
+
 /* ===== V11 UI FRAME REPAIR 3 : compatibility ===== */
 function updateRouletteCounter(){
   const legacy=document.getElementById('rouletteCounter');
@@ -7580,15 +7672,15 @@ function renderAchievementDialog(st){
   const words=Number(totals.words_studied||0), quiz=Number(totals.quiz_questions||0), games=Number(totals.games_completed||0), streak=Number(totals.max_study_streak||totals.study_streak||0);
   const word20=Math.floor(words/20), quiz20=Math.floor(quiz/20), game2=Math.floor(games/2);
   list.innerHTML=[
-    achievementRow("단어 학습 20개마다","누적 단어 학습 20개를 채울 때마다 반복 지급",100,words%20,20,false),
-    achievementRow("퀴즈 20문제마다","정답 여부와 관계없이 완료한 퀴즈 문제 20개마다 반복 지급",100,quiz%20,20,false),
-    achievementRow("게임 2판마다","WORD SEARCH 또는 HANGMAN을 끝까지 완료한 2판마다 반복 지급",100,games%2,2,false),
-    achievementRow("첫 카드 구매","선수/코치 카드 중 첫 번째 카드 구매",300,claimed.first_card?1:0,1,!!claimed.first_card),
-    achievementRow("7일 연속 학습","단어·퀴즈·게임 중 하나 이상을 7일 연속 진행",1000,streak,7,!!claimed.study_streak_7),
-    achievementRow("BEST 11 완성","MY SQUAD의 11개 포지션을 모두 채우기",500,Number(st.best11_count||0),11,!!claimed.best11),
-    achievementRow("퀴즈 400문제","누적 퀴즈 400문제 완료",500,quiz,400,!!claimed.quiz_400),
-    achievementRow("단어 400개","누적 단어 학습 400개 완료",500,words,400,!!claimed.words_400),
-    achievementRow("게임 100판","누적 게임 100판 완료",500,games,100,!!claimed.games_100)
+    achievementRow("단어 학습 20개마다","누적 단어 학습 20개를 채울 때마다 반복 지급",200,words%20,20,false),
+    achievementRow("퀴즈 20문제마다","정답 여부와 관계없이 완료한 퀴즈 문제 20개마다 반복 지급",200,quiz%20,20,false),
+    achievementRow("게임 2판마다","WORD SEARCH 또는 HANGMAN을 끝까지 완료한 2판마다 반복 지급",200,games%2,2,false),
+    achievementRow("첫 카드 구매","선수/코치 카드 중 첫 번째 카드 구매",400,claimed.first_card?1:0,1,!!claimed.first_card),
+    achievementRow("7일 연속 학습","단어·퀴즈·게임 중 하나 이상을 7일 연속 진행",1100,streak,7,!!claimed.study_streak_7),
+    achievementRow("BEST 11 완성","MY SQUAD의 11개 포지션을 모두 채우기",600,Number(st.best11_count||0),11,!!claimed.best11),
+    achievementRow("퀴즈 400문제","누적 퀴즈 400문제 완료",600,quiz,400,!!claimed.quiz_400),
+    achievementRow("단어 400개","누적 단어 학습 400개 완료",600,words,400,!!claimed.words_400),
+    achievementRow("게임 100판","누적 게임 100판 완료",600,games,100,!!claimed.games_100)
   ].join("");
 }
 async function openAchievements(){
@@ -7702,7 +7794,7 @@ function renderSquad(){
    const frame=card?getFrameSrc(card.rarity):"";
    slot.innerHTML=`<div class="squad-slot-card"${card?` data-rarity-card="${card.rarity}"`:``}>${frame?`<img class="frame" src="${frame}" alt="">`:''}${card?`<div class="empty">${displayName?'':'+'}</div>`:'<div class="empty">+</div>'}${card?`<div class="squad-photo-holder"></div>`:''}</div><span class="squad-slot-name">${escapeHtml(displayName||"선수 선택")}</span><span class="squad-slot-pos">${squadPositionLabel(pos)}</span>`;
    const holder=slot.querySelector('.squad-photo-holder');
-   if(card&&holder){getCardPhotoForCard(card).then(photo=>{if(photo){holder.classList.add('has-photo');holder.innerHTML=`<img class="photo" src="${photo}" alt="">`;}});}
+   if(card&&holder){getCardPhotoForCard(card).then(photo=>{if(photo){const mini=holder.closest('.squad-slot-card');if(mini){const bg=document.createElement('div');bg.className='card-photo-backdrop';bg.style.backgroundImage=`url('${photo}')`;mini.insertBefore(bg,holder);}holder.classList.add('has-photo');holder.innerHTML=`<img class="photo" src="${photo}" alt="">`;}});}
    slot.addEventListener("click",()=>openSquadPicker(pos)); pitch.appendChild(slot);
  });
  const placed=positions.filter(pos=>!!st.squad[pos]).length; if(countEl)countEl.textContent=placed+" / 11";
@@ -7840,7 +7932,7 @@ async function renderPlayerCollectionOnly(){
   const html=[];
   for(const card of inv){
     const photo=await getCardPhotoForCard(card);
-    html.push(`<article class="owned-card-item" data-owned-card="${escapeHtml(card.id)}"><div class="owned-card-mini" data-rarity-card="${escapeHtml(card.rarity)}"><div class="player-photo-layer${photo?' has-photo':''}">${photo?`<img src="${photo}" alt="선수 사진">`:'<div class="photo-placeholder"><span>+</span><small>PHOTO</small></div>'}</div><img class="card-frame-image" src="${getFrameSrc(card.rarity)}" alt="${CARD_FRAME_INFO[card.rarity]?.name||card.rarity} 카드 프레임"><div class="player-card-name">${escapeHtml(cardDisplayName(card))}</div></div><div class="owned-card-meta"><span>${CARD_FRAME_INFO[card.rarity]?.name||card.rarity} · ${escapeHtml(card.name||'미설정')}</span><button type="button" data-collection-edit="${escapeHtml(card.id)}">꾸미기</button></div></article>`);
+    html.push(`<article class="owned-card-item" data-owned-card="${escapeHtml(card.id)}"><div class="owned-card-mini" data-rarity-card="${escapeHtml(card.rarity)}">${photo?`<div class="card-photo-backdrop" style="background-image:url('${photo}')"></div>`:''}<div class="player-photo-layer${photo?' has-photo':''}">${photo?`<img src="${photo}" alt="선수 사진">`:'<div class="photo-placeholder"><span>+</span><small>PHOTO</small></div>'}</div><img class="card-frame-image" src="${getFrameSrc(card.rarity)}" alt="${CARD_FRAME_INFO[card.rarity]?.name||card.rarity} 카드 프레임"><div class="player-card-name">${escapeHtml(cardDisplayName(card))}</div></div><div class="owned-card-meta"><span>${CARD_FRAME_INFO[card.rarity]?.name||card.rarity} · ${escapeHtml(card.name||'미설정')}</span><button type="button" data-collection-edit="${escapeHtml(card.id)}">꾸미기</button></div></article>`);
   }
   box.innerHTML=html.join('');
   box.querySelectorAll('[data-collection-edit]').forEach(btn=>btn.addEventListener('click',()=>openCardEditor(btn.dataset.collectionEdit)));
@@ -7852,7 +7944,7 @@ async function renderOwnedCardCollection(){
   const html=[];
   for(const card of inv){
     const photo=await getCardPhotoForCard(card);
-    html.push(`<article class="owned-card-item" data-owned-card="${escapeHtml(card.id)}"><div class="owned-card-mini" data-rarity-card="${escapeHtml(card.rarity)}"><div class="player-photo-layer${photo?' has-photo':''}">${photo?`<img src="${photo}" alt="선수 사진">`:'<div class="photo-placeholder"><span>+</span><small>PHOTO</small></div>'}</div><img class="card-frame-image" src="${getFrameSrc(card.rarity)}" alt="${CARD_FRAME_INFO[card.rarity]?.name||card.rarity} 카드 프레임"><div class="player-card-name">${escapeHtml(cardDisplayName(card))}</div></div><div class="owned-card-meta"><span>${CARD_FRAME_INFO[card.rarity]?.name||card.rarity} · ${escapeHtml(card.name||'미설정')}</span><button type="button" data-owned-edit="${escapeHtml(card.id)}">꾸미기</button></div></article>`);
+    html.push(`<article class="owned-card-item" data-owned-card="${escapeHtml(card.id)}"><div class="owned-card-mini" data-rarity-card="${escapeHtml(card.rarity)}">${photo?`<div class="card-photo-backdrop" style="background-image:url('${photo}')"></div>`:''}<div class="player-photo-layer${photo?' has-photo':''}">${photo?`<img src="${photo}" alt="선수 사진">`:'<div class="photo-placeholder"><span>+</span><small>PHOTO</small></div>'}</div><img class="card-frame-image" src="${getFrameSrc(card.rarity)}" alt="${CARD_FRAME_INFO[card.rarity]?.name||card.rarity} 카드 프레임"><div class="player-card-name">${escapeHtml(cardDisplayName(card))}</div></div><div class="owned-card-meta"><span>${CARD_FRAME_INFO[card.rarity]?.name||card.rarity} · ${escapeHtml(card.name||'미설정')}</span><button type="button" data-owned-edit="${escapeHtml(card.id)}">꾸미기</button></div></article>`);
   }
   box.innerHTML=html.join('');
   box.querySelectorAll('[data-owned-edit]').forEach(btn=>btn.addEventListener('click',()=>openCardEditor(btn.dataset.ownedEdit)));
@@ -7864,7 +7956,7 @@ async function renderOwnedCoachCard(){
   const html=[];
   for(const card of inv){
     const photo=await getCardPhotoForCard(card);
-    html.push(`<article class="owned-card-item coach-owned-card" data-owned-card="${escapeHtml(card.id)}"><div class="owned-card-mini" data-rarity-card="coach"><div class="player-photo-layer${photo?' has-photo':''}">${photo?`<img src="${photo}" alt="감독 사진">`:'<div class="photo-placeholder"><span>+</span><small>PHOTO</small></div>'}</div><img class="card-frame-image" src="${getFrameSrc('coach')}" alt="COACH 카드 프레임"><div class="player-card-name">${escapeHtml(cardDisplayName(card).replace('PLAYER NAME','COACH NAME'))}</div></div><div class="owned-card-meta"><span>COACH · ${escapeHtml(card.name||'미설정')}</span><button type="button" data-owned-coach-edit="${escapeHtml(card.id)}">꾸미기</button></div></article>`);
+    html.push(`<article class="owned-card-item coach-owned-card" data-owned-card="${escapeHtml(card.id)}"><div class="owned-card-mini" data-rarity-card="coach">${photo?`<div class="card-photo-backdrop" style="background-image:url('${photo}')"></div>`:''}<div class="player-photo-layer${photo?' has-photo':''}">${photo?`<img src="${photo}" alt="감독 사진">`:'<div class="photo-placeholder"><span>+</span><small>PHOTO</small></div>'}</div><img class="card-frame-image" src="${getFrameSrc('coach')}" alt="COACH 카드 프레임"><div class="player-card-name">${escapeHtml(cardDisplayName(card).replace('PLAYER NAME','COACH NAME'))}</div></div><div class="owned-card-meta"><span>COACH · ${escapeHtml(card.name||'미설정')}</span><button type="button" data-owned-coach-edit="${escapeHtml(card.id)}">꾸미기</button></div></article>`);
   }
   box.innerHTML=html.join('');
   box.querySelectorAll('[data-owned-coach-edit]').forEach(btn=>btn.addEventListener('click',()=>openCardEditor(btn.dataset.ownedCoachEdit)));
@@ -7872,6 +7964,17 @@ async function renderOwnedCoachCard(){
 function renderCardStage(stage,card,profile,photo){
   if(!stage)return;
   const layer=stage.querySelector('[data-photo-layer]'), name=stage.querySelector('[data-name-layer]');
+  let backdrop=stage.querySelector('.card-photo-backdrop');
+  if(photo){
+    if(!backdrop){
+      backdrop=document.createElement('div');
+      backdrop.className='card-photo-backdrop';
+      stage.insertBefore(backdrop,layer||stage.firstChild);
+    }
+    backdrop.style.backgroundImage=`url('${photo}')`;
+  }else if(backdrop){
+    backdrop.remove();
+  }
   if(layer){
     layer.classList.toggle('has-photo',!!photo);
     layer.innerHTML=photo?`<img src="${photo}" alt="${card?.card_type==='coach'?'감독':'선수'} 사진">`:'<div class="photo-placeholder"><span>+</span><small>PHOTO</small></div>';
