@@ -2632,6 +2632,126 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 .squad-slot-card[data-rarity-card="coach"] .squad-photo-holder{left:16.8%!important;top:20.8%!important;width:66.4%!important;height:40.2%!important;}
 .squad-photo-holder{background:transparent!important;border-radius:1.5%!important;}
 </style>
+
+<style id="rescue-card-aperture-final-v4">
+/*
+  V4 CARD APERTURE
+  - 이전 버전에서 사진 영역을 너무 줄여 투명 프레임 안쪽에 큰 검은 여백이 남던 문제 수정
+  - 사진은 프레임의 실제 사진창을 넓게 채우고,
+    카드 스테이지 자체의 검은 배경이 투명창을 통해 보이지 않도록 처리
+  - 프레임/이름판은 항상 사진보다 위
+*/
+.rarity-card-stage,
+.owned-card-mini,
+.squad-slot-card{
+  isolation:isolate!important;
+}
+
+/* 실제 사진이 들어간 카드의 바탕은 투명 처리:
+   사진 레이어 밖의 검은 카드 스테이지가 프레임 안으로 비치는 현상 방지 */
+.rarity-card-stage:has(.player-photo-layer.has-photo),
+.owned-card-mini:has(.player-photo-layer.has-photo){
+  background:transparent!important;
+}
+
+.card-frame-image,
+.squad-slot-card img.frame{
+  z-index:30!important;
+  pointer-events:none!important;
+}
+.player-card-name{z-index:35!important;}
+.player-photo-layer,
+.squad-photo-holder{
+  z-index:2!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  clip-path:none!important;
+  overflow:hidden!important;
+  border-radius:1%!important;
+}
+.player-photo-layer::after,
+.player-photo-layer.has-photo::after{display:none!important;content:none!important;}
+.player-photo-layer img,
+.squad-photo-holder img.photo{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  transform:none!important;
+  border:0!important;
+  box-shadow:none!important;
+  border-radius:1%!important;
+}
+
+/* 사진이 없을 때만 PHOTO 플레이스홀더에 어두운 배경 사용 */
+.player-photo-layer:not(.has-photo) .photo-placeholder{
+  position:absolute!important;
+  inset:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-direction:column!important;
+  background:#0b1623!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+/*
+  사진창을 다시 넓힘.
+  이름판을 침범하지 않도록 하단은 이름판 바로 위에서 끝냄.
+*/
+[data-card-stage="normal"] .player-photo-layer,
+[data-rarity-card="normal"] .player-photo-layer{
+  left:13.2%!important; top:18.8%!important; width:73.6%!important; height:52.8%!important;
+}
+[data-card-stage="star"] .player-photo-layer,
+[data-rarity-card="star"] .player-photo-layer{
+  left:13.5%!important; top:20.2%!important; width:73.0%!important; height:51.4%!important;
+}
+[data-card-stage="legend"] .player-photo-layer,
+[data-rarity-card="legend"] .player-photo-layer{
+  left:13.5%!important; top:20.4%!important; width:73.0%!important; height:51.2%!important;
+}
+[data-card-stage="best"] .player-photo-layer,
+[data-rarity-card="best"] .player-photo-layer{
+  left:14.2%!important; top:21.8%!important; width:71.6%!important; height:49.8%!important;
+}
+[data-card-stage="coach"] .player-photo-layer,
+[data-rarity-card="coach"] .player-photo-layer{
+  left:13.8%!important; top:21.0%!important; width:72.4%!important; height:50.8%!important;
+}
+
+/* 스쿼드 미니 카드도 동일한 비율 */
+.squad-slot-card[data-rarity-card="normal"] .squad-photo-holder{
+  left:13.2%!important;top:18.8%!important;width:73.6%!important;height:52.8%!important;
+}
+.squad-slot-card[data-rarity-card="star"] .squad-photo-holder{
+  left:13.5%!important;top:20.2%!important;width:73.0%!important;height:51.4%!important;
+}
+.squad-slot-card[data-rarity-card="legend"] .squad-photo-holder{
+  left:13.5%!important;top:20.4%!important;width:73.0%!important;height:51.2%!important;
+}
+.squad-slot-card[data-rarity-card="best"] .squad-photo-holder{
+  left:14.2%!important;top:21.8%!important;width:71.6%!important;height:49.8%!important;
+}
+.squad-slot-card[data-rarity-card="coach"] .squad-photo-holder{
+  left:13.8%!important;top:21.0%!important;width:72.4%!important;height:50.8%!important;
+}
+</style>
+
+
+<style id="rescue-quiz-keyboard-v1">
+#view-quiz .choice.keyboard-selected:not(:disabled){
+  outline:3px solid #f6c84d!important;
+  outline-offset:2px!important;
+  border-color:#f6c84d!important;
+  box-shadow:0 0 0 2px rgba(246,200,77,.18),0 8px 22px rgba(0,0,0,.18)!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -6117,6 +6237,52 @@ document.addEventListener("keydown", (e)=>{
   }
 });
 
+
+/* ============ KEYBOARD SHORTCUTS (QUIZ) ============ */
+document.addEventListener("keydown",(e)=>{
+  if(e.ctrlKey || e.metaKey || e.altKey)return;
+
+  const session=document.getElementById("quizSession");
+  const quizActive=session && session.style.display!=="none";
+  if(!quizActive)return;
+
+  const target=e.target;
+  const isTextInput=target && (target.isContentEditable || target.tagName==="TEXTAREA" ||
+    (target.tagName==="INPUT" && target.id!=="saField"));
+
+  /* 주관식 입력창에서는 기존 Enter 제출을 유지하고 숫자 단축키를 가로채지 않는다. */
+  if(quizMode==="sa"){
+    if(e.key==="ArrowRight"){
+      if(quizGoNextKeyboard()){e.preventDefault();}
+    }
+    return;
+  }
+  if(isTextInput)return;
+
+  /* 1~5: 위에서부터 해당 선지를 선택만 함 */
+  if(/^[1-5]$/.test(e.key)){
+    const idx=Number(e.key)-1;
+    const buttons=quizMcButtons();
+    if(idx<buttons.length){
+      e.preventDefault();
+      quizSelectByNumber(idx);
+    }
+    return;
+  }
+
+  /* Enter: 숫자로 선택해 둔 선지를 제출 */
+  if(e.key==="Enter"){
+    if(quizSubmitKeyboardSelection())e.preventDefault();
+    return;
+  }
+
+  /* 오른쪽 화살표: 답 제출 후 다음 문제 */
+  if(e.key==="ArrowRight"){
+    if(quizGoNextKeyboard())e.preventDefault();
+  }
+});
+
+
 /* ============ QUIZ ============ */
 const dayPickerQuiz = document.getElementById("dayPickerQuiz");
 buildDayPicker(dayPickerQuiz, selectedDaysQuiz, onQuizDayChange);
@@ -6171,7 +6337,10 @@ function startQuiz(){
   renderQuestion();
 }
 
+let quizKeyboardSelectedIndex=-1;
+
 function renderQuestion(){
+  quizKeyboardSelectedIndex=-1;
   const oldQuizCard = document.querySelector(".quiz-card");
   if(oldQuizCard) oldQuizCard.classList.remove("answer-correct");
   document.getElementById("quizFeedback").className = "feedback";
@@ -6222,9 +6391,38 @@ function renderQuestion(){
 
 document.getElementById("quizUnknownBtn")?.addEventListener("click",()=>{if(currentQ)toggleUnknown(currentQ);});
 
+
+function quizMcButtons(){
+  return Array.from(document.querySelectorAll("#mcChoices .choice"));
+}
+function quizSelectByNumber(index){
+  if(quizMode!=="mc")return;
+  const buttons=quizMcButtons();
+  if(index<0 || index>=buttons.length)return;
+  if(buttons.every(b=>b.disabled))return;
+  quizKeyboardSelectedIndex=index;
+  buttons.forEach((b,i)=>b.classList.toggle("keyboard-selected",i===index));
+}
+function quizSubmitKeyboardSelection(){
+  if(quizMode!=="mc")return false;
+  const buttons=quizMcButtons();
+  if(buttons.every(b=>b.disabled))return false;
+  if(quizKeyboardSelectedIndex<0 || quizKeyboardSelectedIndex>=buttons.length)return false;
+  buttons[quizKeyboardSelectedIndex].click();
+  return true;
+}
+function quizGoNextKeyboard(){
+  const btn=document.getElementById("nextQBtn");
+  if(btn && btn.style.display!=="none"){
+    btn.click();
+    return true;
+  }
+  return false;
+}
+
 function handleMCAnswer(btn, chosen, correct, mcArea){
   const buttons = mcArea.querySelectorAll(".choice");
-  buttons.forEach(b=>b.disabled=true);
+  buttons.forEach(b=>{b.disabled=true;b.classList.remove("keyboard-selected");});
   const isCorrect = chosen===correct;
   const quizCard = document.querySelector(".quiz-card");
   if(isCorrect){
