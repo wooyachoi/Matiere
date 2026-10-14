@@ -3408,7 +3408,7 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 
 
 <style id="rescue-v132-photo-presets">
-.photo-zoom-presets{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:7px}
+.photo-zoom-presets{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:7px}
 .photo-zoom-presets button{border:1px solid rgba(255,255,255,.14);background:#101d2a;color:#fff;border-radius:8px;padding:7px 4px;font-size:9px;font-weight:900}
 </style>
 
@@ -3590,6 +3590,60 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
   justify-content:center!important;
   line-height:1!important;
   padding:0 2%!important;
+}
+</style>
+
+
+<style id="rescue-v135-photo50-name-tune">
+/* 이름판 중앙보다 조금 위에 있던 텍스트를 아래로 이동 */
+[data-rarity-card="best"] .player-card-name{
+  left:19%!important;
+  top:77.2%!important;
+  width:62%!important;
+  height:6.2%!important;
+}
+[data-rarity-card="normal"] .player-card-name{
+  left:19%!important;
+  top:77.4%!important;
+  width:62%!important;
+  height:6.1%!important;
+}
+[data-rarity-card="star"] .player-card-name,
+[data-rarity-card="legend"] .player-card-name{
+  left:19%!important;
+  top:77.3%!important;
+  width:62%!important;
+  height:6.1%!important;
+}
+[data-rarity-card="coach"] .player-card-name{
+  left:19%!important;
+  top:77.2%!important;
+  width:62%!important;
+  height:6.2%!important;
+}
+
+/* 카드 꾸미기 화면에서는 큰 카드에 맞춰 이름도 충분히 크게 */
+#editorCardWrap .player-card-name{
+  font-size:clamp(20px,2.4vw,30px)!important;
+  font-weight:800!important;
+  letter-spacing:-0.02em!important;
+  line-height:1!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.7)!important;
+}
+
+/* 컬렉션/스쿼드 쪽은 기존 크기를 유지 */
+.owned-card-mini .player-card-name{
+  font-size:clamp(10px,1.15vw,15px)!important;
+}
+.squad-slot-card .player-card-name{
+  font-size:7px!important;
+}
+
+/* 축소 프리셋이 6개여도 iPad에서 너무 좁지 않게 */
+@media(max-width:850px){
+  .photo-zoom-presets{
+    grid-template-columns:repeat(3,1fr)!important;
+  }
 }
 </style>
 
@@ -4269,12 +4323,13 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
           <div class="tool-row">
             <label for="playerCardPhotoZoom">확대</label>
             <button type="button" class="photo-zoom-step" id="playerCardPhotoZoomOut" aria-label="축소">−</button>
-            <input id="playerCardPhotoZoom" type="range" min="0.8" max="3" step="0.05" value="1">
+            <input id="playerCardPhotoZoom" type="range" min="0.5" max="3" step="0.05" value="1">
             <button type="button" class="photo-zoom-step" id="playerCardPhotoZoomIn" aria-label="확대">＋</button>
             <output id="playerCardPhotoZoomValue">100%</output>
           </div>
           <button type="button" class="photo-reset-btn" id="playerCardPhotoReset">사진 위치 초기화</button>
           <div class="photo-zoom-presets" aria-label="사진 확대 배율">
+            <button type="button" data-photo-scale="0.5">50%</button>
             <button type="button" data-photo-scale="0.8">80%</button>
             <button type="button" data-photo-scale="1">100%</button>
             <button type="button" data-photo-scale="1.25">125%</button>
@@ -8679,7 +8734,7 @@ function normalizedPhotoTransform(card){
   return {
     x:Number.isFinite(x)?Math.max(-60,Math.min(60,x)):0,
     y:Number.isFinite(y)?Math.max(-60,Math.min(60,y)):0,
-    scale:Number.isFinite(scale)?Math.max(0.8,Math.min(3,scale)):1
+    scale:Number.isFinite(scale)?Math.max(0.5,Math.min(3,scale)):1
   };
 }
 function applyPhotoTransformToLayer(layer,transform){
@@ -8687,7 +8742,7 @@ function applyPhotoTransformToLayer(layer,transform){
   const t=transform||{x:0,y:0,scale:1};
   const x=Math.max(-35,Math.min(35,Number(t.x)||0));
   const y=Math.max(-35,Math.min(35,Number(t.y)||0));
-  const scale=Math.max(0.8,Math.min(3,Number(t.scale)||1));
+  const scale=Math.max(0.5,Math.min(3,Number(t.scale)||1));
   layer.style.setProperty('--photo-x',`${x}%`);
   layer.style.setProperty('--photo-y',`${y}%`);
   layer.style.setProperty('--photo-scale',String(scale));
@@ -9040,7 +9095,7 @@ document.getElementById('playerCardPhotoRemove')?.addEventListener('click',()=>{
 
 
 function setActivePhotoScale(value){
-  activeCardPhotoTransform.scale=Math.max(0.8,Math.min(3,Number(value)||1));
+  activeCardPhotoTransform.scale=Math.max(0.5,Math.min(3,Number(value)||1));
   renderActiveCardPhotoTransform();
 }
 function stepPhotoZoom(delta){
