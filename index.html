@@ -2816,6 +2816,140 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 .squad-slot-card img.frame{z-index:30!important;}
 </style>
 
+
+<style id="rescue-full-photo-aperture-v121">
+/*
+  V12.1 FULL PHOTO APERTURE FIX
+  실제 프레임 PNG의 중앙 투명창 크기를 직접 측정해 그 영역 전체를 사진으로 채운다.
+  별도의 검은 매트/블러 배경은 사용하지 않는다.
+*/
+.card-photo-backdrop{display:none!important;}
+
+.rarity-card-stage,
+.owned-card-mini,
+.squad-slot-card{
+  isolation:isolate!important;
+  background:transparent!important;
+}
+
+.player-photo-layer,
+.squad-photo-holder{
+  z-index:2!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  clip-path:none!important;
+  overflow:hidden!important;
+  border-radius:0!important;
+}
+
+.player-photo-layer.has-photo,
+.squad-photo-holder.has-photo{
+  background:transparent!important;
+}
+
+.player-photo-layer img,
+.squad-photo-holder img.photo{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  transform:none!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+
+/* 프레임이 사진보다 위에 오도록 고정 */
+.card-frame-image,
+.squad-slot-card img.frame{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  z-index:30!important;
+  pointer-events:none!important;
+}
+.player-card-name{z-index:35!important;}
+
+/* 실제 PNG 중앙 투명창 측정값 */
+/* NORMAL: x=128..896, y=276..1175 / 1024x1536 */
+[data-card-stage="normal"] .player-photo-layer,
+[data-rarity-card="normal"] .player-photo-layer{
+  left:12.5%!important;
+  top:17.97%!important;
+  width:75.10%!important;
+  height:58.59%!important;
+}
+
+/* STAR: x=120..904, y=320..1205 */
+[data-card-stage="star"] .player-photo-layer,
+[data-rarity-card="star"] .player-photo-layer{
+  left:11.72%!important;
+  top:20.83%!important;
+  width:76.66%!important;
+  height:57.68%!important;
+}
+
+/* LEGEND: x=120..904, y=320..1205 */
+[data-card-stage="legend"] .player-photo-layer,
+[data-rarity-card="legend"] .player-photo-layer{
+  left:11.72%!important;
+  top:20.83%!important;
+  width:76.66%!important;
+  height:57.68%!important;
+}
+
+/* ALL-TIME BEST: x=128..896, y=335..1180 */
+[data-card-stage="best"] .player-photo-layer,
+[data-rarity-card="best"] .player-photo-layer{
+  left:12.5%!important;
+  top:21.81%!important;
+  width:75.10%!important;
+  height:55.01%!important;
+}
+
+/* COACH: x=136..887, y=350..1164 */
+[data-card-stage="coach"] .player-photo-layer,
+[data-rarity-card="coach"] .player-photo-layer{
+  left:13.28%!important;
+  top:22.79%!important;
+  width:73.34%!important;
+  height:53.06%!important;
+}
+
+/* 사진이 없을 때의 PHOTO 표시만 투명창 전체를 사용 */
+.player-photo-layer:not(.has-photo) .photo-placeholder{
+  position:absolute!important;
+  inset:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-direction:column!important;
+  background:#0b1623!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+/* 스쿼드에서도 프레임 투명창 전체를 사진으로 채움 */
+.squad-slot-card[data-rarity-card="normal"] .squad-photo-holder{
+  left:12.5%!important;top:17.97%!important;width:75.10%!important;height:58.59%!important;
+}
+.squad-slot-card[data-rarity-card="star"] .squad-photo-holder,
+.squad-slot-card[data-rarity-card="legend"] .squad-photo-holder{
+  left:11.72%!important;top:20.83%!important;width:76.66%!important;height:57.68%!important;
+}
+.squad-slot-card[data-rarity-card="best"] .squad-photo-holder{
+  left:12.5%!important;top:21.81%!important;width:75.10%!important;height:55.01%!important;
+}
+.squad-slot-card[data-rarity-card="coach"] .squad-photo-holder{
+  left:13.28%!important;top:22.79%!important;width:73.34%!important;height:53.06%!important;
+}
+</style>
+
 </head>
 <body>
 
