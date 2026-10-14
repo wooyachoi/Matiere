@@ -3408,7 +3408,7 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 
 
 <style id="rescue-v132-photo-presets">
-.photo-zoom-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:7px}
+.photo-zoom-presets{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:7px}
 .photo-zoom-presets button{border:1px solid rgba(255,255,255,.14);background:#101d2a;color:#fff;border-radius:8px;padding:7px 4px;font-size:9px;font-weight:900}
 </style>
 
@@ -3553,6 +3553,43 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
   touch-action:none!important;
   -webkit-user-select:none!important;
   user-select:none!important;
+}
+</style>
+
+
+<style id="rescue-v134-photo-scale-name-lower">
+.player-photo-layer.has-photo img,
+.squad-photo-holder.has-photo img.photo{
+  width:calc(86% * var(--photo-scale,1))!important;
+  height:calc(86% * var(--photo-scale,1))!important;
+  max-width:none!important;
+  max-height:none!important;
+}
+
+/* 이름을 원본 네임플레이트 중앙으로 더 아래 이동 */
+[data-rarity-card="best"] .player-card-name{
+  left:19%!important;
+  top:76.0%!important;
+  width:62%!important;
+  height:6.2%!important;
+}
+[data-rarity-card="normal"] .player-card-name{
+  left:19%!important;top:76.3%!important;width:62%!important;height:6.1%!important;
+}
+[data-rarity-card="star"] .player-card-name,
+[data-rarity-card="legend"] .player-card-name{
+  left:19%!important;top:76.2%!important;width:62%!important;height:6.1%!important;
+}
+[data-rarity-card="coach"] .player-card-name{
+  left:19%!important;top:76.0%!important;width:62%!important;height:6.2%!important;
+}
+
+.squad-slot-card .player-card-name{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:1!important;
+  padding:0 2%!important;
 }
 </style>
 
@@ -4232,12 +4269,13 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
           <div class="tool-row">
             <label for="playerCardPhotoZoom">확대</label>
             <button type="button" class="photo-zoom-step" id="playerCardPhotoZoomOut" aria-label="축소">−</button>
-            <input id="playerCardPhotoZoom" type="range" min="1" max="3" step="0.05" value="1">
+            <input id="playerCardPhotoZoom" type="range" min="0.8" max="3" step="0.05" value="1">
             <button type="button" class="photo-zoom-step" id="playerCardPhotoZoomIn" aria-label="확대">＋</button>
             <output id="playerCardPhotoZoomValue">100%</output>
           </div>
           <button type="button" class="photo-reset-btn" id="playerCardPhotoReset">사진 위치 초기화</button>
           <div class="photo-zoom-presets" aria-label="사진 확대 배율">
+            <button type="button" data-photo-scale="0.8">80%</button>
             <button type="button" data-photo-scale="1">100%</button>
             <button type="button" data-photo-scale="1.25">125%</button>
             <button type="button" data-photo-scale="1.5">150%</button>
@@ -8641,7 +8679,7 @@ function normalizedPhotoTransform(card){
   return {
     x:Number.isFinite(x)?Math.max(-60,Math.min(60,x)):0,
     y:Number.isFinite(y)?Math.max(-60,Math.min(60,y)):0,
-    scale:Number.isFinite(scale)?Math.max(1,Math.min(3,scale)):1
+    scale:Number.isFinite(scale)?Math.max(0.8,Math.min(3,scale)):1
   };
 }
 function applyPhotoTransformToLayer(layer,transform){
@@ -8649,7 +8687,7 @@ function applyPhotoTransformToLayer(layer,transform){
   const t=transform||{x:0,y:0,scale:1};
   const x=Math.max(-35,Math.min(35,Number(t.x)||0));
   const y=Math.max(-35,Math.min(35,Number(t.y)||0));
-  const scale=Math.max(1,Math.min(3,Number(t.scale)||1));
+  const scale=Math.max(0.8,Math.min(3,Number(t.scale)||1));
   layer.style.setProperty('--photo-x',`${x}%`);
   layer.style.setProperty('--photo-y',`${y}%`);
   layer.style.setProperty('--photo-scale',String(scale));
@@ -8888,7 +8926,7 @@ function syncPhotoEditorControls(){
   if(out)out.textContent=`${Math.round((activeCardPhotoTransform.scale||1)*100)}%`;
 }
 function resetActivePhotoTransform(){
-  activeCardPhotoTransform={x:0,y:0,scale:1};
+  activeCardPhotoTransform={x:0,y:0,scale:0.9};
   renderActiveCardPhotoTransform();
 }
 function bindCardPhotoDrag(){
@@ -9002,7 +9040,7 @@ document.getElementById('playerCardPhotoRemove')?.addEventListener('click',()=>{
 
 
 function setActivePhotoScale(value){
-  activeCardPhotoTransform.scale=Math.max(1,Math.min(3,Number(value)||1));
+  activeCardPhotoTransform.scale=Math.max(0.8,Math.min(3,Number(value)||1));
   renderActiveCardPhotoTransform();
 }
 function stepPhotoZoom(delta){
@@ -9017,7 +9055,7 @@ document.querySelectorAll('[data-photo-scale]').forEach(btn=>{
   btn.addEventListener('click',e=>{e.preventDefault();setActivePhotoScale(btn.dataset.photoScale);});
 });
 document.getElementById('playerCardPhotoReset')?.addEventListener('click',e=>{e.preventDefault();resetActivePhotoTransform();});
-document.getElementById('playerCardPhotoInput')?.addEventListener('change',e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{activeCardPhotoData=String(reader.result);activeCardPhotoTransform={x:0,y:0,scale:1};const card=findCard(activeCardEditor);renderCardStage(document.querySelector('[data-editor-stage]'),card,{name:card?.name},activeCardPhotoData,activeCardPhotoTransform);syncPhotoEditorControls();bindCardPhotoDrag();};reader.readAsDataURL(file);});
+document.getElementById('playerCardPhotoInput')?.addEventListener('change',e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{activeCardPhotoData=String(reader.result);activeCardPhotoTransform={x:0,y:0,scale:0.9};const card=findCard(activeCardEditor);renderCardStage(document.querySelector('[data-editor-stage]'),card,{name:card?.name},activeCardPhotoData,activeCardPhotoTransform);syncPhotoEditorControls();bindCardPhotoDrag();};reader.readAsDataURL(file);});
 document.querySelectorAll('.rarity-row[data-card-preview]').forEach(row=>{row.addEventListener('click',()=>openPlayerCardShop(row.dataset.cardPreview));row.setAttribute('tabindex','0');row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPlayerCardShop(row.dataset.cardPreview);}});});
 
 /* init */
