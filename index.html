@@ -4043,6 +4043,163 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 }
 </style>
 
+
+<style id="rescue-v142-logo-shop-large-layout">
+/* ===== V14.2 · LOGO SHOP — TRANSFER MARKET SCALE ===== */
+.logo-shop-dialog{
+  width:min(1120px,94vw)!important;
+  max-width:1120px!important;
+  max-height:92vh!important;
+  padding:0!important;
+  overflow:auto!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:22px!important;
+  background:linear-gradient(145deg,#07101a,#0b1624 55%,#111827)!important;
+  color:#fff!important;
+  box-shadow:0 28px 90px rgba(0,0,0,.72)!important;
+}
+.logo-shop-dialog::backdrop{
+  background:rgba(0,5,12,.78)!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+}
+.logo-shop-dialog .rescue-dialog-head{
+  padding:22px 24px 16px!important;
+  align-items:center!important;
+  border-bottom:1px solid rgba(255,255,255,.10)!important;
+  background:transparent!important;
+}
+.logo-shop-dialog .rescue-dialog-kicker{
+  font-size:10px!important;
+  letter-spacing:2.5px!important;
+  color:#9fb3c7!important;
+  font-weight:900!important;
+}
+.logo-shop-dialog .rescue-dialog-head h2{
+  margin:4px 0 0!important;
+  font-size:24px!important;
+  letter-spacing:-.5px!important;
+  color:#fff!important;
+}
+.logo-shop-dialog .rescue-dialog-head p{
+  margin:5px 0 0!important;
+  color:#91a2b2!important;
+  font-size:12px!important;
+}
+.logo-shop-dialog .rescue-dialog-close{
+  width:42px!important;
+  height:42px!important;
+  border-radius:50%!important;
+  border:2px solid #0f5f97!important;
+  background:#0e1b29!important;
+  color:#fff!important;
+  font-size:22px!important;
+  flex:none!important;
+}
+.logo-shop-balance{
+  padding:15px 24px 0!important;
+  color:#8fa0b1!important;
+  font-size:11px!important;
+}
+.logo-shop-balance strong{
+  color:#f3c94f!important;
+  font-size:19px!important;
+}
+.logo-shop-grid{
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:16px!important;
+  padding:18px 24px 24px!important;
+}
+.logo-shop-card{
+  padding:11px!important;
+  border-radius:18px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.018))!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.18)!important;
+}
+.logo-shop-card.is-equipped{
+  border-color:rgba(233,195,76,.66)!important;
+  box-shadow:0 0 0 1px rgba(233,195,76,.16),0 16px 38px rgba(0,0,0,.28)!important;
+}
+.logo-shop-art{
+  border-radius:14px!important;
+  background:#050912!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 14px 30px rgba(0,0,0,.28)!important;
+}
+.logo-shop-info{
+  padding:12px 3px 10px!important;
+}
+.logo-shop-info b{
+  font-size:13px!important;
+  letter-spacing:.02em!important;
+}
+.logo-shop-info span{
+  font-size:12px!important;
+}
+.logo-shop-actions{
+  gap:8px!important;
+}
+.logo-shop-actions button{
+  min-height:40px!important;
+  border-radius:10px!important;
+  font-size:11px!important;
+}
+.logo-shop-status{
+  min-height:18px!important;
+  padding-top:8px!important;
+  font-size:10px!important;
+}
+.logo-shop-dialog .rescue-dialog-foot{
+  padding:14px 24px 20px!important;
+  border-top:1px solid rgba(255,255,255,.10)!important;
+  background:transparent!important;
+}
+.logo-shop-dialog .rescue-dialog-foot .gbtn{
+  width:100%!important;
+  min-height:46px!important;
+  border-radius:14px!important;
+  background:#0d1a28!important;
+  border:1px solid #ef233c!important;
+  color:#fff!important;
+  font-size:14px!important;
+  font-weight:900!important;
+}
+
+@media(max-width:1000px){
+  .logo-shop-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:700px){
+  .logo-shop-dialog{
+    width:96vw!important;
+    max-height:94vh!important;
+    border-radius:19px!important;
+  }
+  .logo-shop-dialog .rescue-dialog-head{
+    padding:18px 17px 14px!important;
+  }
+  .logo-shop-dialog .rescue-dialog-head h2{font-size:22px!important}
+  .logo-shop-balance{padding:12px 17px 0!important}
+  .logo-shop-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+    padding:14px 17px 18px!important;
+  }
+  .logo-shop-card{padding:9px!important}
+  .logo-shop-info{display:block!important}
+  .logo-shop-info b,.logo-shop-info span{display:block!important;margin-top:3px!important}
+  .logo-shop-actions{grid-template-columns:1fr 1fr!important}
+  .logo-shop-dialog .rescue-dialog-foot{padding:12px 17px 16px!important}
+}
+@media(max-width:430px){
+  .logo-shop-grid{grid-template-columns:1fr 1fr!important;gap:8px!important;padding:12px!important}
+  .logo-shop-actions{grid-template-columns:1fr!important}
+  .logo-shop-info b{font-size:11px!important}
+  .logo-shop-info span{font-size:10px!important}
+}
+</style>
+
 </head>
 <body>
 
