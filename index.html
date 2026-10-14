@@ -3412,6 +3412,150 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 .photo-zoom-presets button{border:1px solid rgba(255,255,255,.14);background:#101d2a;color:#fff;border-radius:8px;padding:7px 4px;font-size:9px;font-weight:900}
 </style>
 
+
+<script id="rescue-title-lock">
+(function(){
+  const lockTitle=()=>{
+    if(document.title!=="RESCUE FC") document.title="RESCUE FC";
+    const t=document.querySelector("title");
+    if(t && t.textContent!=="RESCUE FC") t.textContent="RESCUE FC";
+  };
+  lockTitle();
+  window.addEventListener("pageshow",lockTitle);
+  window.addEventListener("focus",lockTitle);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)lockTitle();});
+  const obs=new MutationObserver(lockTitle);
+  if(document.head) obs.observe(document.head,{subtree:true,childList:true,characterData:true});
+  setInterval(lockTitle,1500);
+})();
+</script>
+
+
+<style id="rescue-v133-full-frame-photo">
+/*
+  V13.3
+  사진 레이어를 카드 전체 크기로 깔고, 실제 투명 프레임이 보이는 영역만 노출한다.
+  따라서 BEST 11에서도 사진 위/아래에 필드 배경이 비치는 틈이 생기지 않는다.
+*/
+.card-photo-backdrop{display:none!important;}
+
+.rarity-card-stage .player-photo-layer.has-photo,
+.owned-card-mini .player-photo-layer.has-photo,
+.squad-slot-card .squad-photo-holder.has-photo{
+  position:absolute!important;
+  inset:0!important;
+  left:0!important;top:0!important;width:100%!important;height:100%!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+  z-index:2!important;
+  pointer-events:none!important;
+}
+
+/* 편집 화면에서는 카드 전체를 손가락으로 잡아 사진 이동 */
+#editorCardWrap .rarity-card-stage .player-photo-layer.has-photo{
+  pointer-events:auto!important;
+  touch-action:none!important;
+}
+
+/* 사진 자체를 카드 전체 캔버스에서 이동/확대 */
+.player-photo-layer.has-photo img,
+.squad-photo-holder.has-photo img.photo{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:calc(100% * var(--photo-scale,1))!important;
+  height:calc(100% * var(--photo-scale,1))!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  transform:translate(
+    calc(-50% + var(--photo-x,0%)),
+    calc(-50% + var(--photo-y,0%))
+  )!important;
+  transform-origin:center center!important;
+  border:0!important;
+  box-shadow:none!important;
+  pointer-events:none!important;
+}
+
+/* 사진이 없을 때만 기존 중앙 PHOTO 안내창 유지 */
+.player-photo-layer:not(.has-photo){
+  z-index:2!important;
+}
+
+/* 프레임/이름은 사진보다 항상 위 */
+.card-frame-image,
+.squad-slot-card img.frame{
+  z-index:30!important;
+  pointer-events:none!important;
+}
+.player-card-name{
+  z-index:50!important;
+  pointer-events:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  line-height:1!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0 2%!important;
+}
+
+/* 원본 네임플레이트 정중앙 */
+[data-rarity-card="best"] .player-card-name{
+  left:19%!important;
+  top:72.2%!important;
+  width:62%!important;
+  height:6.7%!important;
+}
+[data-rarity-card="normal"] .player-card-name{
+  left:19%!important;top:73.0%!important;width:62%!important;height:6.4%!important;
+}
+[data-rarity-card="star"] .player-card-name,
+[data-rarity-card="legend"] .player-card-name{
+  left:19%!important;top:73.0%!important;width:62%!important;height:6.4%!important;
+}
+[data-rarity-card="coach"] .player-card-name{
+  left:19%!important;top:72.8%!important;width:62%!important;height:6.5%!important;
+}
+
+/* BEST 11 카드 */
+.squad-slot-card{
+  width:68px!important;
+  aspect-ratio:2/3!important;
+  height:auto!important;
+  background:transparent!important;
+  border:0!important;
+  overflow:hidden!important;
+}
+.squad-slot-card .player-card-name{
+  z-index:60!important;
+  font-size:7.2px!important;
+  font-weight:900!important;
+  color:#f7e6ae!important;
+  text-shadow:0 1px 3px #000!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.squad-slot-card + .squad-slot-name{
+  font-size:8.5px!important;
+}
+
+/* 편집 카드 위에 터치가 확실히 들어오도록 */
+#editorCardWrap [data-editor-stage]{
+  position:relative!important;
+  touch-action:none!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -4111,6 +4255,16 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 
 /* ===== RESCUE FC TITLE FIX ===== */
 document.title="RESCUE FC";
+
+
+function rescueForceTitle(){
+  document.title="RESCUE FC";
+  const titleNode=document.querySelector("title");
+  if(titleNode)titleNode.textContent="RESCUE FC";
+}
+rescueForceTitle();
+window.addEventListener("pageshow",rescueForceTitle);
+window.addEventListener("focus",rescueForceTitle);
 
 /* ============ V9 SUPABASE AUTH ============ */
 const SUPABASE_URL = "https://ldzajiskcgaigumxvero.supabase.co";
@@ -8493,8 +8647,8 @@ function normalizedPhotoTransform(card){
 function applyPhotoTransformToLayer(layer,transform){
   if(!layer)return;
   const t=transform||{x:0,y:0,scale:1};
-  const x=Math.max(-50,Math.min(50,Number(t.x)||0));
-  const y=Math.max(-50,Math.min(50,Number(t.y)||0));
+  const x=Math.max(-35,Math.min(35,Number(t.x)||0));
+  const y=Math.max(-35,Math.min(35,Number(t.y)||0));
   const scale=Math.max(1,Math.min(3,Number(t.scale)||1));
   layer.style.setProperty('--photo-x',`${x}%`);
   layer.style.setProperty('--photo-y',`${y}%`);
@@ -8738,104 +8892,81 @@ function resetActivePhotoTransform(){
   renderActiveCardPhotoTransform();
 }
 function bindCardPhotoDrag(){
+  const stage=document.querySelector('#editorCardWrap [data-editor-stage]');
   const layer=currentEditorPhotoLayer();
-  const stage=layer?.closest('[data-editor-stage]');
-  if(!layer || !stage || stage.dataset.photoDragBound==='1')return;
-  stage.dataset.photoDragBound='1';
+  if(!stage || !layer || stage.dataset.dragReady==='1')return;
+  stage.dataset.dragReady='1';
 
-  const begin=(clientX,clientY,id='touch')=>{
-    if(!activeCardPhotoData)return false;
-    const r=layer.getBoundingClientRect();
-    if(clientX<r.left||clientX>r.right||clientY<r.top||clientY>r.bottom)return false;
+  let dragging=false,startX=0,startY=0,baseX=0,baseY=0;
+
+  const start=(x,y)=>{
+    if(!activeCardPhotoData)return;
+    dragging=true;
+    startX=x;startY=y;
+    baseX=Number(activeCardPhotoTransform.x)||0;
+    baseY=Number(activeCardPhotoTransform.y)||0;
     layer.classList.add('dragging');
-    cardDragState={
-      pointerId:id,
-      startX:clientX,
-      startY:clientY,
-      baseX:Number(activeCardPhotoTransform.x)||0,
-      baseY:Number(activeCardPhotoTransform.y)||0
-    };
-    return true;
   };
-
-  const move=(clientX,clientY,id='touch')=>{
-    if(!cardDragState || cardDragState.pointerId!==id)return false;
-    const rect=layer.getBoundingClientRect();
-    if(!rect.width||!rect.height)return false;
-    const dx=(clientX-cardDragState.startX)/rect.width*100;
-    const dy=(clientY-cardDragState.startY)/rect.height*100;
-    activeCardPhotoTransform.x=Math.max(-50,Math.min(50,cardDragState.baseX+dx));
-    activeCardPhotoTransform.y=Math.max(-50,Math.min(50,cardDragState.baseY+dy));
+  const move=(x,y)=>{
+    if(!dragging)return;
+    const rect=stage.getBoundingClientRect();
+    if(!rect.width||!rect.height)return;
+    activeCardPhotoTransform.x=Math.max(-35,Math.min(35,baseX+((x-startX)/rect.width*100)));
+    activeCardPhotoTransform.y=Math.max(-35,Math.min(35,baseY+((y-startY)/rect.height*100)));
     renderActiveCardPhotoTransform();
-    return true;
   };
-
-  const finish=(id=null)=>{
-    if(!cardDragState)return;
-    if(id!==null && cardDragState.pointerId!==id)return;
-    cardDragState=null;
+  const end=()=>{
+    dragging=false;
     layer.classList.remove('dragging');
   };
 
-  /* Pointer Events */
-  stage.addEventListener('pointerdown',e=>{
-    if(begin(e.clientX,e.clientY,e.pointerId)){
-      e.preventDefault();
-      try{stage.setPointerCapture(e.pointerId);}catch(_){}
-    }
-  },{passive:false});
-  stage.addEventListener('pointermove',e=>{
-    if(move(e.clientX,e.clientY,e.pointerId))e.preventDefault();
-  },{passive:false});
-  stage.addEventListener('pointerup',e=>finish(e.pointerId));
-  stage.addEventListener('pointercancel',e=>finish(e.pointerId));
-
-  /* iOS Safari touch fallback */
+  /* iPad / iPhone Safari */
   stage.addEventListener('touchstart',e=>{
     if(e.touches.length!==1)return;
+    e.preventDefault();
     const t=e.touches[0];
-    if(begin(t.clientX,t.clientY,'touch')){
-      e.preventDefault();
-    }
+    start(t.clientX,t.clientY);
   },{passive:false});
   stage.addEventListener('touchmove',e=>{
-    if(e.touches.length!==1)return;
+    if(!dragging||e.touches.length!==1)return;
+    e.preventDefault();
     const t=e.touches[0];
-    if(move(t.clientX,t.clientY,'touch')){
-      e.preventDefault();
-    }
+    move(t.clientX,t.clientY);
   },{passive:false});
-  stage.addEventListener('touchend',()=>finish('touch'),{passive:false});
-  stage.addEventListener('touchcancel',()=>finish('touch'),{passive:false});
+  stage.addEventListener('touchend',e=>{if(dragging)e.preventDefault();end();},{passive:false});
+  stage.addEventListener('touchcancel',end,{passive:false});
 
-  /* Mouse fallback */
-  stage.addEventListener('mousedown',e=>{
-    if(begin(e.clientX,e.clientY,'mouse'))e.preventDefault();
+  /* Pointer */
+  stage.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='touch')return;
+    e.preventDefault();
+    start(e.clientX,e.clientY);
+    try{stage.setPointerCapture(e.pointerId);}catch(_){}
   });
-  window.addEventListener('mousemove',e=>{
-    if(move(e.clientX,e.clientY,'mouse'))e.preventDefault();
+  stage.addEventListener('pointermove',e=>{
+    if(e.pointerType==='touch'||!dragging)return;
+    e.preventDefault();
+    move(e.clientX,e.clientY);
   });
-  window.addEventListener('mouseup',()=>finish('mouse'));
+  stage.addEventListener('pointerup',end);
+  stage.addEventListener('pointercancel',end);
 
-  /* Desktop image file drop */
-  if(stage.dataset.fileDropBound!=='1'){
-    stage.dataset.fileDropBound='1';
-    stage.addEventListener('dragover',e=>e.preventDefault());
-    stage.addEventListener('drop',e=>{
-      e.preventDefault();
-      const file=Array.from(e.dataTransfer?.files||[]).find(f=>f.type.startsWith('image/'));
-      if(!file)return;
-      const reader=new FileReader();
-      reader.onload=()=>{
-        activeCardPhotoData=String(reader.result);
-        activeCardPhotoTransform={x:0,y:0,scale:1};
-        const card=findCard(activeCardEditor);
-        renderCardStage(stage,card,{name:document.getElementById('playerCardNameInput')?.value||card?.name},activeCardPhotoData,activeCardPhotoTransform);
-        syncPhotoEditorControls();
-      };
-      reader.readAsDataURL(file);
-    });
-  }
+  /* file drag & drop desktop */
+  stage.addEventListener('dragover',e=>e.preventDefault());
+  stage.addEventListener('drop',e=>{
+    e.preventDefault();
+    const file=Array.from(e.dataTransfer?.files||[]).find(f=>f.type.startsWith('image/'));
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      activeCardPhotoData=String(reader.result);
+      activeCardPhotoTransform={x:0,y:0,scale:1};
+      const card=findCard(activeCardEditor);
+      renderCardStage(stage,card,{name:document.getElementById('playerCardNameInput')?.value||card?.name},activeCardPhotoData,activeCardPhotoTransform);
+      syncPhotoEditorControls();
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 function openFormationSelector(){
@@ -8870,21 +9001,22 @@ document.getElementById('playerCardNameInput')?.addEventListener('input',e=>{
 document.getElementById('playerCardPhotoRemove')?.addEventListener('click',()=>{activeCardPhotoData=null;activeCardPhotoTransform={x:0,y:0,scale:1};if(activeCardEditor){const card=findCard(activeCardEditor);renderCardStage(document.querySelector('[data-editor-stage]'),card,{name:card?.name},null,activeCardPhotoTransform);syncPhotoEditorControls();}});
 
 
-function stepPhotoZoom(delta){
-  activeCardPhotoTransform.scale=Math.max(1,Math.min(3,(Number(activeCardPhotoTransform.scale)||1)+delta));
-  renderActiveCardPhotoTransform();
-}
-document.getElementById('playerCardPhotoZoomOut')?.addEventListener('click',()=>stepPhotoZoom(-0.1));
-document.getElementById('playerCardPhotoZoomIn')?.addEventListener('click',()=>stepPhotoZoom(0.1));
 function setActivePhotoScale(value){
   activeCardPhotoTransform.scale=Math.max(1,Math.min(3,Number(value)||1));
   renderActiveCardPhotoTransform();
 }
+function stepPhotoZoom(delta){
+  setActivePhotoScale((Number(activeCardPhotoTransform.scale)||1)+delta);
+}
+document.getElementById('playerCardPhotoZoomOut')?.addEventListener('click',e=>{e.preventDefault();stepPhotoZoom(-0.15);});
+document.getElementById('playerCardPhotoZoomIn')?.addEventListener('click',e=>{e.preventDefault();stepPhotoZoom(0.15);});
 const photoZoomSlider=document.getElementById('playerCardPhotoZoom');
 photoZoomSlider?.addEventListener('input',e=>setActivePhotoScale(e.target.value));
 photoZoomSlider?.addEventListener('change',e=>setActivePhotoScale(e.target.value));
-document.querySelectorAll('[data-photo-scale]').forEach(btn=>btn.addEventListener('click',()=>setActivePhotoScale(btn.dataset.photoScale)));
-document.getElementById('playerCardPhotoReset')?.addEventListener('click',resetActivePhotoTransform);
+document.querySelectorAll('[data-photo-scale]').forEach(btn=>{
+  btn.addEventListener('click',e=>{e.preventDefault();setActivePhotoScale(btn.dataset.photoScale);});
+});
+document.getElementById('playerCardPhotoReset')?.addEventListener('click',e=>{e.preventDefault();resetActivePhotoTransform();});
 document.getElementById('playerCardPhotoInput')?.addEventListener('change',e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{activeCardPhotoData=String(reader.result);activeCardPhotoTransform={x:0,y:0,scale:1};const card=findCard(activeCardEditor);renderCardStage(document.querySelector('[data-editor-stage]'),card,{name:card?.name},activeCardPhotoData,activeCardPhotoTransform);syncPhotoEditorControls();bindCardPhotoDrag();};reader.readAsDataURL(file);});
 document.querySelectorAll('.rarity-row[data-card-preview]').forEach(row=>{row.addEventListener('click',()=>openPlayerCardShop(row.dataset.cardPreview));row.setAttribute('tabindex','0');row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPlayerCardShop(row.dataset.cardPreview);}});});
 
