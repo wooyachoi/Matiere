@@ -3647,6 +3647,132 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 }
 </style>
 
+
+<style id="rescue-v136-collection-name">
+/* PLAYER COLLECTION에서 카드 이름을 더 크게 표시 */
+#playerCollectionDialog .owned-card-mini .player-card-name{
+  font-size:clamp(13px,1.45vw,19px)!important;
+  font-weight:900!important;
+  letter-spacing:-0.02em!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.85)!important;
+}
+
+/* Transfer Market 하단 내 카드 목록도 같은 크기 */
+#playerCardPreviewDialog .owned-card-mini .player-card-name{
+  font-size:clamp(12px,1.35vw,18px)!important;
+  font-weight:900!important;
+}
+
+/* 긴 팀 이름도 레이아웃을 깨지 않도록 */
+#homeTeamName,
+#footballTeamName{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+</style>
+
+
+<style id="rescue-v137-home-six-tiles">
+/* HOME 기능 타일 6개를 기존 영역 안에서 한 줄 유지 */
+.home-feature-grid{
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+.home-feature{
+  min-height:150px!important;
+  padding:18px 16px 15px!important;
+  border-radius:13px!important;
+}
+.home-feature-icon{
+  font-size:27px!important;
+  margin-bottom:16px!important;
+}
+.home-feature b{
+  font-size:17px!important;
+  line-height:1.05!important;
+  white-space:nowrap!important;
+}
+.home-feature small{
+  font-size:11px!important;
+  line-height:1.35!important;
+  margin-top:5px!important;
+  min-height:30px;
+}
+.home-feature strong{
+  font-size:22px!important;
+}
+
+/* MY TEAM도 다른 기능 타일과 완전히 같은 크기/스타일 */
+#homeMyTeamFeature{
+  border-color:#1d3b56!important;
+}
+#homeFeatureTeamName{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  max-width:100%;
+  min-height:0!important;
+}
+
+/* 중간 폭에서는 여전히 6칸 유지하면서 조금 더 압축 */
+@media(max-width:1100px) and (min-width:701px){
+  .home-feature-grid{gap:8px!important;}
+  .home-feature{min-height:138px!important;padding:15px 12px 13px!important;}
+  .home-feature-icon{font-size:24px!important;margin-bottom:12px!important;}
+  .home-feature b{font-size:14px!important;}
+  .home-feature small{font-size:9.5px!important;}
+  .home-feature strong{font-size:19px!important;}
+}
+
+/* 작은 모바일만 2열 */
+@media(max-width:700px){
+  /* 모바일에서도 6개 기능 타일을 반드시 한 줄에 유지 */
+  .home-feature-grid{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    gap:4px!important;
+    width:100%!important;
+    overflow:visible!important;
+  }
+  .home-feature{
+    min-width:0!important;
+    min-height:108px!important;
+    padding:10px 5px 9px!important;
+    border-radius:9px!important;
+  }
+  .home-feature-icon{
+    font-size:18px!important;
+    margin-bottom:8px!important;
+  }
+  .home-feature b{
+    font-size:9.5px!important;
+    line-height:1!important;
+    letter-spacing:-0.02em!important;
+    white-space:nowrap!important;
+  }
+  .home-feature small{
+    font-size:7px!important;
+    line-height:1.2!important;
+    margin-top:4px!important;
+    min-height:17px!important;
+    display:block!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+  .home-feature strong{
+    font-size:14px!important;
+    margin-top:6px!important;
+  }
+  #homeFeatureTeamName{
+    max-width:100%!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -3765,6 +3891,7 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
         <button type="button" class="home-feature" data-home-tab="quiz"><span class="home-feature-icon">☑</span><b>QUIZ</b><small>퀴즈로 실력 점검하기</small><strong>→</strong></button>
         <button type="button" class="home-feature" data-home-tab="game"><span class="home-feature-icon">⌘</span><b>GAME</b><small>게임으로 더 재미있게</small><strong>→</strong></button>
         <button type="button" class="home-feature" data-home-tab="ranking"><span class="home-feature-icon">♕</span><b>RANKING</b><small>학습·게임 랭킹 보기</small><strong>→</strong></button>
+        <button type="button" class="home-feature" id="homeMyTeamFeature"><span class="home-feature-icon">⚽</span><b>MY TEAM</b><small id="homeFeatureTeamName">나의 팀 관리하기</small><strong>→</strong></button>
       </section>
 
       <section class="home-hall-of-fame" id="homeHallOfFame" aria-labelledby="hofTitle">
@@ -3777,18 +3904,6 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
         </div>
       </section>
 
-      <section class="home-football">
-        <div class="home-football-copy">
-          <div class="home-football-title"><span>⚽</span><div><b>FOOTBALL</b><small>나만의 팀을 만들고, 최고의 팀을 완성해보세요.</small></div></div>
-          <div class="home-team-row"><div class="home-team-crest">✚</div><div><b>MY TEAM</b><small>현재 팀을 확인해보세요.</small></div><button type="button" id="homeTeamBtn">→</button></div>
-        </div>
-        <div class="home-mini-pitch" aria-hidden="true">
-          <i style="top:9%;left:50%">ST</i><i style="top:27%;left:28%">LW</i><i style="top:27%;left:72%">RW</i><i style="top:45%;left:50%">CM</i><i style="top:45%;left:25%">CM</i><i style="top:45%;left:75%">CM</i><i style="top:64%;left:18%">LB</i><i style="top:64%;left:40%">CB</i><i style="top:64%;left:60%">CB</i><i style="top:64%;left:82%">RB</i><i style="top:84%;left:50%">GK</i>
-          <span class="pitch-midline"></span><span class="pitch-circle"></span>
-        </div>
-        <div class="home-best11"><b>BEST 11</b><span>○ GK</span><span>○ DF</span><span>○ MF</span><span>○ FW</span></div>
-        <button type="button" class="home-primary home-football-btn" id="homeFootballBtn">팀으로 이동하기 →</button>
-      </section>
     </div>
 
     <!-- ===== FLASHCARDS ===== -->
@@ -4129,7 +4244,7 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
           <button type="button" class="football-cta" id="footballTeamHeroBtn">나의 팀 바로가기 <b>→</b></button>
         </div>
         <div class="football-ball-art" aria-hidden="true">⚽</div>
-        <div class="football-hero-script">Arsenal<br><b>The GOAT</b></div>
+        <div class="football-hero-script"><span id="footballHeroTeamName">Arsenal</span><br><b>The GOAT</b></div>
       </section>
 
       <section class="football-team-card">
@@ -8027,6 +8142,11 @@ function updateHomeSummary(){
   updateHomeGreeting();
   const dayEl=document.getElementById("homeTodayDay"); if(dayEl){const d=new Date().getDate();dayEl.textContent=String(Math.max(1,Math.min(DAY_MAX||1,((d-1)%Math.max(1,DAY_MAX||1))+1))).padStart(2,"0");}
   const count=document.getElementById("homeTodayCount"); if(count)count.textContent="20";
+  const st=loadFootballState();
+  const homeTeamNameEl=document.getElementById("homeTeamName");
+  if(homeTeamNameEl)homeTeamNameEl.textContent=st.teamName||"Arsenal";
+  const homeFeatureTeamNameEl=document.getElementById("homeFeatureTeamName");
+  if(homeFeatureTeamNameEl)homeFeatureTeamNameEl.textContent=st.teamName||"Arsenal";
   updateHomeDailyQuote();
 }
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)updateHomeGreeting();});
@@ -8035,6 +8155,8 @@ document.querySelectorAll("[data-home-tab]").forEach(btn=>btn.addEventListener("
 document.getElementById("homeStartBtn")?.addEventListener("click",()=>setTab("words"));
 document.getElementById("homeFootballBtn")?.addEventListener("click",()=>setTab("football"));
 document.getElementById("homeTeamBtn")?.addEventListener("click",()=>{setTab("football");setTimeout(()=>document.getElementById("footballTeamBtn")?.click(),0);});
+document.getElementById("homeMyTeamFeature")?.addEventListener("click",()=>setTab("football"));
+document.getElementById("footballEditTeamBtn")?.addEventListener("click",editFootballTeamName);
 document.querySelector(".rescue-brand-logo-header")?.addEventListener("click",()=>setTab("home"));
 
 
@@ -8417,7 +8539,14 @@ function renderFootballHub(){
   const st=loadFootballState(), rp=getFootballRP(), count=Object.values(st.squad||{}).filter(Boolean).length;
   const rpEl=document.getElementById("footballRp"), nameEl=document.getElementById("footballTeamName"), countEl=document.getElementById("footballTeamCount"), coachEl=document.getElementById("footballCoachLabel"), prog=document.getElementById("footballTeamProgress");
   if(rpEl)rpEl.textContent=rp.toLocaleString()+" RP";
-  if(nameEl)nameEl.textContent=st.teamName||"Arsenal";
+  const teamName=st.teamName||"Arsenal";
+  if(nameEl)nameEl.textContent=teamName;
+  const heroTeamNameEl=document.getElementById("footballHeroTeamName");
+  if(heroTeamNameEl)heroTeamNameEl.textContent=teamName;
+  const homeTeamNameEl=document.getElementById("homeTeamName");
+  if(homeTeamNameEl)homeTeamNameEl.textContent=teamName;
+  const homeFeatureTeamNameEl=document.getElementById("homeFeatureTeamName");
+  if(homeFeatureTeamNameEl)homeFeatureTeamNameEl.textContent=teamName;
   if(countEl)countEl.textContent=count+" / 11";
   if(prog)prog.style.width=Math.round(count/11*100)+"%";
   if(coachEl){const coachName=loadCardProfiles().__coach?.name;const serverCoachCount=typeof coachCards==="function"?coachCards().length:0;coachEl.textContent=st.coach?"감독 · "+st.coach:(serverCoachCount?`코치 카드 ${serverCoachCount}장 보유`:(st.coachCard?(coachName?"감독 · "+coachName:"코치 카드 보유"):"감독 미영입"));}
@@ -8432,7 +8561,10 @@ function editFootballTeamName(){
   if(next===null)return;
   const name=next.trim().slice(0,24);
   if(!name){alert("팀 이름을 입력해주세요.");return;}
-  st.teamName=name;saveFootballState(st);renderFootballHub();
+  st.teamName=name;
+  saveFootballState(st);
+  renderFootballHub();
+  updateHomeSummary();
 }
 
 let achievementStatusCache=null;
