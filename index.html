@@ -10704,7 +10704,7 @@ function opRenderRole(st){
     lock.hidden=false;lock.disabled=!onlinePenaltyKeeperTarget||st.keeper_submitted;
     box.textContent=st.keeper_submitted?"다이빙 위치 확정 완료 · 상대 슛을 기다리는 중입니다.":onlinePenaltyKeeperTarget?"위치 선택 완료 · 확정 버튼을 누르세요.":"골대 안 원하는 세이브 지점을 터치하세요.";
   }else{
-    role.textContent="ONLINE MATCH";title.textContent="경기 상태 확인 중";desc.textContent="서버에서 다음 턴을 확인하고 있습니다.";lock.hidden=true;box.textContent="실시간 연결을 확인 중입니다. 잠시만 기다려 주세요.";
+    role.textContent="ONLINE MATCH";title.textContent="경기 상태 확인 중";desc.textContent="서버에서 다음 턴을 확인하고 있습니다.";lock.hidden=true;box.textContent=rescuePenaltyStateSummary(st);
   }
 }
 function opResizeCanvas(){
@@ -10768,12 +10768,47 @@ function opAnimateReveal(st){
   setTimeout(()=>{big.textContent=r.result;small.textContent=r.result==="GOAL"?"GOAL!":r.result==="SAVE"?"GOALKEEPER SAVE":r.result==="POST"?"HIT THE POST":"MISS";ov.classList.add("show");},620);
   setTimeout(()=>{ov.classList.remove("show");onlinePenaltyAnim=null;},1500);
 }
+
+function rescuePenaltyStateSummary(data){
+  if(!data)return "NO STATE";
+  return `status=${data.status||"-"} · stage=${data.stage||"-"} · turn=${data.turn_no??"-"} · attacker=${data.current_attacker?"SET":"NONE"}`;
+}
+async function rescuePreparePenaltySession(){
+  if(!onlinePenaltySessionId)return null;
+  try{
+    const {data,error}=await supabaseClient.rpc("rescue_prepare_penalty_session",{p_session_id:onlinePenaltySessionId});
+    if(error)throw error;
+    return data||null;
+  }catch(e){
+    console.warn("Penalty session prepare failed",e);
+    return null;
+  }
+}
+
 function rescuePenaltyApplyState(data){
   if(!data)return;
   onlinePenaltyState=data;
   opRenderScore(data);
   opRenderRole(data);
   opAnimateReveal(data);
+
+  if(data.status==="active" && data.stage==="lobby"){
+    const title=document.getElementById("opTurnTitle");
+    const desc=document.getElementById("opTurnDesc");
+    const box=document.getElementById("opControlState");
+    if(title)title.textContent="경기 세션 초기화 중";
+    if(desc)desc.textContent="이전 버전에서 생성된 경기방을 현재 온라인 승부차기 형식으로 변환하고 있습니다.";
+    if(box)box.textContent=rescuePenaltyStateSummary(data);
+    opShowScreen("opGameScreen");
+    if(!window.__rescuePenaltyRepairBusy){
+      window.__rescuePenaltyRepairBusy=true;
+      rescuePreparePenaltySession()
+        .then(fixed=>{ if(fixed)rescuePenaltyApplyState(fixed); })
+        .finally(()=>{ window.__rescuePenaltyRepairBusy=false; });
+    }
+    return;
+  }
+
   if(data.stage==="coin_toss"){
     if(onlinePenaltyIntroSeen.has(onlinePenaltySessionId)){
       opRenderCoin(data);
@@ -10811,14 +10846,45 @@ async function rescuePenaltyRefreshState(){
   }
 }
 async function rescueLaunchOnlinePenalty(sessionId){
-  if(!sessionId)return;onlinePenaltySessionId=sessionId;onlinePenaltyKeeperTarget=null;
-  rescueCloseDialog("gameRoomDialog");rescueOpenDialog("onlinePenaltyDialog");
+  if(!sessionId)return;
+  onlinePenaltySessionId=sessionId;
+  onlinePenaltyKeeperTarget=null;
+  rescueCloseDialog("gameRoomDialog");
+  rescueOpenDialog("onlinePenaltyDialog");
   try{
-    const {data,error}=await supabaseClient.rpc("rescue_penalty_state",{p_session_id:sessionId});
-    if(error)throw error;onlinePenaltyState=data;opRenderIntro(data);opRenderScore(data);opRenderRole(data);
-    if(!onlinePenaltyIntroSeen.has(sessionId))opShowScreen("opIntroScreen");else if(data.stage==="coin_toss"){opRenderCoin(data);opShowScreen("opCoinScreen");}else opShowScreen("opGameScreen");
-    setTimeout(opResizeCanvas,80);rescueStartPenaltyPoll();
-  }catch(e){console.warn("Penalty launch failed",e);alert("온라인 경기를 불러오지 못했습니다.");}
+    let data=null;
+    try{
+      const prep=await supabaseClient.rpc("rescue_prepare_penalty_session",{p_session_id:sessionId});
+      if(!prep.error && prep.data)data=prep.data;
+    }catch(e){
+      console.warn("Initial penalty prepare skipped",e);
+    }
+    if(!data){
+      const stateRes=await supabaseClient.rpc("rescue_penalty_state",{p_session_id:sessionId});
+      if(stateRes.error)throw stateRes.error;
+      data=stateRes.data;
+    }
+    if(!data)throw new Error("Empty penalty state");
+
+    onlinePenaltyState=data;
+    opRenderIntro(data);
+    opRenderScore(data);
+    opRenderRole(data);
+
+    if(!onlinePenaltyIntroSeen.has(sessionId)){
+      opShowScreen("opIntroScreen");
+    }else if(data.stage==="coin_toss"){
+      opRenderCoin(data);
+      opShowScreen("opCoinScreen");
+    }else{
+      opShowScreen("opGameScreen");
+    }
+    setTimeout(opResizeCanvas,80);
+    rescueStartPenaltyPoll();
+  }catch(e){
+    console.warn("Penalty launch failed",e);
+    alert("온라인 경기 세션을 초기화하지 못했습니다. V14.10 SQL 적용 여부를 확인해 주세요.");
+  }
 }
 document.getElementById("opIntroContinue")?.addEventListener("click",()=>{
   if(!onlinePenaltySessionId)return;onlinePenaltyIntroSeen.add(onlinePenaltySessionId);
