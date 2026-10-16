@@ -4432,6 +4432,24 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 }
 </style>
 
+
+<style id="rescue-v1411-screen-state-fix">
+/* ONLINE PENALTY screen state fix:
+   hidden screens must stay hidden regardless of their layout class. */
+.online-penalty-dialog .op-screen:not(.show){
+  display:none!important;
+}
+.online-penalty-dialog .op-intro.show{
+  display:block!important;
+}
+.online-penalty-dialog .op-coin.show{
+  display:grid!important;
+}
+.online-penalty-dialog .op-game.show{
+  display:grid!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -10687,6 +10705,15 @@ function opRenderScore(st){
 }
 function opRenderRole(st){
   const role=document.getElementById("opRole"),title=document.getElementById("opTurnTitle"),desc=document.getElementById("opTurnDesc"),box=document.getElementById("opControlState"),lock=document.getElementById("opKeeperLock"),fin=document.getElementById("opFinished");
+  if(st.stage==="coin_toss"){
+    role.textContent="COIN TOSS";
+    title.textContent="동전 던지기";
+    desc.textContent="동전 던지기 승자가 선축 또는 후축을 선택합니다.";
+    lock.hidden=true;
+    fin.hidden=true;
+    box.textContent="동전 던지기 화면에서 경기 순서를 결정하세요.";
+    return;
+  }
   if(st.stage==="finished"){
     role.textContent="FULL TIME";title.textContent="승부차기 종료";desc.textContent="최종 결과가 확정되었습니다.";lock.hidden=true;fin.hidden=false;
     const winner=st.winner_id===st.team_a?.user_id?st.team_a:st.team_b;
@@ -10810,8 +10837,8 @@ function rescuePenaltyApplyState(data){
   }
 
   if(data.stage==="coin_toss"){
+    opRenderCoin(data);
     if(onlinePenaltyIntroSeen.has(onlinePenaltySessionId)){
-      opRenderCoin(data);
       opShowScreen("opCoinScreen");
     }
   }else{
