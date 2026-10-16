@@ -4450,6 +4450,113 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 }
 </style>
 
+
+<style id="rescue-v1412-feature-text-alignment">
+/* MY TEAM feature tiles: keep icon / copy / arrow visually aligned after adding the 6th tile */
+@media(min-width:701px){
+  .football-feature-grid{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+  .football-feature{
+    min-width:0!important;
+    min-height:104px!important;
+    padding:13px 11px!important;
+    grid-template-columns:30px minmax(0,1fr) 11px!important;
+    column-gap:8px!important;
+    align-items:center!important;
+  }
+  .football-feature .feature-icon{
+    width:30px!important;
+    margin:0!important;
+    justify-self:center!important;
+    align-self:center!important;
+    font-size:23px!important;
+    line-height:1!important;
+  }
+  .football-feature > div{
+    min-width:0!important;
+    align-self:center!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    transform:translateY(-1px);
+  }
+  .football-feature b{
+    margin:0!important;
+    font-size:11px!important;
+    line-height:1.18!important;
+    letter-spacing:.01em!important;
+    overflow-wrap:normal!important;
+    word-break:keep-all!important;
+  }
+  .football-feature small{
+    margin-top:5px!important;
+    font-size:8.5px!important;
+    line-height:1.32!important;
+    color:#899cac!important;
+    word-break:keep-all!important;
+  }
+  .football-feature > strong{
+    justify-self:end!important;
+    align-self:center!important;
+    margin:0!important;
+    font-size:15px!important;
+    line-height:1!important;
+  }
+
+  /* Long English labels need a little extra compacting, not a different vertical position. */
+  #footballCollectionBtn b,
+  #footballShopBtn b,
+  #footballRouletteBtn b,
+  #footballPenaltyBtn b{
+    font-size:10.5px!important;
+  }
+}
+
+/* On narrower tablet widths, preserve readable copy instead of letting it collide. */
+@media(min-width:701px) and (max-width:1100px){
+  .football-feature{
+    padding:12px 9px!important;
+    grid-template-columns:27px minmax(0,1fr) 9px!important;
+    column-gap:6px!important;
+  }
+  .football-feature .feature-icon{
+    width:27px!important;
+    font-size:21px!important;
+  }
+  .football-feature b{
+    font-size:10px!important;
+  }
+  #footballCollectionBtn b,
+  #footballShopBtn b,
+  #footballRouletteBtn b,
+  #footballPenaltyBtn b{
+    font-size:9.6px!important;
+    letter-spacing:-.01em!important;
+  }
+  .football-feature small{
+    font-size:7.8px!important;
+  }
+  .football-feature > strong{
+    font-size:13px!important;
+  }
+}
+</style>
+
+
+<style id="rescue-v1413-penalty-input-fix">
+#onlinePenaltyCanvas{
+  touch-action:none!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+  cursor:crosshair;
+}
+.op-stage{overscroll-behavior:contain}
+.op-scorebar{pointer-events:none!important}
+</style>
+
 </head>
 <body>
 
@@ -10927,26 +11034,82 @@ document.getElementById("opKeeperLock")?.addEventListener("click",async()=>{
 document.getElementById("onlinePenaltyClose")?.addEventListener("click",()=>{rescueStopPenaltyPoll();rescueCloseDialog("onlinePenaltyDialog");});
 window.addEventListener("resize",()=>{if(document.getElementById("onlinePenaltyDialog")?.open)opResizeCanvas();});
 const opCanvas=document.getElementById("onlinePenaltyCanvas");
-opCanvas?.addEventListener("pointerdown",e=>{
+function opEventPoint(e){
+  const rect=opCanvas.getBoundingClientRect();
+  const src=e.touches?.[0]||e.changedTouches?.[0]||e;
+  return {x:src.clientX-rect.left,y:src.clientY-rect.top};
+}
+function opHandleInputStart(e){
   if(!onlinePenaltyState||onlinePenaltyState.stage!=="turn")return;
-  const rect=opCanvas.getBoundingClientRect(),p={x:e.clientX-rect.left,y:e.clientY-rect.top},G=opGoalRect();
+  const p=opEventPoint(e),G=opGoalRect();
+
   if(onlinePenaltyState.current_defender===currentUser?.id&&!onlinePenaltyState.keeper_submitted){
     if(p.x>=G.x&&p.x<=G.x+G.w&&p.y>=G.y&&p.y<=G.y+G.h){
-      onlinePenaltyKeeperTarget={x:opClamp((p.x-G.x)/G.w,.05,.95),y:opClamp((p.y-G.y)/G.h,.06,.94)};opRenderRole(onlinePenaltyState);
-    }return;
+      if(e.cancelable)e.preventDefault();
+      onlinePenaltyKeeperTarget={
+        x:opClamp((p.x-G.x)/G.w,.05,.95),
+        y:opClamp((p.y-G.y)/G.h,.06,.94)
+      };
+      opRenderRole(onlinePenaltyState);
+    }
+    return;
   }
+
   if(onlinePenaltyState.current_attacker===currentUser?.id&&!onlinePenaltyState.shot_submitted){
-    const b=opBallPos();if(Math.hypot(p.x-b.x,p.y-b.y)<Math.max(90,opClamp(Math.min(onlinePenaltyCanvasSize.w,onlinePenaltyCanvasSize.h)*.043,27,38)*2.8))onlinePenaltyPointer={x:p.x,y:p.y,t:performance.now()};
+    const b=opBallPos();
+    // On touch devices allow a generous start zone around the visible ball.
+    const hitRadius=Math.max(145,opClamp(Math.min(onlinePenaltyCanvasSize.w,onlinePenaltyCanvasSize.h)*.055,34,48)*3.0);
+    if(Math.hypot(p.x-b.x,p.y-b.y)<=hitRadius){
+      if(e.cancelable)e.preventDefault();
+      onlinePenaltyPointer={x:p.x,y:p.y,t:performance.now(),lastX:p.x,lastY:p.y};
+      try{if(e.pointerId!=null)opCanvas.setPointerCapture(e.pointerId);}catch(_){}
+      const box=document.getElementById("opControlState");
+      if(box)box.textContent="슛 방향을 정한 뒤 손가락을 떼세요.";
+    }
   }
-});
-opCanvas?.addEventListener("pointerup",async e=>{
+}
+function opHandleInputMove(e){
+  if(!onlinePenaltyPointer)return;
+  if(e.cancelable)e.preventDefault();
+  const p=opEventPoint(e);
+  onlinePenaltyPointer.lastX=p.x;onlinePenaltyPointer.lastY=p.y;
+}
+async function opHandleInputEnd(e){
   if(!onlinePenaltyPointer||!onlinePenaltyState||onlinePenaltyState.current_attacker!==currentUser?.id)return;
-  const rect=opCanvas.getBoundingClientRect(),p={x:e.clientX-rect.left,y:e.clientY-rect.top},dx=p.x-onlinePenaltyPointer.x,dy=p.y-onlinePenaltyPointer.y,dt=Math.max(80,performance.now()-onlinePenaltyPointer.t);onlinePenaltyPointer=null;if(dy>-25)return;
-  const mag=Math.hypot(dx,dy),power=opClamp(mag/250*(280/dt*.82+.48),.35,1.18),G=opGoalRect();
+  if(e.cancelable)e.preventDefault();
+  const p=opEventPoint(e),start=onlinePenaltyPointer;
+  onlinePenaltyPointer=null;
+  const dx=p.x-start.x,dy=p.y-start.y,dt=Math.max(80,performance.now()-start.t);
+  if(dy>-30||Math.hypot(dx,dy)<45){
+    const box=document.getElementById("opControlState");
+    if(box)box.textContent="공에서 골문 방향으로 더 길게 위로 스와이프하세요.";
+    return;
+  }
+  const mag=Math.hypot(dx,dy),power=opClamp(mag/250*(280/dt*.82+.48),.35,1.18);
   const nx=.5+dx/Math.max(260,onlinePenaltyCanvasSize.w*.72),ny=.62+dy/Math.max(360,onlinePenaltyCanvasSize.h*.66);
   const shotX=opClamp(nx,-.18,1.18),shotY=opClamp((ny-.18)/.42,-.15,1.2),curve=opClamp(dx/Math.max(320,onlinePenaltyCanvasSize.w)*.45,-.28,.28);
-  try{const {data,error}=await supabaseClient.rpc("rescue_penalty_submit_shot",{p_session_id:onlinePenaltySessionId,p_x:shotX,p_y:shotY,p_power:power,p_curve:curve});if(error)throw error;if(data)rescuePenaltyApplyState(data);else await rescuePenaltyRefreshState();}catch(err){console.warn(err);alert("슛 입력 전송에 실패했습니다.");}
-});
+  const box=document.getElementById("opControlState");
+  if(box)box.textContent="슛 입력 전송 중…";
+  try{
+    const {data,error}=await supabaseClient.rpc("rescue_penalty_submit_shot",{p_session_id:onlinePenaltySessionId,p_x:shotX,p_y:shotY,p_power:power,p_curve:curve});
+    if(error)throw error;
+    if(data)rescuePenaltyApplyState(data);else await rescuePenaltyRefreshState();
+  }catch(err){
+    console.warn(err);
+    if(box)box.textContent="슛 전송 실패 · 다시 시도해 주세요.";
+    alert("슛 입력 전송에 실패했습니다.");
+  }
+}
+if(opCanvas){
+  opCanvas.addEventListener("pointerdown",opHandleInputStart,{passive:false});
+  opCanvas.addEventListener("pointermove",opHandleInputMove,{passive:false});
+  opCanvas.addEventListener("pointerup",opHandleInputEnd,{passive:false});
+  opCanvas.addEventListener("pointercancel",()=>{onlinePenaltyPointer=null;},{passive:false});
+  // iOS/Safari fallback for viewers where pointer events are unreliable.
+  opCanvas.addEventListener("touchstart",opHandleInputStart,{passive:false});
+  opCanvas.addEventListener("touchmove",opHandleInputMove,{passive:false});
+  opCanvas.addEventListener("touchend",opHandleInputEnd,{passive:false});
+}
 if(!window.__rescuePenaltyRenderStarted){window.__rescuePenaltyRenderStarted=true;requestAnimationFrame(opDraw);}
 
 
