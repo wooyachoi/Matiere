@@ -4667,6 +4667,33 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 }
 </style>
 
+
+<style id="rescue-v1416-pc-mouse-swipe">
+#onlinePenaltyCanvas{
+  cursor:crosshair;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  -webkit-user-drag:none!important;
+}
+#onlinePenaltyCanvas.op-shoot-ready{cursor:grab}
+#onlinePenaltyCanvas.op-shoot-dragging{cursor:grabbing}
+</style>
+
+
+<style id="rescue-v1417-mobile-swipe-hardfix">
+#onlinePenaltyCanvas{
+  touch-action:none!important;
+  -ms-touch-action:none!important;
+  overscroll-behavior:contain!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+body:has(#onlinePenaltyDialog[open]){
+  overscroll-behavior:none!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -5860,6 +5887,7 @@ document.getElementById("signupForm").addEventListener("submit",async function(e
   if(data.session && data.user){
     await handleSignedIn(data.user);
   }else{
+    document.getElementById("onlinePenaltyCanvas")?.classList.remove("op-shoot-ready","op-shoot-dragging");
     setAuthMode("login");
     document.getElementById("loginEmail").value=email;
     const loginErr=document.getElementById("loginError");
@@ -10864,6 +10892,9 @@ let onlinePenaltyCanvasCtx=null;
 let onlinePenaltyCanvasSize={w:0,h:0,dpr:1};
 let onlinePenaltyKeeperTarget=null;
 let onlinePenaltyPointer=null;
+let onlinePenaltyMouseActive=false;
+let onlinePenaltyTouchActive=false;
+let onlinePenaltyTouchId=null;
 let onlinePenaltyAnim=null;
 let onlinePenaltyRefreshBusy=false;
 let onlinePenaltyPollTimer=null;
@@ -10996,6 +11027,7 @@ function opRenderRole(st){
   const role=document.getElementById("opRole"),title=document.getElementById("opTurnTitle"),desc=document.getElementById("opTurnDesc"),box=document.getElementById("opControlState"),lock=document.getElementById("opKeeperLock"),fin=document.getElementById("opFinished");
   opRenderBroadcast(st);
   if(st.stage==="coin_toss"){
+    document.getElementById("onlinePenaltyCanvas")?.classList.remove("op-shoot-ready","op-shoot-dragging");
     role.textContent="COIN TOSS";
     title.textContent="동전 던지기";
     desc.textContent="동전 던지기 승자가 선축 또는 후축을 선택합니다.";
@@ -11005,6 +11037,7 @@ function opRenderRole(st){
     return;
   }
   if(st.stage==="finished"){
+    document.getElementById("onlinePenaltyCanvas")?.classList.remove("op-shoot-ready","op-shoot-dragging");
     role.textContent="FULL TIME";title.textContent="승부차기 종료";desc.textContent="최종 결과가 확정되었습니다.";lock.hidden=true;fin.hidden=false;
     const winner=st.winner_id===st.team_a?.user_id?st.team_a:st.team_b;
     fin.textContent=`${opTeamLabel(winner)} WIN · ${st.score_a} : ${st.score_b}`;
@@ -11018,6 +11051,7 @@ function opRenderRole(st){
     lock.hidden=true;
     box.textContent=st.shot_submitted?"슛 입력 완료 · 상대 골키퍼 입력을 기다리는 중입니다.":"공을 위쪽 골문 방향으로 스와이프해 슛하세요.";
   }else if(defender){
+    document.getElementById("onlinePenaltyCanvas")?.classList.remove("op-shoot-ready","op-shoot-dragging");
     const player=opCurrentKeeper(st);
     role.textContent="GOALKEEPER";title.textContent=player?`${player.name} · 당신의 세이브`:"당신의 세이브";desc.textContent=rescuePenaltyMode==="ai"?"RESCUE AI의 슛을 막을 지점을 골대 안에서 직접 터치하세요.":"골대 안 막고 싶은 지점을 직접 터치하세요.";
     lock.hidden=false;lock.disabled=!onlinePenaltyKeeperTarget||st.keeper_submitted;
@@ -11312,6 +11346,8 @@ function opEventPoint(e){
 }
 function opHandleInputStart(e){
   if(!onlinePenaltyState||onlinePenaltyState.stage!=="turn")return;
+  if(e.type==="mousedown" && e.button!==0)return;
+  if(e.pointerType==="mouse" && e.button!==0)return;
   const p=opEventPoint(e),G=opGoalRect();
 
   if(onlinePenaltyState.current_defender===currentUser?.id&&!onlinePenaltyState.keeper_submitted){
@@ -11329,13 +11365,17 @@ function opHandleInputStart(e){
   if(onlinePenaltyState.current_attacker===currentUser?.id&&!onlinePenaltyState.shot_submitted){
     const b=opBallPos();
     // On touch devices allow a generous start zone around the visible ball.
-    const hitRadius=Math.max(145,opClamp(Math.min(onlinePenaltyCanvasSize.w,onlinePenaltyCanvasSize.h)*.055,34,48)*3.0);
+    const hitRadius=Math.max(175,opClamp(Math.min(onlinePenaltyCanvasSize.w,onlinePenaltyCanvasSize.h)*.065,38,54)*3.2);
     if(Math.hypot(p.x-b.x,p.y-b.y)<=hitRadius){
       if(e.cancelable)e.preventDefault();
       onlinePenaltyPointer={x:p.x,y:p.y,t:performance.now(),lastX:p.x,lastY:p.y};
+      if(e.type==="mousedown")onlinePenaltyMouseActive=true;
       try{if(e.pointerId!=null)opCanvas.setPointerCapture(e.pointerId);}catch(_){}
+      opCanvas.classList.add("op-shoot-dragging");
       const box=document.getElementById("opControlState");
-      if(box)box.textContent="슛 방향을 정한 뒤 손가락을 떼세요.";
+      if(box)box.textContent=(e.pointerType==="mouse"||e.type==="mousedown")
+        ?"마우스를 누른 채 골문 방향으로 드래그한 뒤 놓으세요."
+        :"공 주변을 누른 채 골문 방향으로 위로 밀고 손가락을 떼세요.";
     }
   }
 }
@@ -11350,6 +11390,8 @@ async function opHandleInputEnd(e){
   if(e.cancelable)e.preventDefault();
   const p=opEventPoint(e),start=onlinePenaltyPointer;
   onlinePenaltyPointer=null;
+  onlinePenaltyMouseActive=false;
+  opCanvas.classList.remove("op-shoot-dragging");
   const dx=p.x-start.x,dy=p.y-start.y,dt=Math.max(80,performance.now()-start.t);
   if(dy>-30||Math.hypot(dx,dy)<45){
     const box=document.getElementById("opControlState");
@@ -11376,18 +11418,110 @@ async function opHandleInputEnd(e){
   }
 }
 if(opCanvas){
-  // Use exactly one event family. Registering pointer + touch together can double-submit on iPad/Safari.
-  if(window.PointerEvent){
-    opCanvas.addEventListener("pointerdown",opHandleInputStart,{passive:false});
-    opCanvas.addEventListener("pointermove",opHandleInputMove,{passive:false});
-    opCanvas.addEventListener("pointerup",opHandleInputEnd,{passive:false});
-    opCanvas.addEventListener("pointercancel",()=>{onlinePenaltyPointer=null;},{passive:false});
-  }else{
-    opCanvas.addEventListener("touchstart",opHandleInputStart,{passive:false});
-    opCanvas.addEventListener("touchmove",opHandleInputMove,{passive:false});
-    opCanvas.addEventListener("touchend",opHandleInputEnd,{passive:false});
-    opCanvas.addEventListener("touchcancel",()=>{onlinePenaltyPointer=null;},{passive:false});
+  // Mobile touch is handled by native Touch Events on the canvas + document.
+  // This is deliberately independent from Pointer Events because iOS/Safari can
+  // drop/cancel pointer gestures inside fullscreen dialogs.
+  function opTouchById(list,id){
+    if(!list)return null;
+    for(const t of list){
+      if(id==null || t.identifier===id)return t;
+    }
+    return null;
   }
+
+  opCanvas.addEventListener("touchstart",e=>{
+    if(onlinePenaltyTouchActive)return;
+    const t=e.changedTouches?.[0]||e.touches?.[0];
+    if(!t)return;
+    onlinePenaltyTouchActive=true;
+    onlinePenaltyTouchId=t.identifier;
+    opHandleInputStart(e);
+    if(onlinePenaltyPointer||onlinePenaltyKeeperTarget){
+      if(e.cancelable)e.preventDefault();
+    }else{
+      onlinePenaltyTouchActive=false;
+      onlinePenaltyTouchId=null;
+    }
+  },{passive:false});
+
+  document.addEventListener("touchmove",e=>{
+    if(!onlinePenaltyTouchActive)return;
+    const t=opTouchById(e.touches,onlinePenaltyTouchId);
+    if(!t)return;
+    if(e.cancelable)e.preventDefault();
+    // Supply only the tracked touch to the existing coordinate helper.
+    opHandleInputMove({
+      touches:[t],
+      changedTouches:[t],
+      cancelable:false,
+      preventDefault(){}
+    });
+  },{passive:false});
+
+  document.addEventListener("touchend",e=>{
+    if(!onlinePenaltyTouchActive)return;
+    const t=opTouchById(e.changedTouches,onlinePenaltyTouchId);
+    if(!t)return;
+    if(e.cancelable)e.preventDefault();
+    opHandleInputEnd({
+      touches:[],
+      changedTouches:[t],
+      cancelable:false,
+      preventDefault(){}
+    });
+    onlinePenaltyTouchActive=false;
+    onlinePenaltyTouchId=null;
+  },{passive:false});
+
+  document.addEventListener("touchcancel",e=>{
+    if(!onlinePenaltyTouchActive)return;
+    onlinePenaltyTouchActive=false;
+    onlinePenaltyTouchId=null;
+    onlinePenaltyPointer=null;
+    opCanvas.classList.remove("op-shoot-dragging");
+  },{passive:false});
+
+  // Pointer Events are kept only for pen/stylus. Touch is intentionally ignored
+  // here to prevent duplicate submission with the native Touch Event path.
+  if(window.PointerEvent){
+    opCanvas.addEventListener("pointerdown",e=>{
+      if(e.pointerType!=="pen")return;
+      opHandleInputStart(e);
+    },{passive:false});
+    opCanvas.addEventListener("pointermove",e=>{
+      if(e.pointerType!=="pen")return;
+      opHandleInputMove(e);
+    },{passive:false});
+    opCanvas.addEventListener("pointerup",e=>{
+      if(e.pointerType!=="pen")return;
+      opHandleInputEnd(e);
+    },{passive:false});
+    opCanvas.addEventListener("pointercancel",e=>{
+      if(e.pointerType!=="pen")return;
+      onlinePenaltyPointer=null;
+      opCanvas.classList.remove("op-shoot-dragging");
+    },{passive:false});
+  }
+
+  // Explicit desktop mouse path.
+  opCanvas.addEventListener("mousedown",e=>{
+    opHandleInputStart(e);
+  },{passive:false});
+
+  window.addEventListener("mousemove",e=>{
+    if(!onlinePenaltyMouseActive||!onlinePenaltyPointer)return;
+    opHandleInputMove(e);
+  },{passive:false});
+
+  window.addEventListener("mouseup",e=>{
+    if(!onlinePenaltyMouseActive||!onlinePenaltyPointer)return;
+    opHandleInputEnd(e);
+  },{passive:false});
+
+  // Safari gesture/drag defaults must never steal the shot gesture.
+  opCanvas.addEventListener("dragstart",e=>e.preventDefault());
+  opCanvas.addEventListener("contextmenu",e=>e.preventDefault());
+  opCanvas.addEventListener("gesturestart",e=>e.preventDefault(),{passive:false});
 }
 if(!window.__rescuePenaltyRenderStarted){window.__rescuePenaltyRenderStarted=true;requestAnimationFrame(opDraw);}
 
