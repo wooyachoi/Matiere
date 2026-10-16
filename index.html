@@ -10563,7 +10563,9 @@ function rescueRenderGameRoom(session){
   if(stateEl){
     if(session.status==="active"){
       stateEl.innerHTML="<strong>두 선수 모두 준비 완료</strong>온라인 PENALTY SHOOTOUT 경기에 입장합니다.";
-      setTimeout(()=>rescueLaunchOnlinePenalty(session.id),500);
+      if(onlinePenaltySessionId!==session.id){
+        setTimeout(()=>{ if(onlinePenaltySessionId!==session.id) rescueLaunchOnlinePenalty(session.id); },180);
+      }
     }else{
       stateEl.innerHTML="<strong>상대 연결됨</strong>둘 다 READY를 누르면 경기 세션이 활성화됩니다.";
     }
@@ -10574,7 +10576,14 @@ async function rescueSubscribeSession(sessionId){
   rescueSessionChannel=supabaseClient.channel(`rescue-game-session-${sessionId}`)
     .on("postgres_changes",{
       event:"UPDATE",schema:"public",table:"rescue_game_sessions",filter:`id=eq.${sessionId}`
-    },payload=>{rescueRenderGameRoom(payload.new);if(onlinePenaltySessionId===payload.new?.id)rescuePenaltyRefreshState();})
+    },payload=>{
+      if(onlinePenaltySessionId===payload.new?.id){
+        rescueCurrentGameSession=payload.new;
+        rescuePenaltyRefreshState();
+      }else{
+        rescueRenderGameRoom(payload.new);
+      }
+    })
     .subscribe();
 }
 async function rescueSetReady(){
@@ -10609,6 +10618,8 @@ let onlinePenaltyCanvasSize={w:0,h:0,dpr:1};
 let onlinePenaltyKeeperTarget=null;
 let onlinePenaltyPointer=null;
 let onlinePenaltyAnim=null;
+let onlinePenaltyRefreshBusy=false;
+let onlinePenaltyPollTimer=null;
 
 function opClamp(v,a,b){return Math.max(a,Math.min(b,v));}
 function opLerp(a,b,t){return a+(b-a)*t;}
@@ -10693,7 +10704,7 @@ function opRenderRole(st){
     lock.hidden=false;lock.disabled=!onlinePenaltyKeeperTarget||st.keeper_submitted;
     box.textContent=st.keeper_submitted?"다이빙 위치 확정 완료 · 상대 슛을 기다리는 중입니다.":onlinePenaltyKeeperTarget?"위치 선택 완료 · 확정 버튼을 누르세요.":"골대 안 원하는 세이브 지점을 터치하세요.";
   }else{
-    role.textContent="ONLINE MATCH";title.textContent="상대 진행 중";desc.textContent="현재 턴 정보를 동기화하고 있습니다.";lock.hidden=true;box.textContent="잠시 기다려 주세요.";
+    role.textContent="ONLINE MATCH";title.textContent="경기 상태 확인 중";desc.textContent="서버에서 다음 턴을 확인하고 있습니다.";lock.hidden=true;box.textContent="실시간 연결을 확인 중입니다. 잠시만 기다려 주세요.";
   }
 }
 function opResizeCanvas(){
@@ -10757,24 +10768,56 @@ function opAnimateReveal(st){
   setTimeout(()=>{big.textContent=r.result;small.textContent=r.result==="GOAL"?"GOAL!":r.result==="SAVE"?"GOALKEEPER SAVE":r.result==="POST"?"HIT THE POST":"MISS";ov.classList.add("show");},620);
   setTimeout(()=>{ov.classList.remove("show");onlinePenaltyAnim=null;},1500);
 }
+function rescuePenaltyApplyState(data){
+  if(!data)return;
+  onlinePenaltyState=data;
+  opRenderScore(data);
+  opRenderRole(data);
+  opAnimateReveal(data);
+  if(data.stage==="coin_toss"){
+    if(onlinePenaltyIntroSeen.has(onlinePenaltySessionId)){
+      opRenderCoin(data);
+      opShowScreen("opCoinScreen");
+    }
+  }else{
+    opShowScreen("opGameScreen");
+  }
+}
+function rescueStartPenaltyPoll(){
+  if(onlinePenaltyPollTimer)clearInterval(onlinePenaltyPollTimer);
+  onlinePenaltyPollTimer=setInterval(()=>{
+    const d=document.getElementById("onlinePenaltyDialog");
+    if(d?.open && onlinePenaltySessionId)rescuePenaltyRefreshState();
+  },700);
+}
+function rescueStopPenaltyPoll(){
+  if(onlinePenaltyPollTimer){
+    clearInterval(onlinePenaltyPollTimer);
+    onlinePenaltyPollTimer=null;
+  }
+}
+
 async function rescuePenaltyRefreshState(){
-  if(!onlinePenaltySessionId)return;
+  if(!onlinePenaltySessionId || onlinePenaltyRefreshBusy)return;
+  onlinePenaltyRefreshBusy=true;
   try{
     const {data,error}=await supabaseClient.rpc("rescue_penalty_state",{p_session_id:onlinePenaltySessionId});
-    if(error)throw error;if(!data)return;
-    onlinePenaltyState=data;opRenderScore(data);opRenderRole(data);opAnimateReveal(data);
-    if(data.stage==="coin_toss"){if(onlinePenaltyIntroSeen.has(onlinePenaltySessionId)){opRenderCoin(data);opShowScreen("opCoinScreen");}}
-    else{opShowScreen("opGameScreen");}
-  }catch(e){console.warn("Penalty state refresh failed",e);}
+    if(error)throw error;
+    rescuePenaltyApplyState(data);
+  }catch(e){
+    console.warn("Penalty state refresh failed",e);
+  }finally{
+    onlinePenaltyRefreshBusy=false;
+  }
 }
 async function rescueLaunchOnlinePenalty(sessionId){
   if(!sessionId)return;onlinePenaltySessionId=sessionId;onlinePenaltyKeeperTarget=null;
   rescueCloseDialog("gameRoomDialog");rescueOpenDialog("onlinePenaltyDialog");
   try{
     const {data,error}=await supabaseClient.rpc("rescue_penalty_state",{p_session_id:sessionId});
-    if(error)throw error;onlinePenaltyState=data;opRenderIntro(data);opRenderScore(data);
+    if(error)throw error;onlinePenaltyState=data;opRenderIntro(data);opRenderScore(data);opRenderRole(data);
     if(!onlinePenaltyIntroSeen.has(sessionId))opShowScreen("opIntroScreen");else if(data.stage==="coin_toss"){opRenderCoin(data);opShowScreen("opCoinScreen");}else opShowScreen("opGameScreen");
-    setTimeout(opResizeCanvas,80);opRenderRole(data);
+    setTimeout(opResizeCanvas,80);rescueStartPenaltyPoll();
   }catch(e){console.warn("Penalty launch failed",e);alert("온라인 경기를 불러오지 못했습니다.");}
 }
 document.getElementById("opIntroContinue")?.addEventListener("click",()=>{
@@ -10782,13 +10825,13 @@ document.getElementById("opIntroContinue")?.addEventListener("click",()=>{
   if(onlinePenaltyState?.stage==="coin_toss"){opRenderCoin(onlinePenaltyState);opShowScreen("opCoinScreen");}else opShowScreen("opGameScreen");
 });
 document.querySelectorAll("[data-penalty-order]").forEach(btn=>btn.addEventListener("click",async()=>{
-  try{const {error}=await supabaseClient.rpc("rescue_choose_penalty_order",{p_session_id:onlinePenaltySessionId,p_choice:btn.dataset.penaltyOrder});if(error)throw error;await rescuePenaltyRefreshState();}catch(e){alert("선축/후축 선택에 실패했습니다.");}
+  try{const {data,error}=await supabaseClient.rpc("rescue_choose_penalty_order",{p_session_id:onlinePenaltySessionId,p_choice:btn.dataset.penaltyOrder});if(error)throw error;if(data)rescuePenaltyApplyState(data);else await rescuePenaltyRefreshState();}catch(e){alert("선축/후축 선택에 실패했습니다.");}
 }));
 document.getElementById("opKeeperLock")?.addEventListener("click",async()=>{
   if(!onlinePenaltyKeeperTarget||!onlinePenaltySessionId)return;
-  try{const {error}=await supabaseClient.rpc("rescue_penalty_submit_keeper",{p_session_id:onlinePenaltySessionId,p_x:onlinePenaltyKeeperTarget.x,p_y:onlinePenaltyKeeperTarget.y});if(error)throw error;onlinePenaltyKeeperTarget=null;await rescuePenaltyRefreshState();}catch(e){alert("골키퍼 입력 전송에 실패했습니다.");}
+  try{const {data,error}=await supabaseClient.rpc("rescue_penalty_submit_keeper",{p_session_id:onlinePenaltySessionId,p_x:onlinePenaltyKeeperTarget.x,p_y:onlinePenaltyKeeperTarget.y});if(error)throw error;onlinePenaltyKeeperTarget=null;if(data)rescuePenaltyApplyState(data);else await rescuePenaltyRefreshState();}catch(e){alert("골키퍼 입력 전송에 실패했습니다.");}
 });
-document.getElementById("onlinePenaltyClose")?.addEventListener("click",()=>rescueCloseDialog("onlinePenaltyDialog"));
+document.getElementById("onlinePenaltyClose")?.addEventListener("click",()=>{rescueStopPenaltyPoll();rescueCloseDialog("onlinePenaltyDialog");});
 window.addEventListener("resize",()=>{if(document.getElementById("onlinePenaltyDialog")?.open)opResizeCanvas();});
 const opCanvas=document.getElementById("onlinePenaltyCanvas");
 opCanvas?.addEventListener("pointerdown",e=>{
@@ -10809,7 +10852,7 @@ opCanvas?.addEventListener("pointerup",async e=>{
   const mag=Math.hypot(dx,dy),power=opClamp(mag/250*(280/dt*.82+.48),.35,1.18),G=opGoalRect();
   const nx=.5+dx/Math.max(260,onlinePenaltyCanvasSize.w*.72),ny=.62+dy/Math.max(360,onlinePenaltyCanvasSize.h*.66);
   const shotX=opClamp(nx,-.18,1.18),shotY=opClamp((ny-.18)/.42,-.15,1.2),curve=opClamp(dx/Math.max(320,onlinePenaltyCanvasSize.w)*.45,-.28,.28);
-  try{const {error}=await supabaseClient.rpc("rescue_penalty_submit_shot",{p_session_id:onlinePenaltySessionId,p_x:shotX,p_y:shotY,p_power:power,p_curve:curve});if(error)throw error;await rescuePenaltyRefreshState();}catch(err){console.warn(err);alert("슛 입력 전송에 실패했습니다.");}
+  try{const {data,error}=await supabaseClient.rpc("rescue_penalty_submit_shot",{p_session_id:onlinePenaltySessionId,p_x:shotX,p_y:shotY,p_power:power,p_curve:curve});if(error)throw error;if(data)rescuePenaltyApplyState(data);else await rescuePenaltyRefreshState();}catch(err){console.warn(err);alert("슛 입력 전송에 실패했습니다.");}
 });
 if(!window.__rescuePenaltyRenderStarted){window.__rescuePenaltyRenderStarted=true;requestAnimationFrame(opDraw);}
 
