@@ -4623,6 +4623,50 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
 }
 </style>
 
+
+<style id="rescue-v1415-ai-match">
+.penalty-ai-card{
+  margin:14px 24px 2px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  padding:14px 15px;
+  border-radius:14px;
+  border:1px solid rgba(45,140,255,.28);
+  background:
+    radial-gradient(circle at 10% 20%,rgba(45,140,255,.18),transparent 36%),
+    linear-gradient(145deg,#0e1e2b,#0a1621);
+}
+.penalty-ai-badge{
+  padding:7px 9px;border-radius:999px;
+  background:rgba(45,140,255,.12);
+  border:1px solid rgba(45,140,255,.28);
+  color:#8bc0ff;font-size:8px;font-weight:1000;letter-spacing:.13em;
+}
+.penalty-ai-copy{min-width:0}
+.penalty-ai-copy b{display:block;font-size:12px}
+.penalty-ai-copy small{display:block;margin-top:4px;color:#8296a8;font-size:9px;line-height:1.45}
+#penaltyAiBtn{
+  border:1px solid rgba(45,140,255,.55);
+  background:linear-gradient(135deg,#2f8fff,#155eb6);
+  color:#fff;border-radius:9px;padding:9px 12px;
+  font-size:9px;font-weight:1000;cursor:pointer;
+}
+#penaltyAiBtn:active{transform:scale(.985)}
+.op-ai-pill{
+  display:inline-flex;align-items:center;gap:6px;margin-top:8px;
+  padding:5px 8px;border-radius:999px;
+  background:rgba(45,140,255,.10);
+  border:1px solid rgba(45,140,255,.22);
+  color:#8ec1ff;font-size:8px;font-weight:1000;
+}
+@media(max-width:700px){
+  .penalty-ai-card{margin:12px;grid-template-columns:1fr}
+  #penaltyAiBtn{width:100%}
+}
+</style>
+
 </head>
 <body>
 
@@ -5318,17 +5362,7 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
   <h3>배치된 선수</h3>
   <p>필드의 카드를 누르면 다른 선수 카드로 교체할 수 있습니다. 같은 카드는 한 포지션에만 배치할 수 있습니다.</p>
   <div class="squad-list" id="squadList"></div>
-  <section class="squad-online" aria-labelledby="onlineUsersTitle">
-    <div class="squad-online-head">
-      <b id="onlineUsersTitle">ONLINE PLAY</b>
-      <span class="online-count" id="onlineUsersCount">0 ONLINE</span>
-    </div>
-    <div class="online-users-list" id="onlineUsersList">
-      <div class="online-empty">현재 접속 중인 다른 이용자를 찾는 중…</div>
-    </div>
-    <div class="online-status" id="onlinePlayStatus">로그인 상태에서 접속 중인 이용자끼리 게임 초대를 보낼 수 있습니다.</div>
-    <span class="online-game-pill">PENALTY SHOOTOUT · 준비 단계</span>
-  </section>
+
 </aside></div>
   </dialog>
 
@@ -5387,6 +5421,14 @@ nav.tabs.rescue-bottom-nav{display:none!important;height:0!important;min-height:
       <div><b>진행 중인 온라인 경기가 있습니다.</b><small id="penaltyResumeText">경기 상태를 확인하는 중입니다.</small></div>
       <button type="button" id="penaltyResumeBtn">경기 복귀</button>
     </div>
+    <section class="penalty-ai-card" id="penaltyAiCard">
+      <div class="penalty-ai-badge">AI MATCH</div>
+      <div class="penalty-ai-copy">
+        <b>RESCUE AI와 승부차기</b>
+        <small id="penaltyAiCopy">온라인 상대를 기다리지 않고 바로 경기할 수 있습니다.</small>
+      </div>
+      <button type="button" id="penaltyAiBtn">AI와 경기</button>
+    </section>
     <div class="penalty-directory" id="penaltyHubDirectory">
       <div class="penalty-directory-empty">사용자 목록을 불러오는 중입니다.</div>
     </div>
@@ -10062,7 +10104,6 @@ async function hydrateSquadStateFromServer(){
 async function openSquadEditor(){
  const d=document.getElementById("squadDialog"); if(!d)return;
  rescueOpenDialog("squadDialog");
- rescueRenderOnlineUsers();
  let st=squadState();
  const sel=document.getElementById("squadFormationSelect");
  if(sel)sel.value=st.formation||"4-3-3";
@@ -10973,12 +11014,12 @@ function opRenderRole(st){
   const attacker=st.current_attacker===currentUser?.id, defender=st.current_defender===currentUser?.id;
   if(attacker){
     const player=opCurrentKicker(st);
-    role.textContent="KICKER";title.textContent=player?`${player.name} · 당신의 킥`:"당신의 킥";desc.textContent="공에서 골문을 향해 스와이프하세요.";
+    role.textContent="KICKER";title.textContent=player?`${player.name} · 당신의 킥`:"당신의 킥";desc.textContent=rescuePenaltyMode==="ai"?"RESCUE AI 골키퍼를 상대로 공을 골문 방향으로 스와이프하세요.":"공에서 골문을 향해 스와이프하세요.";
     lock.hidden=true;
     box.textContent=st.shot_submitted?"슛 입력 완료 · 상대 골키퍼 입력을 기다리는 중입니다.":"공을 위쪽 골문 방향으로 스와이프해 슛하세요.";
   }else if(defender){
     const player=opCurrentKeeper(st);
-    role.textContent="GOALKEEPER";title.textContent=player?`${player.name} · 당신의 세이브`:"당신의 세이브";desc.textContent="골대 안 막고 싶은 지점을 직접 터치하세요.";
+    role.textContent="GOALKEEPER";title.textContent=player?`${player.name} · 당신의 세이브`:"당신의 세이브";desc.textContent=rescuePenaltyMode==="ai"?"RESCUE AI의 슛을 막을 지점을 골대 안에서 직접 터치하세요.":"골대 안 막고 싶은 지점을 직접 터치하세요.";
     lock.hidden=false;lock.disabled=!onlinePenaltyKeeperTarget||st.keeper_submitted;
     box.textContent=st.keeper_submitted?"다이빙 위치 확정 완료 · 상대 슛을 기다리는 중입니다.":onlinePenaltyKeeperTarget?"위치 선택 완료 · 확정 버튼을 누르세요.":"골대 안 원하는 세이브 지점을 터치하세요.";
   }else{
@@ -11195,6 +11236,7 @@ async function rescuePenaltyRefreshState(){
 }
 async function rescueLaunchOnlinePenalty(sessionId){
   if(!sessionId)return;
+  rescuePenaltyMode="online";
   onlinePenaltySessionId=sessionId;
   onlinePenaltyKeeperTarget=null;
   onlinePenaltyAppliedVersion=-1;
@@ -11238,16 +11280,28 @@ async function rescueLaunchOnlinePenalty(sessionId){
 }
 document.getElementById("opIntroContinue")?.addEventListener("click",()=>{
   if(!onlinePenaltySessionId)return;onlinePenaltyIntroSeen.add(onlinePenaltySessionId);
-  if(onlinePenaltyState?.stage==="coin_toss"){opRenderCoin(onlinePenaltyState);opShowScreen("opCoinScreen");}else opShowScreen("opGameScreen");
+  if(onlinePenaltyState?.stage==="coin_toss"){
+    opRenderCoin(onlinePenaltyState);
+    opShowScreen("opCoinScreen");
+    if(rescuePenaltyMode==="ai")rescueAiAutoChooseOrder();
+  }else opShowScreen("opGameScreen");
 });
 document.querySelectorAll("[data-penalty-order]").forEach(btn=>btn.addEventListener("click",async()=>{
+  if(rescuePenaltyMode==="ai"){
+    rescueAiChooseOrder(btn.dataset.penaltyOrder);
+    return;
+  }
   try{const {data,error}=await supabaseClient.rpc("rescue_choose_penalty_order",{p_session_id:onlinePenaltySessionId,p_choice:btn.dataset.penaltyOrder});if(error)throw error;if(data)rescuePenaltyApplyState(data);else await rescuePenaltyRefreshState();}catch(e){alert("선축/후축 선택에 실패했습니다.");}
 }));
 document.getElementById("opKeeperLock")?.addEventListener("click",async()=>{
   if(!onlinePenaltyKeeperTarget||!onlinePenaltySessionId)return;
+  if(rescuePenaltyMode==="ai"){
+    rescueAiSubmitKeeper();
+    return;
+  }
   try{const {data,error}=await supabaseClient.rpc("rescue_penalty_submit_keeper",{p_session_id:onlinePenaltySessionId,p_x:onlinePenaltyKeeperTarget.x,p_y:onlinePenaltyKeeperTarget.y});if(error)throw error;onlinePenaltyKeeperTarget=null;if(data)rescuePenaltyApplyState(data);else await rescuePenaltyRefreshState();}catch(e){alert("골키퍼 입력 전송에 실패했습니다.");}
 });
-document.getElementById("onlinePenaltyClose")?.addEventListener("click",()=>{rescueStopPenaltyPoll();rescueCloseDialog("onlinePenaltyDialog");});
+document.getElementById("onlinePenaltyClose")?.addEventListener("click",()=>{rescueStopPenaltyPoll();rescuePenaltyMode="online";rescueAiCommittedMove=null;rescueCloseDialog("onlinePenaltyDialog");});
 window.addEventListener("resize",()=>{if(document.getElementById("onlinePenaltyDialog")?.open)opResizeCanvas();});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&document.getElementById("onlinePenaltyDialog")?.open&&onlinePenaltySessionId)rescuePenaltyRefreshState();});
 const opCanvas=document.getElementById("onlinePenaltyCanvas");
@@ -11307,6 +11361,10 @@ async function opHandleInputEnd(e){
   const shotX=opClamp(nx,-.18,1.18),shotY=opClamp((ny-.18)/.42,-.15,1.2),curve=opClamp(dx/Math.max(320,onlinePenaltyCanvasSize.w)*.45,-.28,.28);
   const box=document.getElementById("opControlState");
   if(box)box.textContent="슛 입력 전송 중…";
+  if(rescuePenaltyMode==="ai"){
+    rescueAiSubmitShot({x:shotX,y:shotY,power,curve});
+    return;
+  }
   try{
     const {data,error}=await supabaseClient.rpc("rescue_penalty_submit_shot",{p_session_id:onlinePenaltySessionId,p_x:shotX,p_y:shotY,p_power:power,p_curve:curve});
     if(error)throw error;
@@ -11448,6 +11506,259 @@ async function openPenaltyHub(){
 }
 document.getElementById("footballPenaltyBtn")?.addEventListener("click",openPenaltyHub);
 document.getElementById("penaltyHubClose")?.addEventListener("click",()=>rescueCloseDialog("penaltyHubDialog"));
+
+
+
+/* ============ V14.15 · LOCAL AI PENALTY MATCH ============ */
+let rescuePenaltyMode="online";
+let rescueAiCommittedMove=null;
+const RESCUE_AI_ID="RESCUE_AI";
+
+function rescueAiLineup(){
+  return [
+    {slot:"GK",name:"NOVA",rarity:"legend"},
+    {slot:"LB",name:"VEGA",rarity:"star"},
+    {slot:"LCB",name:"ATLAS",rarity:"legend"},
+    {slot:"RCB",name:"ORION",rarity:"star"},
+    {slot:"RB",name:"LYRA",rarity:"normal"},
+    {slot:"LCM",name:"ECHO",rarity:"star"},
+    {slot:"RCM",name:"SOL",rarity:"legend"},
+    {slot:"LW",name:"RIFT",rarity:"star"},
+    {slot:"ST",name:"AXIS",rarity:"legend"},
+    {slot:"RW",name:"FLARE",rarity:"star"},
+    {slot:"CAM",name:"ZENITH",rarity:"legend"}
+  ];
+}
+async function rescueBuildMyLocalTeamSnapshot(){
+  try{
+    await loadServerCards(true);
+    await hydrateSquadStateFromServer();
+  }catch(e){
+    console.warn("AI match squad refresh skipped",e);
+  }
+  const st=loadFootballState();
+  const lineup=(serverCardCache||[])
+    .filter(c=>c.card_type==="player"&&c.squad_slot)
+    .map(c=>({
+      card_id:c.id,
+      slot:c.squad_slot,
+      name:cardDisplayName(c),
+      rarity:c.rarity
+    }));
+  return {
+    user_id:currentUser?.id||"LOCAL",
+    username:currentProfile?.username||"YOU",
+    team_name:st.teamName||"Arsenal",
+    logo_key:typeof rescueSelectedLogo!=="undefined"?rescueSelectedLogo:null,
+    formation:st.formation||"4-3-3",
+    lineup
+  };
+}
+function rescueAiTeamSnapshot(){
+  return {
+    user_id:RESCUE_AI_ID,
+    username:"RESCUE AI",
+    team_name:"RESCUE AI",
+    logo_key:null,
+    formation:"4-3-3",
+    lineup:rescueAiLineup()
+  };
+}
+function rescueAiResetTurnFlags(st){
+  st.keeper_submitted=false;
+  st.shot_submitted=false;
+  rescueAiCommittedMove=null;
+  onlinePenaltyKeeperTarget=null;
+}
+function rescueAiOpponentFor(st,userId){
+  return userId===st.player_a?st.player_b:st.player_a;
+}
+function rescueAiPrepareTurn(st){
+  rescueAiResetTurnFlags(st);
+  if(st.current_attacker===currentUser?.id){
+    // AI goalkeeper commits BEFORE the user shoots.
+    rescueAiCommittedMove={
+      type:"keeper",
+      x:opClamp(.14+Math.random()*.72,.05,.95),
+      y:opClamp(.12+Math.random()*.70,.06,.94)
+    };
+    st.keeper_submitted=true;
+  }else if(st.current_attacker===RESCUE_AI_ID){
+    // AI shot is committed BEFORE the user chooses a save position.
+    const cornerBias=Math.random();
+    let x;
+    if(cornerBias<.34)x=.14+Math.random()*.16;
+    else if(cornerBias>.66)x=.70+Math.random()*.16;
+    else x=.38+Math.random()*.24;
+    rescueAiCommittedMove={
+      type:"shot",
+      x:opClamp(x,.08,.92),
+      y:opClamp(.13+Math.random()*.66,.08,.90),
+      power:.62+Math.random()*.46,
+      curve:(Math.random()-.5)*.30
+    };
+    st.shot_submitted=true;
+  }
+}
+function rescueAiCheckWinner(st){
+  const aK=(st.kicks_a||[]).length,bK=(st.kicks_b||[]).length,aS=st.score_a||0,bS=st.score_b||0;
+  if(aK<=5&&bK<=5){
+    if(aS>bS+(5-bK))return st.player_a;
+    if(bS>aS+(5-aK))return st.player_b;
+  }
+  if(aK>=5&&bK>=5&&aK===bK&&aS!==bS)return aS>bS?st.player_a:st.player_b;
+  return null;
+}
+function rescueAiResolveTurn(st,shot,keeper){
+  const inside=shot.x>.065&&shot.x<.935&&shot.y>.065&&shot.y<.93;
+  const nearPost=inside&&Math.min(Math.abs(shot.x-.065),Math.abs(shot.x-.935),Math.abs(shot.y-.065))<.042;
+  const dist=Math.hypot(shot.x-keeper.x,(shot.y-keeper.y)*.9);
+  const saveRadius=.19+(shot.power<.55?.035:0)-(shot.power>.98?.025:0);
+  let result;
+  if(!inside)result="MISS";
+  else if(nearPost&&Math.random()<.30)result="POST";
+  else if(dist<saveRadius)result="SAVE";
+  else result="GOAL";
+
+  const attacker=st.current_attacker;
+  const isA=attacker===st.player_a;
+  const marker=result==="GOAL"?"G":result[0];
+  if(isA){
+    st.kicks_a=[...(st.kicks_a||[]),marker];
+    if(result==="GOAL")st.score_a=(st.score_a||0)+1;
+  }else{
+    st.kicks_b=[...(st.kicks_b||[]),marker];
+    if(result==="GOAL")st.score_b=(st.score_b||0)+1;
+  }
+
+  const finishedTurn=st.turn_no;
+  st.last_turn_no=finishedTurn;
+  st.last_reveal={
+    turn_no:finishedTurn,result,
+    keeper_x:keeper.x,keeper_y:keeper.y,
+    shot_x:shot.x,shot_y:shot.y,
+    power:shot.power,curve:shot.curve||0,
+    attacker_id:attacker
+  };
+  st.version=(st.version||0)+1;
+
+  const winner=rescueAiCheckWinner(st);
+  if(winner){
+    st.winner_id=winner;
+    st.status="finished";
+    st.stage="finished";
+  }else{
+    st.current_attacker=rescueAiOpponentFor(st,attacker);
+    st.current_defender=attacker;
+    st.turn_no=finishedTurn+1;
+    rescueAiPrepareTurn(st);
+  }
+  rescuePenaltyApplyState({...st});
+}
+function rescueAiAutoChooseOrder(){
+  if(rescuePenaltyMode!=="ai"||!onlinePenaltyState||onlinePenaltyState.stage!=="coin_toss")return;
+  if(onlinePenaltyState.coin_winner!==RESCUE_AI_ID)return;
+  setTimeout(()=>{
+    if(rescuePenaltyMode!=="ai"||onlinePenaltyState?.stage!=="coin_toss")return;
+    const aiFirst=Math.random()<.5;
+    const st={...onlinePenaltyState};
+    st.first_kicker=aiFirst?RESCUE_AI_ID:currentUser.id;
+    st.current_attacker=st.first_kicker;
+    st.current_defender=rescueAiOpponentFor(st,st.current_attacker);
+    st.stage="turn";
+    st.turn_no=1;
+    st.version=(st.version||0)+1;
+    rescueAiPrepareTurn(st);
+    rescuePenaltyApplyState(st);
+  },900);
+}
+async function rescueStartAiPenalty(){
+  if(!currentUser?.id){
+    alert("로그인 후 이용할 수 있습니다.");
+    return;
+  }
+  rescuePenaltyMode="ai";
+  rescueStopPenaltyPoll();
+  onlinePenaltySessionId="AI:"+Date.now();
+  onlinePenaltyAppliedVersion=-1;
+  onlinePenaltyLastRevealTurn=0;
+  const mine=await rescueBuildMyLocalTeamSnapshot();
+  const ai=rescueAiTeamSnapshot();
+  const coinWinner=Math.random()<.5?mine.user_id:RESCUE_AI_ID;
+  const st={
+    id:onlinePenaltySessionId,
+    status:"active",
+    stage:"coin_toss",
+    player_a:mine.user_id,
+    player_b:RESCUE_AI_ID,
+    team_a:mine,
+    team_b:ai,
+    coin_winner:coinWinner,
+    first_kicker:null,
+    current_attacker:null,
+    current_defender:null,
+    turn_no:1,
+    score_a:0,score_b:0,
+    kicks_a:[],kicks_b:[],
+    winner_id:null,
+    last_reveal:null,last_turn_no:0,
+    keeper_submitted:false,shot_submitted:false,
+    version:1
+  };
+  onlinePenaltyState=st;
+  rescueCloseDialog("penaltyHubDialog");
+  rescueOpenDialog("onlinePenaltyDialog");
+  opRenderIntro(st);opRenderScore(st);opRenderRole(st);
+  onlinePenaltyIntroSeen.delete(onlinePenaltySessionId);
+  opShowScreen("opIntroScreen");
+  setTimeout(opResizeCanvas,80);
+}
+function rescueAiChooseOrder(choice){
+  if(rescuePenaltyMode!=="ai"||!onlinePenaltyState||onlinePenaltyState.stage!=="coin_toss")return;
+  const st={...onlinePenaltyState};
+  const winner=st.coin_winner;
+  if(winner!==currentUser?.id)return;
+  st.first_kicker=choice==="first"?currentUser.id:RESCUE_AI_ID;
+  st.current_attacker=st.first_kicker;
+  st.current_defender=rescueAiOpponentFor(st,st.current_attacker);
+  st.stage="turn";st.turn_no=1;st.version=(st.version||0)+1;
+  rescueAiPrepareTurn(st);
+  rescuePenaltyApplyState(st);
+}
+function rescueAiSubmitKeeper(){
+  if(rescuePenaltyMode!=="ai"||!onlinePenaltyState||!onlinePenaltyKeeperTarget)return false;
+  const st={...onlinePenaltyState};
+  if(st.current_defender!==currentUser?.id)return false;
+  const shot=rescueAiCommittedMove;
+  if(!shot||shot.type!=="shot")return false;
+  st.keeper_submitted=true;
+  rescueAiResolveTurn(st,shot,onlinePenaltyKeeperTarget);
+  onlinePenaltyKeeperTarget=null;
+  return true;
+}
+function rescueAiSubmitShot(shot){
+  if(rescuePenaltyMode!=="ai"||!onlinePenaltyState)return false;
+  const st={...onlinePenaltyState};
+  if(st.current_attacker!==currentUser?.id)return false;
+  const keeper=rescueAiCommittedMove;
+  if(!keeper||keeper.type!=="keeper")return false;
+  st.shot_submitted=true;
+  rescueAiResolveTurn(st,shot,keeper);
+  return true;
+}
+document.getElementById("penaltyAiBtn")?.addEventListener("click",rescueStartAiPenalty);
+
+const _rescuePenaltyHubRender = rescueRenderPenaltyDirectory;
+rescueRenderPenaltyDirectory=function(){
+  _rescuePenaltyHubRender();
+  const copy=document.getElementById("penaltyAiCopy");
+  if(copy){
+    const otherOnline=rescueOnlineUsers.filter(x=>x.user_id!==currentUser?.id).length;
+    copy.textContent=otherOnline
+      ?`현재 ${otherOnline}명이 온라인입니다. AI 연습 경기도 언제든 시작할 수 있습니다.`
+      :"현재 온라인 상대가 없습니다. RESCUE AI와 바로 승부차기를 시작할 수 있습니다.";
+  }
+};
 
 
 /* init */
