@@ -5795,6 +5795,7 @@ async function handleSignedIn(user){
 
     // Everything below is non-critical initialization. One failed table/RPC must
     // never log the user back out.
+    try{ await rescueLoadTeamMetaFromServer(); }catch(e){ console.warn("Team meta cloud load skipped",e); }
     try{ await syncWordMarksForUser(user); }catch(e){ console.warn("Word mark sync skipped",e); }
     try{ await refreshServerRP(); }catch(e){ console.warn("RP refresh skipped",e); }
     try{ await loadServerCards(true); }catch(e){ console.warn("Card collection refresh skipped",e); }
@@ -9919,17 +9920,22 @@ function renderFootballHub(){
   if(document.getElementById("squadDialog"))renderSquad();
   updateCardShopUI();
 }
-function editFootballTeamName(){
+async function editFootballTeamName(){
   const st=loadFootballState();
   const next=prompt("팀 이름을 입력하세요.\n예: Arsenal",st.teamName||"Arsenal");
   if(next===null)return;
   const name=next.trim().slice(0,24);
   if(!name){alert("팀 이름을 입력해주세요.");return;}
+
   st.teamName=name;
   saveFootballState(st);
   renderFootballHub();
   updateHomeSummary();
-  rescueSyncTeamMeta().catch(e=>console.warn("Team name sync skipped",e));
+
+  const synced=await rescueSyncTeamMeta();
+  if(!synced){
+    alert("팀 이름은 이 기기에 저장되었지만 서버 동기화에 실패했습니다. 네트워크 연결 후 다시 변경해 주세요.");
+  }
 }
 
 let achievementStatusCache=null;
@@ -10978,16 +10984,75 @@ function opRenderBroadcast(st){
 }
 async function rescueSyncMyTeam(){
   // Squad slots are already stored server-side by rescue_set_squad_card.
-  // This synchronizes the remaining presentation metadata immediately before online play.
-  await rescueSyncTeamMeta();
+  // Team name / formation are cloud-backed in rescue_team_profile.
+  return await rescueSyncTeamMeta();
 }
+
+async function rescueLoadTeamMetaFromServer(){
+  if(!currentUser?.id)return false;
+  try{
+    const {data,error}=await supabaseClient
+      .from("rescue_team_profile")
+      .select("team_name,formation")
+      .eq("user_id",currentUser.id)
+      .maybeSingle();
+
+    if(error)throw error;
+
+    const st=loadFootballState();
+
+    // Existing cloud values are the source of truth across devices.
+    if(data){
+      const cloudName=String(data.team_name||"").trim().slice(0,24);
+      const cloudFormation=String(data.formation||"").trim();
+
+      let changed=false;
+      if(cloudName && cloudName!==st.teamName){
+        st.teamName=cloudName;
+        changed=true;
+      }
+      if(FORMATION_POSITIONS[cloudFormation] && cloudFormation!==st.formation){
+        st.formation=cloudFormation;
+        changed=true;
+      }
+
+      if(changed){
+        saveFootballState(st);
+        renderFootballHub();
+        updateHomeSummary();
+        try{renderSquad();}catch(_){}
+      }
+
+      // A row may exist only because a logo was equipped before team metadata existed.
+      // Fill any missing cloud fields from this device without overwriting valid cloud data.
+      if(!cloudName || !FORMATION_POSITIONS[cloudFormation]){
+        await rescueSyncTeamMeta();
+      }
+      return true;
+    }
+
+    // No cloud profile yet: seed it once from this device's current team metadata.
+    return await rescueSyncTeamMeta();
+  }catch(e){
+    console.warn("Team meta cloud load failed",e);
+    return false;
+  }
+}
+
 async function rescueSyncTeamMeta(){
-  if(!currentUser?.id)return;
+  if(!currentUser?.id)return false;
   const st=loadFootballState();
   try{
-    const {error}=await supabaseClient.rpc("rescue_set_team_meta",{p_team_name:(st.teamName||"Arsenal"),p_formation:(st.formation||"4-3-3")});
+    const {error}=await supabaseClient.rpc("rescue_set_team_meta",{
+      p_team_name:String(st.teamName||"Arsenal").trim().slice(0,24) || "Arsenal",
+      p_formation:FORMATION_POSITIONS[st.formation]?st.formation:"4-3-3"
+    });
     if(error)throw error;
-  }catch(e){console.warn("Team meta sync failed",e);}
+    return true;
+  }catch(e){
+    console.warn("Team meta sync failed",e);
+    return false;
+  }
 }
 function opShowScreen(id){
   ["opIntroScreen","opCoinScreen","opGameScreen"].forEach(x=>document.getElementById(x)?.classList.toggle("show",x===id));
