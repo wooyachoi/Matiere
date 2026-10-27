@@ -4820,6 +4820,153 @@ header.top .rescue-brand-logo-header{
 }
 </style>
 
+
+<style id="matiere-v1438-black-rescue-skin">
+/* V14.38 · BLACK lessons styled to match RESCUE visual system */
+.vocab-book-switch{
+  margin:0 0 14px!important;
+  padding:12px 14px!important;
+  border:1px solid #1d3b56!important;
+  border-radius:14px!important;
+  background:linear-gradient(145deg,#0a1928,#071321)!important;
+  box-shadow:none!important;
+}
+.vocab-book-switch .book-title{
+  color:#8fa2b5!important;
+  font-size:10px!important;
+  letter-spacing:.14em!important;
+}
+.vocab-book-tabs{gap:10px!important}
+.vocab-book-tab{
+  min-height:38px!important;
+  border:1px solid rgba(239,35,60,.60)!important;
+  background:#0d1c2b!important;
+  color:#d8e1ea!important;
+  border-radius:999px!important;
+  padding:8px 16px!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  box-shadow:none!important;
+}
+.vocab-book-tab:hover{
+  background:#112234!important;
+  color:#fff!important;
+}
+.vocab-book-tab.active{
+  background:linear-gradient(135deg,#ff2945,#d9112f)!important;
+  border-color:#ff5a68!important;
+  color:#fff!important;
+}
+.black-book-panel{
+  display:none;
+  margin:0 0 14px!important;
+  padding:14px!important;
+  border:1px solid #1d3b56!important;
+  border-radius:16px!important;
+  background:linear-gradient(145deg,#0a1928,#071321)!important;
+  box-shadow:none!important;
+}
+.black-book-panel.show{display:block!important}
+.black-book-head{align-items:flex-start!important;margin-bottom:12px!important}
+.black-book-head b{font-size:13px!important;color:#f5f7fa!important}
+.black-book-head small{font-size:10px!important;color:#8fa2b5!important}
+.black-lesson-grid{gap:10px!important}
+.black-lesson-btn{
+  min-width:0!important;
+  min-height:50px!important;
+  border:1px solid rgba(239,35,60,.60)!important;
+  background:#0d1c2b!important;
+  color:#dbe4ec!important;
+  border-radius:10px!important;
+  padding:10px 4px!important;
+  font-size:11px!important;
+  font-weight:850!important;
+  cursor:pointer!important;
+  box-shadow:none!important;
+  position:relative!important;
+}
+.black-lesson-btn:hover{background:#112234!important;color:#fff!important}
+.black-lesson-btn.selected{
+  background:linear-gradient(135deg,#ff2945,#d9112f)!important;
+  border-color:#ff5a68!important;
+  color:#fff!important;
+}
+.black-lesson-btn.unavailable{
+  background:rgba(255,255,255,.03)!important;
+  border-color:rgba(255,255,255,.10)!important;
+  color:#5f7285!important;
+  opacity:.75!important;
+  filter:none!important;
+}
+.black-lesson-btn.available::after{
+  content:"";
+  display:block;
+  width:5px;height:5px;border-radius:50%;
+  margin:2px auto 0;
+  background:rgba(255,255,255,.55)!important;
+}
+.black-lesson-btn.selected::after{background:#fff!important}
+.black-book-notice{
+  margin-top:12px!important;
+  padding:12px 13px!important;
+  border-radius:12px!important;
+  background:rgba(255,255,255,.04)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  color:#8fa2b5!important;
+  font-size:10px!important;
+  line-height:1.6!important;
+}
+.black-book-actions{display:flex;gap:10px!important;margin-top:12px!important}
+.black-book-actions button{
+  flex:1!important;
+  min-height:40px!important;
+  border:1px solid rgba(239,35,60,.60)!important;
+  background:#0d1c2b!important;
+  color:#d8e1ea!important;
+  border-radius:10px!important;
+  padding:9px 10px!important;
+  font-size:11px!important;
+  font-weight:850!important;
+  cursor:pointer!important;
+  box-shadow:none!important;
+}
+.black-book-actions button:hover{background:#112234!important;color:#fff!important}
+.black-book-actions button.primary{
+  background:linear-gradient(135deg,#ff2945,#d9112f)!important;
+  border-color:#ff5a68!important;
+  color:#fff!important;
+}
+/* Header logo tune-up for the wide Matiére wordmark */
+header.top .rescue-brand-logo-header{
+  width:320px!important;
+  max-width:320px!important;
+  max-height:64px!important;
+  height:auto!important;
+  flex:0 0 320px!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+  background:transparent!important;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.20))!important;
+}
+@media(max-width:1100px){
+  header.top .rescue-brand-logo-header{
+    width:270px!important;
+    max-width:270px!important;
+    flex-basis:270px!important;
+    max-height:60px!important;
+  }
+}
+@media(max-width:700px){
+  header.top .rescue-brand-logo-header{
+    width:190px!important;
+    max-width:190px!important;
+    flex-basis:190px!important;
+    max-height:56px!important;
+  }
+  .black-lesson-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+</style>
+
 </head>
 <body>
 
