@@ -10903,6 +10903,7 @@ let onlinePenaltyTouchActive=false;
 let onlinePenaltyTouchId=null;
 let onlinePenaltyAnim=null;
 let onlinePenaltyRefreshBusy=false;
+let onlinePenaltyRefreshPromise=null;
 let onlinePenaltyPollTimer=null;
 let onlinePenaltyAppliedVersion=-1;
 let onlinePenaltyLastStateAt=0;
@@ -11109,8 +11110,14 @@ function opRenderRole(st){
     box.textContent="경기가 종료되었습니다.";return;
   }
   fin.hidden=true;
-  const attacker=st.current_attacker===currentUser?.id, defender=st.current_defender===currentUser?.id;
+  const derivedDefender=st.current_defender || (
+    st.current_attacker===st.player_a ? st.player_b :
+    st.current_attacker===st.player_b ? st.player_a : null
+  );
+  const attacker=st.current_attacker===currentUser?.id;
+  const defender=derivedDefender===currentUser?.id;
   if(attacker){
+    document.getElementById("onlinePenaltyCanvas")?.classList.add("op-shoot-ready");
     const player=opCurrentKicker(st);
     role.textContent="KICKER";title.textContent=player?`${player.name} · 당신의 킥`:"당신의 킥";desc.textContent=rescuePenaltyMode==="ai"?"RESCUE AI 골키퍼를 상대로 공을 골문 방향으로 스와이프하세요.":"공에서 골문을 향해 스와이프하세요.";
     lock.hidden=true;
@@ -11122,6 +11129,7 @@ function opRenderRole(st){
     lock.hidden=false;lock.disabled=!onlinePenaltyKeeperTarget||st.keeper_submitted;
     box.textContent=st.keeper_submitted?"다이빙 위치 확정 완료 · 상대 슛을 기다리는 중입니다.":onlinePenaltyKeeperTarget?"위치 선택 완료 · 확정 버튼을 누르세요.":"골대 안 원하는 세이브 지점을 터치하세요.";
   }else{
+    document.getElementById("onlinePenaltyCanvas")?.classList.remove("op-shoot-ready","op-shoot-dragging");
     role.textContent="ONLINE MATCH";title.textContent="경기 상태 확인 중";desc.textContent="서버에서 다음 턴을 확인하고 있습니다.";lock.hidden=true;box.textContent=rescuePenaltyStateSummary(st);
   }
 }
@@ -11259,9 +11267,40 @@ function rescueRoutePenaltyScreen(st){
       break;
   }
 }
+function rescuePenaltyNormalizeState(raw){
+  if(!raw || typeof raw!=="object")return raw;
+  const st={...raw};
+
+  if(!Array.isArray(st.kicks_a))st.kicks_a=[];
+  if(!Array.isArray(st.kicks_b))st.kicks_b=[];
+  st.score_a=Number(st.score_a??0);
+  st.score_b=Number(st.score_b??0);
+  st.turn_no=Number(st.turn_no??1);
+  st.version=Number(st.version??0);
+
+  // rescue_game_sessions에는 current_defender 컬럼이 없다.
+  // raw session row가 실수로 들어와도 역할 판정이 깨지지 않게 방어 계산한다.
+  if(st.stage===RESCUE_PENALTY_STAGE.TURN && st.current_attacker && !st.current_defender){
+    if(st.current_attacker===st.player_a)st.current_defender=st.player_b;
+    else if(st.current_attacker===st.player_b)st.current_defender=st.player_a;
+  }
+
+  st.shot_submitted=Boolean(st.shot_submitted);
+  st.keeper_submitted=Boolean(st.keeper_submitted);
+  return st;
+}
+
+function rescuePenaltyTurnStateValid(st){
+  if(!st || st.stage!==RESCUE_PENALTY_STAGE.TURN)return true;
+  if(!st.player_a || !st.player_b || !st.current_attacker || !st.current_defender)return false;
+  if(st.current_attacker===st.current_defender)return false;
+  const players=new Set([st.player_a,st.player_b]);
+  return players.has(st.current_attacker) && players.has(st.current_defender);
+}
+
 function rescuePenaltyStateSummary(data){
   if(!data)return "NO STATE";
-  return `status=${data.status||"-"} · stage=${data.stage||"-"} · turn=${data.turn_no??"-"} · attacker=${data.current_attacker?"SET":"NONE"}`;
+  return `status=${data.status||"-"} · stage=${data.stage||"-"} · turn=${data.turn_no??"-"} · attacker=${data.current_attacker?"SET":"NONE"} · defender=${data.current_defender?"SET":"NONE"} · v=${data.version??"-"}`;
 }
 async function rescuePreparePenaltySession(){
   if(!onlinePenaltySessionId)return null;
@@ -11276,28 +11315,64 @@ async function rescuePreparePenaltySession(){
 }
 
 function rescuePenaltyApplyState(data){
-  if(!data)return;
+  if(!data)return false;
+  data=rescuePenaltyNormalizeState(data);
+
+  // 불완전한 TURN 상태를 UI에 설치하면 양 기기의 역할 판정이 깨진다.
+  if(!rescuePenaltyTurnStateValid(data)){
+    console.warn("Rejected incomplete penalty TURN state",data);
+    const conn=document.getElementById("opConnectionState");
+    if(conn)conn.textContent="STATE REPAIR…";
+    const title=document.getElementById("opTurnTitle");
+    const desc=document.getElementById("opTurnDesc");
+    const box=document.getElementById("opControlState");
+    if(title)title.textContent="턴 상태 복구 중";
+    if(desc)desc.textContent="서버의 완전한 경기 상태를 다시 불러오고 있습니다.";
+    if(box)box.textContent=rescuePenaltyStateSummary(data);
+    setTimeout(()=>rescuePenaltyRefreshState(true),80);
+    return false;
+  }
+
   const incomingVersion=Number(data.version??0);
   if(onlinePenaltyState?.id===data.id && onlinePenaltyAppliedVersion>=0 && incomingVersion<onlinePenaltyAppliedVersion){
-    return; // Ignore out-of-order RPC/Realtime responses.
+    return false;
   }
-  if(onlinePenaltyState?.id!==data.id){onlinePenaltyAppliedVersion=-1;onlinePenaltyLastRevealTurn=0;}
+  if(onlinePenaltyState?.id!==data.id){
+    onlinePenaltyAppliedVersion=-1;
+    onlinePenaltyLastRevealTurn=0;
+  }
+
   onlinePenaltyAppliedVersion=Math.max(onlinePenaltyAppliedVersion,incomingVersion);
   onlinePenaltyLastStateAt=Date.now();
-  const conn=document.getElementById("opConnectionState");if(conn)conn.textContent="REALTIME CONNECTED";
+
+  const conn=document.getElementById("opConnectionState");
+  if(conn)conn.textContent="REALTIME CONNECTED";
+
   onlinePenaltyState=data;
-  opRenderScore(data);opRenderRole(data);opAnimateReveal(data);rescueRenderPenaltyClock();
+  opRenderScore(data);
+  opRenderRole(data);
+  opAnimateReveal(data);
+  rescueRenderPenaltyClock();
 
   if(data.status==="active" && data.stage===RESCUE_PENALTY_STAGE.LOBBY){
-    const title=document.getElementById("opTurnTitle"),desc=document.getElementById("opTurnDesc"),box=document.getElementById("opControlState");
+    const title=document.getElementById("opTurnTitle"),
+          desc=document.getElementById("opTurnDesc"),
+          box=document.getElementById("opControlState");
     if(title)title.textContent="경기 세션 초기화 중";
     if(desc)desc.textContent="온라인 경기 상태를 복구하고 있습니다.";
     if(box)box.textContent=rescuePenaltyStateSummary(data);
     opShowScreen("opGameScreen");
-    if(!window.__rescuePenaltyRepairBusy){window.__rescuePenaltyRepairBusy=true;rescuePreparePenaltySession().then(fixed=>{if(fixed)rescuePenaltyApplyState(fixed);}).finally(()=>{window.__rescuePenaltyRepairBusy=false;});}
-    return;
+    if(!window.__rescuePenaltyRepairBusy){
+      window.__rescuePenaltyRepairBusy=true;
+      rescuePreparePenaltySession()
+        .then(fixed=>{if(fixed)rescuePenaltyApplyState(fixed);})
+        .finally(()=>{window.__rescuePenaltyRepairBusy=false;});
+    }
+    return true;
   }
+
   rescueRoutePenaltyScreen(data);
+  return true;
 }
 function rescueStartPenaltyPoll(){
   if(onlinePenaltyPollTimer)clearInterval(onlinePenaltyPollTimer);
@@ -11319,19 +11394,48 @@ function rescueStopPenaltyPoll(){
   }
 }
 
-async function rescuePenaltyRefreshState(){
-  if(!onlinePenaltySessionId || onlinePenaltyRefreshBusy)return;
-  onlinePenaltyRefreshBusy=true;
-  try{
-    const {data,error}=await supabaseClient.rpc("rescue_penalty_state",{p_session_id:onlinePenaltySessionId});
-    if(error)throw error;
-    rescuePenaltyApplyState(data);
-  }catch(e){
-    console.warn("Penalty state refresh failed",e);
-    const conn=document.getElementById("opConnectionState");if(conn)conn.textContent="RECONNECTING…";
-  }finally{
-    onlinePenaltyRefreshBusy=false;
+async function rescuePenaltyRefreshState(force=false){
+  if(!onlinePenaltySessionId)return null;
+
+  // 기존 요청이 있으면 그냥 return하지 않고 그 요청이 끝날 때까지 기다린다.
+  if(onlinePenaltyRefreshPromise){
+    return await onlinePenaltyRefreshPromise;
   }
+
+  onlinePenaltyRefreshBusy=true;
+  const sessionId=onlinePenaltySessionId;
+
+  onlinePenaltyRefreshPromise=(async()=>{
+    try{
+      const {data,error}=await supabaseClient.rpc("rescue_penalty_state",{p_session_id:sessionId});
+      if(error)throw error;
+      if(sessionId!==onlinePenaltySessionId)return null;
+
+      let normalized=rescuePenaltyNormalizeState(data);
+      rescuePenaltyApplyState(normalized);
+
+      if(force && normalized?.stage===RESCUE_PENALTY_STAGE.TURN && !rescuePenaltyTurnStateValid(normalized)){
+        await new Promise(resolve=>setTimeout(resolve,180));
+        const second=await supabaseClient.rpc("rescue_penalty_state",{p_session_id:sessionId});
+        if(second.error)throw second.error;
+        if(sessionId!==onlinePenaltySessionId)return null;
+        normalized=rescuePenaltyNormalizeState(second.data);
+        rescuePenaltyApplyState(normalized);
+      }
+
+      return normalized;
+    }catch(e){
+      console.warn("Penalty state refresh failed",e);
+      const conn=document.getElementById("opConnectionState");
+      if(conn)conn.textContent="RECONNECTING…";
+      return null;
+    }finally{
+      onlinePenaltyRefreshBusy=false;
+      onlinePenaltyRefreshPromise=null;
+    }
+  })();
+
+  return await onlinePenaltyRefreshPromise;
 }
 async function rescueLaunchOnlinePenalty(sessionId){
   if(!sessionId)return;
@@ -11390,7 +11494,37 @@ document.querySelectorAll("[data-penalty-order]").forEach(btn=>btn.addEventListe
     rescueAiChooseOrder(btn.dataset.penaltyOrder);
     return;
   }
-  try{const {data,error}=await supabaseClient.rpc("rescue_choose_penalty_order",{p_session_id:onlinePenaltySessionId,p_choice:btn.dataset.penaltyOrder});if(error)throw error;if(data)rescuePenaltyApplyState(data);else await rescuePenaltyRefreshState();}catch(e){alert("선축/후축 선택에 실패했습니다.");}
+
+  if(!onlinePenaltySessionId)return;
+
+  const buttons=[...document.querySelectorAll("[data-penalty-order]")];
+  buttons.forEach(x=>x.disabled=true);
+
+  const conn=document.getElementById("opConnectionState");
+  const box=document.getElementById("opControlState");
+  if(conn)conn.textContent="STARTING TURN…";
+  if(box)box.textContent="선축/후축을 확정하고 첫 번째 턴을 준비하고 있습니다.";
+
+  try{
+    const {error}=await supabaseClient.rpc("rescue_choose_penalty_order",{
+      p_session_id:onlinePenaltySessionId,
+      p_choice:btn.dataset.penaltyOrder
+    });
+    if(error)throw error;
+
+    // 이 RPC의 반환형은 rescue_game_sessions row다.
+    // current_defender / keeper_submitted / shot_submitted가 없으므로 절대 직접 적용하지 않는다.
+    const state=await rescuePenaltyRefreshState(true);
+
+    if(!state || state.stage!==RESCUE_PENALTY_STAGE.TURN || !rescuePenaltyTurnStateValid(state)){
+      throw new Error("Canonical TURN state was not established");
+    }
+  }catch(e){
+    console.warn("Penalty order transition failed",e);
+    buttons.forEach(x=>x.disabled=false);
+    if(conn)conn.textContent="SYNC ERROR";
+    alert("선축/후축 확정 후 첫 턴을 불러오지 못했습니다. 다시 시도해 주세요.");
+  }
 }));
 document.getElementById("opKeeperLock")?.addEventListener("click",async()=>{
   if(!onlinePenaltyKeeperTarget||!onlinePenaltySessionId)return;
@@ -11415,7 +11549,12 @@ function opHandleInputStart(e){
   if(e.pointerType==="mouse" && e.button!==0)return;
   const p=opEventPoint(e),G=opGoalRect();
 
-  if(onlinePenaltyState.current_defender===currentUser?.id&&!onlinePenaltyState.keeper_submitted){
+  const inputDefender=onlinePenaltyState.current_defender || (
+    onlinePenaltyState.current_attacker===onlinePenaltyState.player_a ? onlinePenaltyState.player_b :
+    onlinePenaltyState.current_attacker===onlinePenaltyState.player_b ? onlinePenaltyState.player_a : null
+  );
+
+  if(inputDefender===currentUser?.id&&!onlinePenaltyState.keeper_submitted){
     if(p.x>=G.x&&p.x<=G.x+G.w&&p.y>=G.y&&p.y<=G.y+G.h){
       if(e.cancelable)e.preventDefault();
       onlinePenaltyKeeperTarget={
