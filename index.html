@@ -4958,14 +4958,14 @@ header.top .rescue-brand-logo-header{
           <h1><span id="homeGreeting">GOOD MORNING,</span><br><strong id="homeUserName">RESCUER</strong></h1>
           <p>오늘도 조금씩 성장해 보세요.</p>
         </div>
-        <div class="home-script home-daily-quote" id="homeDailyQuote"><b>오늘의 문장을 불러오는 중…</b></div>
+        <div class="home-script home-daily-quote" id="homeDailyQuote"><b>조금씩 쌓인 것이 결국 나를 만든다.</b><small class="quote-credit">— MATIÈRE —</small></div>
       </section>
 
       <section class="home-today">
         <div class="home-today-icon">▣</div>
         <div class="home-today-copy">
           <span>TODAY'S LEARNING</span>
-          <strong>DAY <b id="homeTodayDay">01</b></strong>
+          <strong>DAY <b id="homeTodayDay">27</b></strong>
           <small><b id="homeTodayCount">20</b> WORDS · 지금, 오늘의 학습을 시작해보세요!</small>
         </div>
         <button type="button" class="home-primary" id="homeStartBtn">학습 시작하기 →</button>
@@ -9523,24 +9523,41 @@ function setTab(active){
   if(active==="ranking"){tabRanking.classList.add("active");viewRanking.style.display="block";renderRanking();}
   if(active==="football"){tabFootball.classList.add("active");viewFootball.style.display="block";renderFootballHub();}
 }
-const HOME_DAILY_LYRICS = ["I'm up before the morning\nMy eyes are on the ceiling", "Saw you walk through the doorway\nGuess that's a part of grieving", "I keep a place for you in\nThe corner where I'm drinking my first coffee", "Our stars were just aligning\nAnd now they're dissipating", "Shrouded by the light of the inner cityscape and\nTime moves at its own pace\nI wonder how it's feeling", "Oh, I'm learning how to move ahead\nLearning how to grow\nLearning how to lead life without you, friend", "I haven't talked about you in a few weeks and\nSomeone says your name\nI remembered how to breathe in", "The wound is fairly swollen\nBut I've finally stopped the bleeding", "Train's moving forward\nPiccadilly Circus", "I thought I passed you on the way home\nRemember I was nervous first time we went to dinner", "Memories are stray bullets\nThey wound my frail subconscious\nEven sleep is exhausting oh", "Oh, I'm learning how to move ahead\nLearning how to grow\nLearning how to lead life without you, friend", "And oh wow, the dust had barely settled in\nThen you had to go\nThen you had to lead life with someone else", "Oh, I know I'm, know I'm\nBetter alone I, know I'm", "Oh I know I'm, know I'm\nBetter alone I, know I'm\nBetter alone I, know I'm\nBetter alone I, know I'm", "Oh I know I, know I'm\nBetter alone I, know I'm\nBetter alone I, know I'm\nBetter alone I, know I'm", "Oh, I know I'm\nYeah, I'm, yeah, I'm\nI'm used to being alone", "I'm learning how to move ahead\nLearning how to grow\nLearning how to lead life without you, friend, friend", "Learning how to grow up\nLearning how to lead life without you, friend"]
+const HOME_DAILY_QUOTES = [
+  "조금씩 쌓인 것이 결국 나를 만든다.",
+  "오늘 외운 한 단어가 내일의 문장을 바꾼다.",
+  "빠르게보다 꾸준하게.",
+  "모르는 단어는 실패가 아니라 다음 학습의 시작이다.",
+  "한 번 더 보는 순간, 기억은 조금 더 오래 남는다.",
+  "배운 것을 꺼내 쓰는 순간 지식이 된다.",
+  "오늘의 작은 반복이 실력을 만든다.",
+  "완벽하게 시작할 필요는 없다. 계속하면 된다.",
+  "익숙함은 반복에서 만들어진다.",
+  "단어 하나씩, 생각의 재료를 쌓아가자.",
+  "기억은 한 번의 집중보다 여러 번의 만남을 좋아한다.",
+  "어제보다 하나 더 알면 충분하다."
+];
+function kstDateParts(date=new Date()){
+  const parts=new Intl.DateTimeFormat("en-CA",{
+    timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"
+  }).formatToParts(date);
+  const get=t=>Number(parts.find(p=>p.type===t)?.value||0);
+  return {year:get("year"),month:get("month"),day:get("day")};
+}
 function updateHomeDailyQuote(){
   const el=document.getElementById("homeDailyQuote");
-  if(!el || !HOME_DAILY_LYRICS.length) return;
-  // Use the Korea calendar date so every visitor sees a stable daily paragraph.
-  const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
-  const get=t=>Number(parts.find(p=>p.type===t)?.value||0);
-  const y=get("year"), m=get("month"), d=get("day");
-  const dayNumber=Math.floor(Date.UTC(y,m-1,d)/86400000);
-  const startDayNumber=Math.floor(Date.UTC(2026,8,23)/86400000);
-  const index=(((dayNumber-startDayNumber)%HOME_DAILY_LYRICS.length)+HOME_DAILY_LYRICS.length)%HOME_DAILY_LYRICS.length;
-  const paragraph=HOME_DAILY_LYRICS[index];
-  el.innerHTML='<b></b><small class="quote-credit">— Dhruv · Grieving —</small>'; 
+  if(!el || !HOME_DAILY_QUOTES.length) return;
+  const {year,month,day}=kstDateParts();
+  const dayNumber=Math.floor(Date.UTC(year,month-1,day)/86400000);
+  const index=((dayNumber%HOME_DAILY_QUOTES.length)+HOME_DAILY_QUOTES.length)%HOME_DAILY_QUOTES.length;
+  el.innerHTML='<b></b><small class="quote-credit">— MATIÈRE —</small>';
   const b=el.querySelector("b");
-  if(b) b.innerHTML=escapeHtml(paragraph).replace(/\n/g,"<br>");
+  if(b)b.textContent=HOME_DAILY_QUOTES[index];
 }
 function getKoreaTimeGreeting(){
-  const hour=Number(new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Seoul",hour:"2-digit",hourCycle:"h23"}).format(new Date()));
+  const hour=Number(new Intl.DateTimeFormat("en-US",{
+    timeZone:"Asia/Seoul",hour:"2-digit",hourCycle:"h23"
+  }).format(new Date()));
   if(hour>=6 && hour<12) return "GOOD MORNING,";
   if(hour>=12 && hour<18) return "GOOD AFTERNOON,";
   if(hour>=18 && hour<=20) return "GOOD EVENING,";
@@ -9555,14 +9572,14 @@ function updateHomeSummary(){
   const name=String(currentProfile?.username||currentUser?.user_metadata?.username||currentUser?.email?.split("@")[0]||(label && !/^(GUEST|USER|RESCUER)$/i.test(label)?label:"")||"RESCUER").trim();
   const n=document.getElementById("homeUserName"); if(n)n.textContent=name.toUpperCase();
   updateHomeGreeting();
-  const dayEl=document.getElementById("homeTodayDay"); if(dayEl){const d=new Date().getDate();dayEl.textContent=String(Math.max(1,Math.min(DAY_MAX||1,((d-1)%Math.max(1,DAY_MAX||1))+1))).padStart(2,"0");}
+  const dayEl=document.getElementById("homeTodayDay"); if(dayEl){const d=kstDateParts().day;dayEl.textContent=String(Math.max(1,Math.min(DAY_MAX||1,((d-1)%Math.max(1,DAY_MAX||1))+1))).padStart(2,"0");}
   const count=document.getElementById("homeTodayCount"); if(count)count.textContent="20";
   const st=loadFootballState();
   const homeTeamNameEl=document.getElementById("homeTeamName");
   if(homeTeamNameEl)homeTeamNameEl.textContent=st.teamName||"Arsenal";
   updateHomeDailyQuote();
 }
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)updateHomeGreeting();});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)updateHomeSummary();});
 tabHome.addEventListener("click",()=>setTab("home"));tabCards.addEventListener("click",()=>setTab("cards"));tabWords.addEventListener("click",()=>setTab("words"));tabQuiz.addEventListener("click",()=>setTab("quiz"));tabGame.addEventListener("click",()=>setTab("game"));tabRanking.addEventListener("click",()=>setTab("ranking"));tabFootball.addEventListener("click",()=>setTab("football"));
 document.querySelectorAll("[data-home-tab]").forEach(btn=>btn.addEventListener("click",()=>setTab(btn.dataset.homeTab)));
 document.getElementById("homeStartBtn")?.addEventListener("click",()=>setTab("words"));
