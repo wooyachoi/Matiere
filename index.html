@@ -11056,7 +11056,18 @@ async function rescueSyncTeamMeta(){
   }
 }
 function opShowScreen(id){
-  ["opIntroScreen","opCoinScreen","opGameScreen"].forEach(x=>document.getElementById(x)?.classList.toggle("show",x===id));
+  ["opIntroScreen","opCoinScreen","opGameScreen"].forEach(x=>{
+    document.getElementById(x)?.classList.toggle("show",x===id);
+  });
+
+  // The game canvas may have been measured while display:none during
+  // STARTING XI / coin toss. Recalculate after it becomes visible.
+  if(id==="opGameScreen"){
+    requestAnimationFrame(()=>{
+      opResizeCanvas();
+      requestAnimationFrame(opResizeCanvas);
+    });
+  }
 }
 function opRenderIntro(st){
   const a=st.team_a||{},b=st.team_b||{};
@@ -11134,11 +11145,27 @@ function opRenderRole(st){
   }
 }
 function opResizeCanvas(){
-  const c=document.getElementById("onlinePenaltyCanvas"),stage=document.getElementById("opStage");if(!c||!stage)return;
-  const r=stage.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
-  onlinePenaltyCanvasSize={w:Math.max(320,r.width),h:Math.max(430,r.height),dpr};
-  c.width=onlinePenaltyCanvasSize.w*dpr;c.height=onlinePenaltyCanvasSize.h*dpr;
-  onlinePenaltyCanvasCtx=c.getContext("2d");onlinePenaltyCanvasCtx.setTransform(dpr,0,0,dpr,0,0);
+  const c=document.getElementById("onlinePenaltyCanvas");
+  const stage=document.getElementById("opStage");
+  if(!c||!stage)return;
+
+  const stageRect=stage.getBoundingClientRect();
+  const canvasRect=c.getBoundingClientRect();
+  const dpr=Math.min(devicePixelRatio||1,2);
+
+  // Prefer the visible stage size. If layout is still settling, use canvas CSS size.
+  const visibleW=stageRect.width>1 ? stageRect.width : canvasRect.width;
+  const visibleH=stageRect.height>1 ? stageRect.height : canvasRect.height;
+
+  const w=Math.max(320,Math.round(visibleW||320));
+  const h=Math.max(430,Math.round(visibleH||430));
+
+  onlinePenaltyCanvasSize={w,h,dpr};
+  c.width=Math.round(w*dpr);
+  c.height=Math.round(h*dpr);
+
+  onlinePenaltyCanvasCtx=c.getContext("2d");
+  onlinePenaltyCanvasCtx.setTransform(dpr,0,0,dpr,0,0);
 }
 function opDrawBall(ctx,x,y,r,rot){
   ctx.save();ctx.translate(x,y);ctx.rotate(rot||0);
@@ -11538,11 +11565,49 @@ document.getElementById("onlinePenaltyClose")?.addEventListener("click",()=>{res
 window.addEventListener("resize",()=>{if(document.getElementById("onlinePenaltyDialog")?.open)opResizeCanvas();});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&document.getElementById("onlinePenaltyDialog")?.open&&onlinePenaltySessionId)rescuePenaltyRefreshState();});
 const opCanvas=document.getElementById("onlinePenaltyCanvas");
+
+let rescuePenaltyCanvasResizeObserver=null;
+if(opCanvas && window.ResizeObserver){
+  const stage=document.getElementById("opStage");
+  if(stage){
+    rescuePenaltyCanvasResizeObserver=new ResizeObserver(()=>{
+      if(document.getElementById("onlinePenaltyDialog")?.open &&
+         document.getElementById("opGameScreen")?.classList.contains("show")){
+        opResizeCanvas();
+      }
+    });
+    rescuePenaltyCanvasResizeObserver.observe(stage);
+  }
+}
 function opEventPoint(e){
   const rect=opCanvas.getBoundingClientRect();
   const src=e.touches?.[0]||e.changedTouches?.[0]||e;
-  return {x:src.clientX-rect.left,y:src.clientY-rect.top};
+
+  // Canvas drawing uses onlinePenaltyCanvasSize logical coordinates,
+  // while pointer/touch events arrive in CSS viewport pixels.
+  // Convert CSS coordinates -> logical canvas coordinates every time.
+  const cssX=src.clientX-rect.left;
+  const cssY=src.clientY-rect.top;
+  const sx=rect.width>0 ? onlinePenaltyCanvasSize.w/rect.width : 1;
+  const sy=rect.height>0 ? onlinePenaltyCanvasSize.h/rect.height : 1;
+
+  return {
+    x:cssX*sx,
+    y:cssY*sy
+  };
 }
+
+function rescuePenaltyInputGeometry(){
+  if(!opCanvas)return null;
+  const rect=opCanvas.getBoundingClientRect();
+  return {
+    css:{w:Math.round(rect.width),h:Math.round(rect.height)},
+    logical:{w:onlinePenaltyCanvasSize.w,h:onlinePenaltyCanvasSize.h},
+    ball:opBallPos(),
+    goal:opGoalRect()
+  };
+}
+
 function opHandleInputStart(e){
   if(!onlinePenaltyState||onlinePenaltyState.stage!=="turn")return;
   if(e.type==="mousedown" && e.button!==0)return;
