@@ -7129,6 +7129,121 @@ header.top{
 }
 </style>
 
+
+<style id="matiere-v1452-poem-homefix">
+/* 1) MY TEAM: remove the old grass/pitch overlay completely. */
+#view-football .football-hero::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  border:0!important;
+}
+
+/* 2) Remove every old football/script decoration that overlaps the new hero background. */
+#view-football .football-ball-art,
+#view-football .football-hero-script{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+/* Remove any remaining green field wash from the hero itself. */
+#view-football .football-hero{
+  box-shadow:none!important;
+}
+#view-football .football-hero:before{
+  content:none!important;
+  display:none!important;
+}
+
+/* 3) Home six-card borders: one consistent champagne-gold system, no blue. */
+#view-home .home-feature,
+#view-home .home-feature:nth-child(1),
+#view-home .home-feature:nth-child(2),
+#view-home .home-feature:nth-child(3),
+#view-home .home-feature:nth-child(4),
+#view-home .home-feature:nth-child(5),
+#view-home .home-feature:nth-child(6){
+  background:linear-gradient(155deg,#12110f 0%,#0a0a09 100%)!important;
+  border:1px solid rgba(184,141,73,.48)!important;
+  box-shadow:none!important;
+}
+#view-home .home-feature:hover{
+  border-color:#d2ad68!important;
+  background:linear-gradient(155deg,#18140f,#0d0c0a)!important;
+}
+#view-home .home-feature::after{
+  border-color:rgba(184,141,73,.10)!important;
+  background:transparent!important;
+}
+#view-home .home-feature-icon{
+  border-color:rgba(184,141,73,.30)!important;
+  background:rgba(184,141,73,.055)!important;
+  color:#d4b16d!important;
+}
+#view-home .home-feature strong{
+  color:#d4b16d!important;
+}
+
+/* 4) Korean poem styling — softer than a formal textbook serif. */
+#homeDailyQuote{
+  border-left:2px solid rgba(216,186,120,.88)!important;
+  padding-left:24px!important;
+  font-style:normal!important;
+  color:#f2eadc!important;
+  text-align:left!important;
+  max-width:470px!important;
+  letter-spacing:-.025em!important;
+}
+#homeDailyQuote b{
+  display:block!important;
+  font-family:"MaruBuri","Noto Serif KR","Nanum Myeongjo","Apple SD Gothic Neo",serif!important;
+  font-weight:500!important;
+  line-height:1.62!important;
+  color:#f4ecdf!important;
+  word-break:keep-all!important;
+  text-wrap:balance;
+  text-shadow:0 1px 14px rgba(0,0,0,.18)!important;
+}
+#homeDailyQuote.quote-short b{
+  font-size:31px!important;
+  line-height:1.52!important;
+}
+#homeDailyQuote.quote-medium b{
+  font-size:27px!important;
+  line-height:1.58!important;
+}
+#homeDailyQuote.quote-long b{
+  font-size:23px!important;
+  line-height:1.62!important;
+}
+#homeDailyQuote .quote-credit{
+  display:block!important;
+  margin-top:16px!important;
+  font-family:"Pretendard","SUIT","Apple SD Gothic Neo",sans-serif!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  font-style:normal!important;
+  letter-spacing:.16em!important;
+  color:#c7a466!important;
+  text-transform:none!important;
+}
+@media(max-width:700px){
+  #homeDailyQuote{
+    max-width:100%!important;
+    padding-left:16px!important;
+  }
+  #homeDailyQuote.quote-short b{font-size:25px!important}
+  #homeDailyQuote.quote-medium b{font-size:22px!important}
+  #homeDailyQuote.quote-long b{font-size:19px!important}
+  #homeDailyQuote .quote-credit{
+    font-size:9.5px!important;
+    letter-spacing:.11em!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -12037,11 +12152,10 @@ function setTab(active){
   if(active==="ranking"){tabRanking.classList.add("active");viewRanking.style.display="block";renderRanking();}
   if(active==="football"){tabFootball.classList.add("active");viewFootball.style.display="block";renderFootballHub();}
 }
-const HOME_DAILY_LYRICS = ["A message before sunrise can change the shape of an ordinary day.\nSometimes home suddenly feels farther away than it ever has.", "There are moments when fear arrives before the truth does.\nToo many words gather at once, while time seems painfully small.", "How do you prepare to part from someone woven into your whole life?\nSome goodbyes feel impossible because the memories are everywhere.", "So much of who we are comes from the people who raised us.\nEven in a mirror, love can leave a familiar trace.", "When I doubted myself, you still found something worth believing in.\nThat kind of faith stays long after the moment has passed.", "You stood beside me through every mistake and every right turn.\nThe thought of walking on without you is what scares me most.", "I saw the love you shared with the people around you.\nIf the day comes, I will do my best to protect what mattered to you.", "Some friendships are deeper than the word friend can explain.\nThey become part of the way we understand our own lives.", "No distance or ending can erase everything someone gave us.\nThe strongest memories keep returning in the smallest places.", "If time is limited, I want to use what remains with care.\nThere are still things worth saying, remembering, and beginning again.", "Maybe moving forward does not mean leaving someone behind.\nIt can mean carrying their light into the life that comes next.", "One day, I hope the pain will sit beside gratitude instead of replacing it.\nUntil then, I will keep the light you gave me."]
+const HOME_DAILY_LYRICS = ["바다로 가자 큰 바다로 가자", "우리 인젠 큰하늘과 넓은바다를 마음대로 가졌노라", "하늘이 바다요 바다가 하늘이라\n바다 하늘 모두다 가졌노라", "옳다 그리하여 가슴이 뼉은치야\n우리 모두다 가잤구나 큰바다로 가잤구나", "우리는 바다없이 살었지야 숨마키고 살었지야", "그리하여 쪼여들고 울고불고 하였지야", "바다없는 항구속에 사로잡힌 몸은\n살이 터저나고 뼈 튀겨나고 넋이 흐터지고", "하마트면 아주 꺼꾸러져 버릴것을\n오! 바다가 터지도다 큰바다가 터지도다", "쪽배 타면 제주야 가고오고\n독목선 왜섬이사 갔다 왔지", "허나 그게 바달러냐\n건너뛰는 실개천이라", "우리 삼년 걸려도 큰 배를 짓잤구나\n큰 바다 넓은하늘을 우리는 가졌노라", "우리 큰배타고 떠나가잤구나", "창랑을 해치고 태풍을 거더차고\n하늘과 맞다은 저수평선 뚜르리라", "큰 호통하고 떠나 가잤구나", "바다없는 항구에 사로잡힌 마음들아\n툭털고 이러서자 바다가 네 집이라", "우리들 사슬버슨 넋이로다 푸러노힌 겨래로다", "기슴엔 잔뜩 별을 안으렴아", "손에 잡히는 엄마별 아가별\n머리엔 끄득 보배를 이고 오렴", "별아래 좍 깔린 산호요 진주라", "바다로 가자 우리 큰 바다로 가자"]
 function updateHomeDailyQuote(){
   const el=document.getElementById("homeDailyQuote");
   if(!el || !HOME_DAILY_LYRICS.length) return;
-  // Use the Korea calendar date so every visitor sees a stable daily paragraph.
   const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
   const get=t=>Number(parts.find(p=>p.type===t)?.value||0);
   const y=get("year"), m=get("month"), d=get("day");
@@ -12049,7 +12163,11 @@ function updateHomeDailyQuote(){
   const startDayNumber=Math.floor(Date.UTC(2026,9,28)/86400000);
   const index=(((dayNumber-startDayNumber)%HOME_DAILY_LYRICS.length)+HOME_DAILY_LYRICS.length)%HOME_DAILY_LYRICS.length;
   const paragraph=HOME_DAILY_LYRICS[index];
-  el.innerHTML='<b></b><small class="quote-credit">— Inspired by Dean Lewis · How Do I Say Goodbye —</small>'; 
+  const visualLength=paragraph.replace(/\n/g,"").length;
+  const lines=paragraph.split("\n").length;
+  el.classList.remove("quote-short","quote-medium","quote-long");
+  el.classList.add(visualLength<=18 && lines===1 ? "quote-short" : visualLength<=38 ? "quote-medium" : "quote-long");
+  el.innerHTML='<b></b><small class="quote-credit">— 김영랑 · 「바다로 가자」 —</small>';
   const b=el.querySelector("b");
   if(b) b.innerHTML=escapeHtml(paragraph).replace(/\n/g,"<br>");
 }
