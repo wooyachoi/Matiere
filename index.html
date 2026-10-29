@@ -7452,6 +7452,111 @@ header.top{
 }
 </style>
 
+
+<style id="matiere-v1454-aeris">
+#aerisSetup{margin-top:4px}
+.aeris-setup-panel{position:relative;overflow:hidden;background:linear-gradient(145deg,#11100e,#080807)!important;border:1px solid rgba(190,146,76,.42)!important}
+.aeris-setup-panel:after{content:"";position:absolute;width:320px;height:320px;border-radius:50%;right:-150px;top:-180px;border:1px solid rgba(215,181,112,.12);box-shadow:0 0 80px rgba(190,146,76,.05);pointer-events:none}
+.aeris-setup-head{text-align:center;margin-bottom:18px}
+.aeris-setup-kicker{font-size:8px;letter-spacing:.25em;color:#c49d60;margin-bottom:5px}
+.aeris-setup-title{font-family:Georgia,'Times New Roman',serif;font-size:30px;font-weight:700;color:#f2eadc}
+.aeris-setup-title span{color:#d8b472}
+.aeris-setup-desc{font-size:12px;color:#978e81;margin-top:4px}
+.aeris-setup-label{font-size:10px;font-weight:800;letter-spacing:.16em;color:#c0a069;margin:10px 0 8px}
+.aeris-diff-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.aeris-diff{padding:13px 10px!important;text-align:left!important;background:#0e0d0b!important;border-color:rgba(190,146,76,.48)!important}
+.aeris-diff b{display:block;color:#eee5d8;font-family:Georgia,'Times New Roman',serif;font-size:16px}
+.aeris-diff small{display:block;color:#8f867a;font-size:9.5px;margin-top:3px}
+.aeris-diff.on{background:linear-gradient(135deg,#e8d4aa,#bb8a43)!important;color:#17110a!important;border-color:#efdcb8!important}
+.aeris-diff.on b,.aeris-diff.on small{color:#21170d!important}
+.aeris-count{font-size:12px;color:#9c9387;margin:0 0 14px}
+.aeris-launch{width:100%;padding:15px!important;background:linear-gradient(105deg,#ead9b4,#c6964e 62%,#8d6530)!important;color:#17110a!important;border-color:#ebd6ab!important}
+@media(max-width:700px){.aeris-diff-row{grid-template-columns:1fr}}
+
+.aeris-flight-overlay{position:fixed;inset:0;z-index:5000;background:#000;display:none;overflow:hidden;color:#f3eadb;touch-action:none}
+.aeris-flight-overlay.open{display:block}
+#aerisCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.aeris-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at center,transparent 43%,rgba(0,0,0,.22) 70%,rgba(0,0,0,.72) 100%),linear-gradient(180deg,rgba(0,0,0,.32),transparent 20%,transparent 74%,rgba(0,0,0,.42))}
+.aeris-flight-top{position:absolute;left:0;right:0;top:0;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 max(20px,env(safe-area-inset-right)) 0 max(20px,env(safe-area-inset-left));background:linear-gradient(180deg,rgba(2,2,2,.9),rgba(2,2,2,.12));z-index:4}
+.aeris-flight-brand{font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#dfc184}
+.aeris-flight-brand small{display:block;font:700 7px/1.1 Inter,sans-serif;letter-spacing:.22em;color:#927c58;text-align:center;margin-top:2px}
+.aeris-exit-btn{border:1px solid rgba(211,172,98,.50);background:rgba(10,9,8,.74);color:#e4d7c4;border-radius:999px;padding:8px 13px;font-size:10px;font-weight:800;letter-spacing:.08em}
+.aeris-hud{position:absolute;inset:0;pointer-events:none;z-index:3;font-variant-numeric:tabular-nums}
+.aeris-hud-col{position:absolute;top:82px;display:flex;flex-direction:column;gap:8px}.aeris-hud-col.left{left:18px}.aeris-hud-col.right{right:18px;align-items:flex-end}
+.aeris-readout{min-width:108px;padding:8px 11px;border:1px solid rgba(190,146,76,.36);border-radius:10px;background:linear-gradient(145deg,rgba(12,11,9,.72),rgba(4,4,4,.48));backdrop-filter:blur(7px)}
+.aeris-readout label{display:block;font-size:7px;letter-spacing:.22em;color:#a5947b;margin-bottom:3px}.aeris-readout strong{font-size:20px;color:#f3eadb}.aeris-readout small{font-size:8px;color:#c4a66b;margin-left:3px}
+.aeris-route-hud{position:absolute;top:82px;left:50%;transform:translateX(-50%);text-align:center;width:min(48vw,510px)}
+.aeris-route-kicker{font-size:8px;letter-spacing:.24em;color:#c69c58}.aeris-route-title{font-family:Georgia,'Times New Roman',serif;font-size:19px;margin-top:4px}.aeris-route-sub{font-size:9px;color:#978d7e;margin-top:2px}
+.aeris-progress{height:3px;width:78%;margin:9px auto 0;background:rgba(255,255,255,.09);border-radius:999px;overflow:hidden}.aeris-progress div{height:100%;width:0;background:linear-gradient(90deg,#9c7137,#ead4a6)}
+.aeris-reticle{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:86px;height:86px;opacity:.68}.aeris-reticle:before,.aeris-reticle:after{content:"";position:absolute;background:rgba(235,211,164,.66)}.aeris-reticle:before{height:24px;width:1px;left:42px;top:31px}.aeris-reticle:after{width:56px;height:1px;left:15px;top:43px}.aeris-reticle i{position:absolute;inset:20px;border:1px solid rgba(235,211,164,.38);border-radius:50%}
+.aeris-approach{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);font-size:9px;letter-spacing:.20em;color:#d4b16c;opacity:0;transition:opacity .18s;text-shadow:0 0 16px #000}.aeris-approach.show{opacity:1}
+
+.aeris-touch{position:absolute;inset:0;z-index:5;pointer-events:none;display:none}.aeris-pad{position:absolute;bottom:max(24px,calc(env(safe-area-inset-bottom) + 12px));width:138px;height:138px;border-radius:50%;border:1px solid rgba(190,146,76,.17);background:radial-gradient(circle,rgba(190,146,76,.055),rgba(0,0,0,.10) 62%,transparent 64%);pointer-events:auto}.aeris-pad:first-child{left:max(18px,env(safe-area-inset-left))}.aeris-pad:nth-child(2){right:max(18px,env(safe-area-inset-right))}.aeris-pad:before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;border:1px solid rgba(224,194,137,.28);background:rgba(8,8,7,.58)}.aeris-knob{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;border:1px solid rgba(229,199,141,.48);background:radial-gradient(circle at 35% 30%,rgba(255,245,220,.18),rgba(190,146,76,.11) 48%,rgba(5,5,5,.72))}.aeris-pad span{position:absolute;left:50%;bottom:-16px;transform:translateX(-50%);white-space:nowrap;font-size:7px;letter-spacing:.16em;color:#847967}.aeris-desktop-hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font-size:8px;letter-spacing:.12em;color:#7e7568;z-index:4}
+
+/* Checkpoint arrival effect */
+.aeris-checkpoint-fx{position:absolute;inset:0;z-index:7;pointer-events:none;opacity:0}
+.aeris-checkpoint-fx.active{opacity:1}
+.aeris-fx-ring{position:absolute;left:50%;top:50%;width:90px;height:90px;border-radius:50%;border:1px solid rgba(239,209,151,.78);transform:translate(-50%,-50%) scale(.4);opacity:0}
+.aeris-checkpoint-fx.active .r1{animation:aerisRingBurst .68s ease-out 0s forwards}.aeris-checkpoint-fx.active .r2{animation:aerisRingBurst .68s ease-out .08s forwards}.aeris-checkpoint-fx.active .r3{animation:aerisRingBurst .68s ease-out .16s forwards}
+.aeris-fx-title{position:absolute;left:50%;top:50%;transform:translate(-50%,68px);font:700 10px/1 Inter,sans-serif;letter-spacing:.28em;color:#e6ca91;opacity:0;text-shadow:0 0 20px rgba(224,181,99,.55)}
+.aeris-checkpoint-fx.active .aeris-fx-title{animation:aerisFxTitle .7s ease-out .12s forwards}
+.aeris-flash{position:absolute;inset:0;z-index:6;pointer-events:none;background:radial-gradient(circle at center,rgba(255,244,217,.38),rgba(204,152,72,.13) 34%,transparent 66%);opacity:0}
+.aeris-flash.active{animation:aerisFlash .52s ease-out forwards}
+@keyframes aerisRingBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.35)}22%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(7.5)}}
+@keyframes aerisFxTitle{0%{opacity:0;letter-spacing:.42em}35%{opacity:1}100%{opacity:0;transform:translate(-50%,54px)}}
+@keyframes aerisFlash{0%{opacity:0}22%{opacity:1}100%{opacity:0}}
+
+/* quiz/result */
+.aeris-quiz-overlay,.aeris-result-overlay{position:absolute;inset:0;z-index:9;display:none;align-items:center;justify-content:center;background:rgba(2,2,2,.74);backdrop-filter:blur(8px);padding:22px}.aeris-quiz-overlay.show,.aeris-result-overlay.show{display:flex}
+.aeris-quiz-card,.aeris-result-card{width:min(92vw,700px);border:1px solid rgba(216,181,112,.60);border-radius:21px;background:linear-gradient(145deg,rgba(18,16,13,.98),rgba(7,7,6,.99));box-shadow:0 36px 100px rgba(0,0,0,.58);padding:28px}
+.aeris-quiz-meta{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.20em;color:#c7a25f}.aeris-question{font-family:Georgia,'Times New Roman',serif;font-size:27px;line-height:1.38;margin:18px 0 20px;color:#f2eadc}.aeris-question .ko{font-family:'Apple SD Gothic Neo','Pretendard',sans-serif;font-size:.82em;font-weight:600}
+.aeris-choice{display:block;width:100%;padding:12px 14px;margin:8px 0;text-align:left;border-radius:10px;border:1px solid rgba(190,146,76,.46);background:#11100e;color:#eee5d8;font-weight:650}.aeris-choice:hover{border-color:#d6b16b;background:#18140f}
+.aeris-ox-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.aeris-ox{padding:20px;border-radius:12px;border:1px solid rgba(190,146,76,.46);background:#100f0d;color:#efe7da;font-family:Georgia,'Times New Roman',serif;font-size:27px}
+.aeris-short-row{display:flex;gap:8px}.aeris-short-row input{flex:1;padding:13px;border-radius:10px;border:1px solid rgba(190,146,76,.5);background:#0e0d0b;color:#fff;outline:none}.aeris-short-row button{padding:0 20px;border-radius:10px;border:1px solid #dfc189;background:linear-gradient(135deg,#e5cea0,#b88440);font-weight:900;color:#17110a}
+.aeris-quiz-note{margin-top:13px;font-size:9.5px;color:#80776b}.aeris-result-card{text-align:center;max-width:540px}.aeris-result-kicker{font-size:9px;letter-spacing:.26em;color:#c49c5c}.aeris-result-card h2{font-family:Georgia,'Times New Roman',serif;font-size:38px;margin:9px 0;color:#f2eadc}.aeris-result-card p{color:#a59b8d;line-height:1.6}.aeris-result-stat{font-size:18px;color:#d5b16c;margin:16px}.aeris-return-btn{padding:12px 22px;border-radius:999px;border:1px solid #dec38d;background:#c49349;color:#17110a;font-weight:900}
+
+@media(pointer:coarse){.aeris-touch{display:block}.aeris-desktop-hint{display:none}}
+@media(max-width:700px){.aeris-hud-col{top:70px}.aeris-readout{min-width:92px;padding:7px 9px}.aeris-readout strong{font-size:17px}.aeris-route-hud{top:70px;width:50vw}.aeris-route-sub{display:none}.aeris-pad{width:118px;height:118px}.aeris-question{font-size:22px}.aeris-short-row{flex-direction:column}.aeris-short-row button{padding:12px}}
+</style>
+
+
+<style id="matiere-v1455-aeris-state-fix">
+#aerisQuizOverlay.show{
+  display:flex!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+#aerisFlightOverlay.aeris-fx-lock .aeris-touch{
+  pointer-events:none!important;
+}
+</style>
+
+
+<style id="matiere-v1456-mission-sfx">
+.aeris-mission-intro{
+  position:absolute;inset:0;z-index:8;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;
+}
+.aeris-mission-intro.active{animation:aerisMissionIntro .82s ease-out forwards}
+.aeris-mission-label{
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:42px;font-weight:700;letter-spacing:.04em;color:#f1e5cf;
+  text-shadow:0 0 28px rgba(211,166,85,.34),0 6px 24px rgba(0,0,0,.7);
+}
+.aeris-mission-sub{
+  margin-top:8px;font-size:10px;font-weight:800;letter-spacing:.30em;color:#cda965;
+}
+@keyframes aerisMissionIntro{
+  0%{opacity:0;transform:scale(.96)}
+  20%{opacity:1;transform:scale(1)}
+  68%{opacity:1}
+  100%{opacity:0;transform:scale(1.025)}
+}
+@media(max-width:700px){.aeris-mission-label{font-size:32px}}
+</style>
+
 </head>
 <body>
 
@@ -7761,15 +7866,50 @@ header.top{
 
     <!-- ===== GAME: WORD SEARCH ===== -->
     <div id="view-game">
-      <div class="section-header"><div class="section-kicker">GAME</div><h2>Vocabulary Games</h2><p>Practice vocabulary through Word Search and Hangman.</p><div class="section-rule"></div></div>
+      <div class="section-header"><div class="section-kicker">GAME</div><h2>Vocabulary Games</h2><p>Practice vocabulary through Word Search, Hangman, and AERIS Expedition.</p><div class="section-rule"></div></div>
       <div class="game-mode-row">
         <button class="gbtn mode-btn on" id="gameModeWS">WORD SEARCH</button>
         <button class="gbtn mode-btn" id="gameModeHang">HANGMAN</button>
+        <button class="gbtn mode-btn" id="gameModeAeris">AERIS EXPEDITION</button>
       </div>
       <div class="game-rules" id="gameRulesWS"><strong>WORD SEARCH · RULES</strong><ol><li>Choose one or more Days. Every additional selected Day adds 1% to the new final score.</li><li>Choose EASY, NORMAL, or HARD. Higher difficulty uses a larger grid, more target words, and more time.</li><li>Read the Korean meaning, then drag from the first letter to the last letter of the matching English word.</li><li>Correct finds give points and build a combo. Consecutive finds increase the combo reward.</li><li>Find all target words before time runs out to complete the game. A time-out still records the points earned.</li><li>The Day bonus is applied only to the new score being saved. Existing ranking scores remain unchanged.</li></ol></div>
       <div class="game-rules" id="gameRulesHang" style="display:none"><strong>HANGMAN · RULES</strong><ol><li>Choose one or more Days, then start. One word is randomly selected from the chosen Days.</li><li>Guess the English word one letter at a time with the on-screen keyboard.</li><li>Wrong guesses increase the mistake count. Solve the word before the mistake limit is reached.</li><li>After solving the English word, enter its Korean meaning and press Check.</li><li>Correct answers are scored by solving time, so a faster solution earns a higher basic score.</li><li>The selected-Day bonus is then applied: each additional selected Day adds 1% to the new score.</li></ol></div>
 
-      <div id="hangmanSetup" style="display:none;">
+      
+      <div class="game-rules" id="gameRulesAeris" style="display:none">
+        <strong>AERIS EXPEDITION · RULES</strong>
+        <ol>
+          <li>Choose your vocabulary book and select one or more Days / lessons.</li>
+          <li>Choose difficulty: CRUISE 10 checkpoints, VELOCITY 15, HYPER 20. Higher difficulty also increases flight speed.</li>
+          <li>Fly the spacecraft yourself and enter each golden checkpoint ring.</li>
+          <li>At every checkpoint, one random OX, short-answer, or five-choice vocabulary question appears.</li>
+          <li>A correct answer continues the expedition. One wrong answer, or missing a checkpoint, ends the mission.</li>
+          <li>AERIS currently runs as a standalone game mode and does not change existing Word Search / Hangman ranking records.</li>
+        </ol>
+      </div>
+
+      <div id="aerisSetup" style="display:none;">
+        <div class="panel aeris-setup-panel">
+          <div class="aeris-setup-head">
+            <div class="aeris-setup-kicker">MATIÈRE · DEEP SPACE VOCABULARY EXPEDITION</div>
+            <div class="aeris-setup-title">AERIS <span>EXPEDITION</span></div>
+            <div class="aeris-setup-desc">직접 우주선을 조종해 체크포인트에 진입하고, 단어 퀴즈를 통과하며 항로를 완주하세요.</div>
+          </div>
+
+          <div class="aeris-setup-label">DIFFICULTY</div>
+          <div class="aeris-diff-row" id="aerisDiffRow">
+            <button type="button" class="gbtn aeris-diff on" data-aeris-diff="easy"><b>하 · CRUISE</b><small>10 words · 적당히 빠르게</small></button>
+            <button type="button" class="gbtn aeris-diff" data-aeris-diff="normal"><b>중 · VELOCITY</b><small>15 words · 꽤 빠르게</small></button>
+            <button type="button" class="gbtn aeris-diff" data-aeris-diff="hard"><b>상 · HYPER</b><small>20 words · 많이 빠르게</small></button>
+          </div>
+
+          <div class="day-picker" id="dayPickerAeris"></div>
+          <p class="aeris-count" id="aerisCountLabel">0 words available</p>
+          <button type="button" class="gbtn ok-btn aeris-launch" id="aerisStartBtn">START EXPEDITION →</button>
+        </div>
+      </div>
+
+<div id="hangmanSetup" style="display:none;">
         <div class="panel">
           <div style="text-align:center;margin-bottom:14px;">
             <div style="font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:22px;color:var(--ink);">HANGMAN</div>
@@ -7869,6 +8009,73 @@ header.top{
         </div>
       </div>
 
+    </div>
+
+    
+    <div id="aerisFlightOverlay" class="aeris-flight-overlay" aria-hidden="true">
+      <canvas id="aerisCanvas"></canvas>
+      <div class="aeris-vignette"></div>
+      
+      <div id="aerisMissionIntro" class="aeris-mission-intro">
+        <div class="aeris-mission-label" id="aerisMissionLabel">MISSION #1</div>
+        <div class="aeris-mission-sub" id="aerisMissionSub">VOCABULARY CHECK</div>
+      </div>
+      <div id="aerisCheckpointFx" class="aeris-checkpoint-fx">
+        <div class="aeris-fx-ring r1"></div>
+        <div class="aeris-fx-ring r2"></div>
+        <div class="aeris-fx-ring r3"></div>
+        <div class="aeris-fx-title">CHECKPOINT LOCKED</div>
+      </div>
+      <div id="aerisFlash" class="aeris-flash"></div>
+
+      <div class="aeris-flight-top">
+        <div class="aeris-flight-brand">Matière<small>— AERIS EXPEDITION —</small></div>
+        <button type="button" id="aerisExitBtn" class="aeris-exit-btn">EXIT</button>
+      </div>
+
+      <div class="aeris-hud">
+        <div class="aeris-hud-col left">
+          <div class="aeris-readout"><label>AIRSPEED</label><strong id="aerisSpeedHud">000</strong><small>KT</small></div>
+          <div class="aeris-readout"><label>ALTITUDE</label><strong id="aerisAltHud">0000</strong><small>M</small></div>
+        </div>
+        <div class="aeris-hud-col right">
+          <div class="aeris-readout"><label>THROTTLE</label><strong id="aerisThrHud">00</strong><small>%</small></div>
+          <div class="aeris-readout"><label>CHECKPOINT</label><strong id="aerisCpHud">0/0</strong></div>
+        </div>
+        <div class="aeris-route-hud">
+          <div class="aeris-route-kicker">DEEP SPACE ROUTE</div>
+          <div class="aeris-route-title">AURELIA CORRIDOR</div>
+          <div class="aeris-route-sub" id="aerisRouteSub">황금 체크포인트 중앙으로 직접 진입하세요.</div>
+          <div class="aeris-progress"><div id="aerisProgressFill"></div></div>
+        </div>
+        <div class="aeris-reticle"><i></i></div>
+        <div id="aerisApproach" class="aeris-approach">CHECKPOINT APPROACH</div>
+      </div>
+
+      <div class="aeris-touch">
+        <div id="aerisFlightPad" class="aeris-pad"><div id="aerisFlightKnob" class="aeris-knob"></div><span>ROLL / PITCH</span></div>
+        <div id="aerisThrottlePad" class="aeris-pad"><div id="aerisThrottleKnob" class="aeris-knob"></div><span>THROTTLE</span></div>
+      </div>
+      <div class="aeris-desktop-hint">WASD / ARROWS · SHIFT / CTRL</div>
+
+      <div id="aerisQuizOverlay" class="aeris-quiz-overlay">
+        <div class="aeris-quiz-card">
+          <div class="aeris-quiz-meta"><span id="aerisQuizType">CHECKPOINT QUIZ</span><span id="aerisQuizCount">1 / 10</span></div>
+          <div id="aerisQuestion" class="aeris-question"></div>
+          <div id="aerisAnswerArea"></div>
+          <div class="aeris-quiz-note">정답이면 다음 항로로 이동합니다. 오답이면 탐사가 종료됩니다.</div>
+        </div>
+      </div>
+
+      <div id="aerisResultOverlay" class="aeris-result-overlay">
+        <div class="aeris-result-card">
+          <div id="aerisResultKicker" class="aeris-result-kicker">EXPEDITION STATUS</div>
+          <h2 id="aerisResultTitle">MISSION COMPLETE</h2>
+          <p id="aerisResultText"></p>
+          <div id="aerisResultStat" class="aeris-result-stat"></div>
+          <button type="button" id="aerisReturnBtn" class="aeris-return-btn">RETURN TO GAME MENU</button>
+        </div>
+      </div>
     </div>
 
     <div class="quiz-exit-overlay" id="gameExitConfirm" role="dialog" aria-modal="true" aria-labelledby="gameExitTitle" style="display:none;">
@@ -12095,6 +12302,7 @@ function wsCheckSelection(path){
 }
 function wsMarkFound(pl, cellsEls){
   wsFoundSet.add(pl.word);
+  try{window.matiereSfx?.wordFound()}catch(_){}
   cellsEls.forEach(el=>{ el.classList.remove("ws-active"); el.classList.add("ws-found"); });
   const item = document.getElementById("ws-word-"+pl.idx);
   if(item){
@@ -12332,7 +12540,10 @@ function guessHang(c){
   hangGuessed.add(c);
   const buttons=[...document.querySelectorAll(".hang-key")];const btn=buttons.find(b=>b.textContent===c);
   if(btn) btn.disabled=true;
-  if(hangWord.word.toUpperCase().replace(/[^A-Z]/g,"").includes(c)){btn&&btn.classList.add("hit");}
+  if(hangWord.word.toUpperCase().replace(/[^A-Z]/g,"").includes(c)){
+    btn&&btn.classList.add("hit");
+    try{window.matiereSfx?.letterCorrect()}catch(_){}
+  }
   else{hangMisses.push(c);btn&&btn.classList.add("miss");}
   hangDisplayWord();
   document.getElementById("hangmanStage").classList.add("miss-"+hangMisses.length);
@@ -15452,6 +15663,478 @@ hydrateCardStages();
   height:38.8%!important;
 }
 </style>
+
+
+<script id="matiere-v1454-aeris-js">
+(()=>{
+"use strict";
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+
+const selectedDaysAeris=new Set();
+let aerisDifficulty="easy";
+const aerisLevels={
+  easy:{count:10,baseSpeed:190,maxSpeed:285,gateSpacing:1900},
+  normal:{count:15,baseSpeed:245,maxSpeed:350,gateSpacing:1780},
+  hard:{count:20,baseSpeed:305,maxSpeed:430,gateSpacing:1650}
+};
+const dayPickerAeris=$("#dayPickerAeris");
+const aerisOverlay=$("#aerisFlightOverlay");
+const aerisCanvas=$("#aerisCanvas");
+const actx=aerisCanvas.getContext("2d",{alpha:false});
+let AW=1,AH=1,ADPR=1,aLast=performance.now();
+let aerisRunning=false,aerisPaused=true,aerisQuizOpen=false,aerisCheckpointTransition=false;
+let aerisPhase="IDLE"; // IDLE | FLYING | CHECKPOINT_FX | QUIZ | RESULT
+let aerisPendingQuestionIndex=-1;
+let aerisQuizFallbackTimer=null;
+let aerisSession={count:10,current:0,answered:0,questions:[]};
+const acraft={x:0,y:0,vx:0,vy:0,roll:0,pitch:0,yaw:0,speed:190,throttle:.63,altitude:1400,distance:0};
+const ainput={roll:0,pitch:0,throttle:0},akeys=new Set();
+let agates=[],astars=[],adust=[],aasteroids=[],anebulae=[],cameraShake=0;
+
+function aclamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function alerp(a,b,t){return a+(b-a)*t}
+function arnd(a,b){return a+Math.random()*(b-a)}
+function ashuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function aesc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function anorm(s){return String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+
+function aerisPool(){
+  return poolForPicker(dayPickerAeris,selectedDaysAeris);
+}
+function aerisRefreshSetup(){
+  refreshDayPickerUI(dayPickerAeris,selectedDaysAeris);
+  const pool=aerisPool();
+  const need=aerisLevels[aerisDifficulty].count;
+  $("#aerisCountLabel").textContent=`${pool.length} words available · ${need} required`;
+  $("#aerisStartBtn").disabled=pool.length<need;
+}
+if(dayPickerAeris){
+  buildDayPicker(dayPickerAeris,selectedDaysAeris,aerisRefreshSetup);
+  refreshDayPickerUI(dayPickerAeris,selectedDaysAeris);
+  aerisRefreshSetup();
+  $("#aerisSetup").addEventListener("click",()=>setTimeout(aerisRefreshSetup,0));
+}
+$$("[data-aeris-diff]").forEach(btn=>btn.addEventListener("click",()=>{
+  aerisDifficulty=btn.dataset.aerisDiff;
+  $$("[data-aeris-diff]").forEach(x=>x.classList.toggle("on",x===btn));
+  aerisRefreshSetup();
+}));
+
+function hideAllGameModes(){
+  ["wsSetup","wsPlay","wsResult","hangmanSetup","hangmanPlay","hangmanResult","aerisSetup"].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display="none";
+  });
+  ["gameRulesWS","gameRulesHang","gameRulesAeris"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display="none"});
+  ["gameModeWS","gameModeHang","gameModeAeris"].forEach(id=>document.getElementById(id)?.classList.remove("on"));
+}
+$("#gameModeAeris")?.addEventListener("click",()=>{
+  try{stopHangTimer()}catch(_){}
+  try{wsStopTimer()}catch(_){}
+  hideAllGameModes();
+  $("#gameModeAeris").classList.add("on");
+  $("#gameRulesAeris").style.display="block";
+  $("#aerisSetup").style.display="block";
+  setTimeout(aerisRefreshSetup,0);
+});
+$("#gameModeWS")?.addEventListener("click",()=>{$("#aerisSetup").style.display="none";$("#gameRulesAeris").style.display="none";$("#gameModeAeris").classList.remove("on")});
+$("#gameModeHang")?.addEventListener("click",()=>{$("#aerisSetup").style.display="none";$("#gameRulesAeris").style.display="none";$("#gameModeAeris").classList.remove("on")});
+
+/* Resize / scene */
+function aerisResize(){
+  ADPR=Math.min(devicePixelRatio||1,2);AW=innerWidth;AH=innerHeight;
+  aerisCanvas.width=Math.floor(AW*ADPR);aerisCanvas.height=Math.floor(AH*ADPR);
+  aerisCanvas.style.width=AW+"px";aerisCanvas.style.height=AH+"px";
+  actx.setTransform(ADPR,0,0,ADPR,0,0);
+  aerisSeedSpace();
+}
+function aerisSeedSpace(){
+  astars=Array.from({length:280},()=>({x:Math.random(),y:Math.random(),z:arnd(.15,1),a:arnd(.18,.88),h:arnd(34,48)}));
+  adust=Array.from({length:80},()=>({x:arnd(-1,1),y:arnd(-1,1),z:arnd(.1,1)}));
+  aasteroids=Array.from({length:24},()=>({x:arnd(-1.8,1.8),y:arnd(-.9,.8),z:arnd(1200,9000),r:arnd(10,42)}));
+  anebulae=Array.from({length:4},()=>({x:arnd(.1,.9),y:arnd(.1,.7),r:arnd(.14,.32),a:arnd(.025,.065)}));
+}
+function aerisBuildGates(){
+  const cfg=aerisLevels[aerisDifficulty];agates=[];
+  for(let i=0;i<cfg.count;i++){
+    const spread=aerisDifficulty==="hard"?.72:aerisDifficulty==="normal"?.64:.56;
+    agates.push({z:1500+i*cfg.gateSpacing,x:arnd(-spread,spread),y:arnd(-.28,.24),state:"future"});
+  }
+}
+function aerisGenerateQuestions(){
+  const pool=ashuffle(aerisPool().slice());
+  const need=aerisLevels[aerisDifficulty].count;
+  const picked=pool.slice(0,need);
+  return picked.map(item=>{
+    const type=["ox","short","mc"][Math.floor(Math.random()*3)];
+    if(type==="ox"){
+      const truthful=Math.random()<.5;
+      let shown=item.meaning;
+      if(!truthful){
+        const others=pool.filter(x=>x.word!==item.word);
+        shown=(others[Math.floor(Math.random()*others.length)]||item).meaning;
+      }
+      return {type,item,truthful,shown};
+    }
+    if(type==="short")return {type,item};
+    const others=ashuffle(pool.filter(x=>x.word!==item.word&&x.meaning!==item.meaning)).slice(0,4);
+    return {type,item,choices:ashuffle([item,...others]).map(x=>x.meaning)};
+  });
+}
+function aerisStart(){
+  const cfg=aerisLevels[aerisDifficulty],pool=aerisPool();
+  if(pool.length<cfg.count){alert(`최소 ${cfg.count}개의 단어가 필요합니다.`);return}
+  const questions=aerisGenerateQuestions();
+  aerisSession={count:cfg.count,current:0,answered:0,questions};
+  Object.assign(acraft,{x:0,y:0,vx:0,vy:0,roll:0,pitch:0,yaw:0,speed:cfg.baseSpeed,throttle:.63,altitude:1400,distance:0});
+  aerisBuildGates();
+  aerisOverlay.classList.add("open");aerisOverlay.setAttribute("aria-hidden","false");
+  aerisRunning=true;aerisPaused=false;aerisQuizOpen=false;aerisCheckpointTransition=false;
+  aerisPhase="FLYING";aerisPendingQuestionIndex=-1;
+  if(aerisQuizFallbackTimer){clearTimeout(aerisQuizFallbackTimer);aerisQuizFallbackTimer=null}
+  $("#aerisQuizOverlay").classList.remove("show");$("#aerisResultOverlay").classList.remove("show");
+  aerisResize();aLast=performance.now();aerisUpdateHud();
+}
+$("#aerisStartBtn")?.addEventListener("click",aerisStart);
+
+function aerisExit(){
+  aerisRunning=false;aerisPaused=true;aerisQuizOpen=false;aerisCheckpointTransition=false;
+  aerisPhase="IDLE";aerisPendingQuestionIndex=-1;
+  if(aerisQuizFallbackTimer){clearTimeout(aerisQuizFallbackTimer);aerisQuizFallbackTimer=null}
+  aerisOverlay.classList.remove("open");aerisOverlay.setAttribute("aria-hidden","true");
+  $("#aerisQuizOverlay").classList.remove("show");$("#aerisResultOverlay").classList.remove("show");
+  setTimeout(aerisRefreshSetup,0);
+}
+$("#aerisExitBtn")?.addEventListener("click",()=>{if(confirm("AERIS 탐사를 종료하시겠습니까?"))aerisExit()});
+$("#aerisReturnBtn")?.addEventListener("click",aerisExit);
+
+/* checkpoint effect */
+function aerisEnsureQuizVisible(){
+  if(aerisPhase!=="CHECKPOINT_FX" && aerisPhase!=="QUIZ")return;
+  if(aerisSession.current>=aerisSession.count)return;
+  const overlay=$("#aerisQuizOverlay");
+  if(!overlay.classList.contains("show")){
+    aerisOpenQuiz(true);
+  }
+}
+
+function aerisCheckpointFxThenQuiz(){
+  if(aerisPhase!=="FLYING" || aerisCheckpointTransition || aerisQuizOpen)return;
+
+  aerisCheckpointTransition=true;
+  aerisPaused=true;
+  aerisPhase="CHECKPOINT_FX";
+  aerisPendingQuestionIndex=aerisSession.current;
+
+  $("#aerisApproach").classList.remove("show");
+  const fx=$("#aerisCheckpointFx"),flash=$("#aerisFlash");
+  try{window.matiereSfx?.checkpoint()}catch(_){}
+  fx.classList.remove("active");
+  flash.classList.remove("active");
+  void fx.offsetWidth;
+  fx.classList.add("active");
+
+  setTimeout(()=>{
+    if(aerisPhase==="CHECKPOINT_FX")flash.classList.add("active");
+  },150);
+
+  // Primary transition after the visual effect.
+  setTimeout(()=>{
+    if(aerisPhase!=="CHECKPOINT_FX")return;
+    fx.classList.remove("active");
+    flash.classList.remove("active");
+
+    const mission=$("#aerisMissionIntro");
+    const missionNumber=aerisSession.current+1;
+    $("#aerisMissionLabel").textContent=missionNumber===aerisSession.count?"FINAL MISSION":`MISSION #${missionNumber}`;
+    $("#aerisMissionSub").textContent="VOCABULARY CHECK";
+    mission.classList.remove("active");
+    void mission.offsetWidth;
+    mission.classList.add("active");
+    try{window.matiereSfx?.mission()}catch(_){}
+
+    setTimeout(()=>{
+      mission.classList.remove("active");
+      aerisCheckpointTransition=false;
+      aerisOpenQuiz(false);
+    },760);
+  },620);
+
+  // Safari/iPad fallback: if the animation/timer path ever desyncs,
+  // force the quiz open after a short grace period.
+  if(aerisQuizFallbackTimer)clearTimeout(aerisQuizFallbackTimer);
+  aerisQuizFallbackTimer=setTimeout(()=>{
+    aerisEnsureQuizVisible();
+  },1700);
+}
+
+function aerisOpenQuiz(force){
+  if(aerisSession.current>=aerisSession.count)return;
+  if(aerisQuizOpen && !force)return;
+
+  const qIndex=aerisPendingQuestionIndex>=0?aerisPendingQuestionIndex:aerisSession.current;
+  const q=aerisSession.questions[qIndex];
+  if(!q)return;
+
+  aerisQuizOpen=true;
+  aerisPaused=true;
+  aerisCheckpointTransition=false;
+  aerisPhase="QUIZ";
+  acraft.vx*=.12;
+  acraft.vy*=.12;
+
+  const overlay=$("#aerisQuizOverlay");
+  overlay.classList.add("show");
+
+  // Render after overlay class is applied, then verify visibility one frame later.
+  aerisRenderQuiz(q);
+  requestAnimationFrame(()=>{
+    if(aerisPhase==="QUIZ" && !overlay.classList.contains("show")){
+      overlay.classList.add("show");
+    }
+  });
+
+  if(aerisQuizFallbackTimer){
+    clearTimeout(aerisQuizFallbackTimer);
+    aerisQuizFallbackTimer=null;
+  }
+}
+function aerisRenderQuiz(q){
+  $("#aerisQuizCount").textContent=`${aerisSession.current+1} / ${aerisSession.count}`;
+  const area=$("#aerisAnswerArea");area.innerHTML="";
+  if(q.type==="ox"){
+    $("#aerisQuizType").textContent="CHECKPOINT · OX";
+    $("#aerisQuestion").innerHTML=`<b>${aesc(q.item.word)}</b>의 뜻은<br><span class="ko">“${aesc(q.shown)}”</span>이다.`;
+    const row=document.createElement("div");row.className="aeris-ox-row";
+    [["O",true],["X",false]].forEach(([t,v])=>{const b=document.createElement("button");b.className="aeris-ox";b.textContent=t;b.onclick=()=>aerisJudge(v===q.truthful,q);row.appendChild(b)});
+    area.appendChild(row);
+  }else if(q.type==="short"){
+    $("#aerisQuizType").textContent="CHECKPOINT · SHORT ANSWER";
+    $("#aerisQuestion").innerHTML=`<span class="ko">${aesc(q.item.meaning)}</span><br>에 해당하는 영어 단어를 입력하세요.`;
+    area.innerHTML='<div class="aeris-short-row"><input id="aerisShortInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="English word"><button id="aerisShortSubmit">SUBMIT</button></div>';
+    const submit=()=>aerisJudge(anorm($("#aerisShortInput").value)===anorm(q.item.word),q);
+    $("#aerisShortSubmit").onclick=submit;$("#aerisShortInput").onkeydown=e=>{if(e.key==="Enter")submit()};setTimeout(()=>$("#aerisShortInput")?.focus(),80);
+  }else{
+    $("#aerisQuizType").textContent="CHECKPOINT · 5 CHOICE";
+    $("#aerisQuestion").innerHTML=`<b>${aesc(q.item.word)}</b>의 뜻으로 가장 적절한 것은?`;
+    q.choices.forEach((c,i)=>{const b=document.createElement("button");b.className="aeris-choice";b.textContent=`${i+1}. ${c}`;b.onclick=()=>aerisJudge(c===q.item.meaning,q);area.appendChild(b)});
+  }
+}
+function aerisJudge(ok,q){
+  if(aerisPhase!=="QUIZ")return;
+
+  if(ok){
+    try{window.matiereSfx?.correct()}catch(_){}
+    aerisSession.answered++;
+    aerisSession.current++;
+    aerisPendingQuestionIndex=-1;
+
+    $("#aerisQuizOverlay").classList.remove("show");
+    aerisQuizOpen=false;
+
+    if(aerisSession.current>=aerisSession.count){
+      aerisFinish(true);
+      return;
+    }
+
+    $("#aerisRouteSub").textContent="정답 · 다음 항로를 탐색합니다.";
+    $("#aerisFlash").classList.remove("active");
+    void $("#aerisFlash").offsetWidth;
+    $("#aerisFlash").classList.add("active");
+    setTimeout(()=>$("#aerisFlash").classList.remove("active"),520);
+
+    aerisPaused=false;
+    aerisPhase="FLYING";
+    acraft.speed=Math.max(acraft.speed,aerisLevels[aerisDifficulty].baseSpeed*.87);
+  }else{
+    try{window.matiereSfx?.fail()}catch(_){}
+    aerisPendingQuestionIndex=-1;
+    $("#aerisQuizOverlay").classList.remove("show");
+    aerisQuizOpen=false;
+    aerisFinish(false,q);
+  }
+}
+function aerisFinish(success,q){
+  aerisRunning=false;aerisPaused=true;
+  aerisPhase="RESULT";
+  aerisCheckpointTransition=false;
+  if(aerisQuizFallbackTimer){clearTimeout(aerisQuizFallbackTimer);aerisQuizFallbackTimer=null}
+  $("#aerisResultOverlay").classList.add("show");
+  if(success){
+    $("#aerisResultKicker").textContent="AERIS · ROUTE COMPLETE";$("#aerisResultTitle").textContent="MISSION COMPLETE";
+    $("#aerisResultText").textContent="모든 체크포인트를 통과하고 어휘 탐사를 완료했습니다.";
+  }else{
+    $("#aerisResultKicker").textContent="AERIS · EXPEDITION FAILED";$("#aerisResultTitle").textContent="MISSION FAILED";
+    $("#aerisResultText").innerHTML=q?`정답은 <strong>${aesc(q.item.word)}</strong> — ${aesc(q.item.meaning)} 입니다.`:"체크포인트 진입에 실패했습니다.";
+  }
+  $("#aerisResultStat").textContent=`${aerisSession.answered} / ${aerisSession.count} CHECKPOINTS CLEARED`;
+}
+
+/* flight simulation */
+function aerisUpdate(dt){
+  if(!aerisRunning||aerisPaused)return;
+  const cfg=aerisLevels[aerisDifficulty];
+  let r=0,p=0,t=0;
+  if(akeys.has("ArrowLeft")||akeys.has("KeyA"))r=-1;if(akeys.has("ArrowRight")||akeys.has("KeyD"))r=1;
+  if(akeys.has("ArrowUp")||akeys.has("KeyW"))p=-1;if(akeys.has("ArrowDown")||akeys.has("KeyS"))p=1;
+  if(akeys.has("ShiftLeft")||akeys.has("ShiftRight"))t=1;if(akeys.has("ControlLeft")||akeys.has("ControlRight"))t=-1;
+  if(Math.abs(ainput.roll)>.03)r=ainput.roll;if(Math.abs(ainput.pitch)>.03)p=ainput.pitch;if(Math.abs(ainput.throttle)>.03)t=ainput.throttle;
+  acraft.roll=alerp(acraft.roll,r,1-Math.pow(.0017,dt));acraft.pitch=alerp(acraft.pitch,p,1-Math.pow(.0017,dt));acraft.yaw=alerp(acraft.yaw,acraft.roll*.45,1-Math.pow(.04,dt));
+  acraft.throttle=aclamp(acraft.throttle+t*dt*.23,.48,1);
+  acraft.speed=alerp(acraft.speed,alerp(cfg.baseSpeed,cfg.maxSpeed,acraft.throttle),1-Math.pow(.10,dt));
+  acraft.vx+=(acraft.roll*.54+acraft.yaw*.20)*dt;acraft.vy+=acraft.pitch*.46*dt;acraft.vx*=Math.pow(.38,dt);acraft.vy*=Math.pow(.40,dt);
+  acraft.x=aclamp(acraft.x+acraft.vx*dt,-1.25,1.25);acraft.y=aclamp(acraft.y+acraft.vy*dt,-.82,.72);
+  acraft.altitude=aclamp(1400-acraft.y*780,520,2350);acraft.distance+=acraft.speed*.514444*dt;
+  const g=agates[aerisSession.current];
+  if(g && aerisPhase==="FLYING"){
+    const rel=g.z-acraft.distance;
+    $("#aerisApproach").classList.toggle("show",rel<950&&rel>120);
+
+    if(rel<115 && g.state==="future"){
+      // Use the same projection as the rendered gate, so visual alignment and hit detection agree.
+      const gp=aproj(g.x,g.y,Math.max(70,rel));
+      const gateR=aclamp(gp.s*220,10,210);
+
+      // Ship screen center uses the same values as aerisDrawShip().
+      const shipX=AW*.5+acraft.x*AW*.12;
+      const shipY=AH*.72+acraft.y*AH*.055;
+
+      // The drawn gate is elliptical (height = 0.60 * radius).
+      // Give a small margin so entering the visible ring feels fair on touch devices.
+      const dx=(shipX-gp.x)/(gateR*.78);
+      const dy=(shipY-gp.y)/(gateR*.60*.78);
+      const inside=(dx*dx+dy*dy)<=1;
+
+      if(inside){
+        g.state="hit";
+        aerisCheckpointFxThenQuiz();
+      }else if(rel<20){
+        // Only fail after the craft has genuinely passed the gate plane.
+        g.state="missed";
+        try{window.matiereSfx?.fail()}catch(_){}
+        aerisFinish(false,null);
+      }
+    }
+  }
+  cameraShake=alerp(cameraShake,Math.abs(acraft.roll)*.48+(acraft.speed/cfg.maxSpeed)*.16,1-Math.pow(.08,dt));aerisUpdateHud();
+}
+function aerisUpdateHud(){
+  $("#aerisSpeedHud").textContent=String(Math.round(acraft.speed)).padStart(3,"0");$("#aerisAltHud").textContent=String(Math.round(acraft.altitude)).padStart(4,"0");
+  $("#aerisThrHud").textContent=String(Math.round(acraft.throttle*100)).padStart(2,"0");$("#aerisCpHud").textContent=`${aerisSession.answered}/${aerisSession.count}`;
+  $("#aerisProgressFill").style.width=(aerisSession.count?aerisSession.answered/aerisSession.count*100:0)+"%";
+}
+
+/* rendering */
+function aproj(x,y,z){const f=520/Math.max(70,z);return{x:AW*.5+(x-acraft.x*.42)*f*AW*.70,y:AH*.47+(y-acraft.y*.38)*f*AH*.68,s:f}}
+function aerisDrawSpace(){
+  let g=actx.createLinearGradient(0,0,0,AH);g.addColorStop(0,"#020203");g.addColorStop(.52,"#060607");g.addColorStop(1,"#0b0806");actx.fillStyle=g;actx.fillRect(0,0,AW,AH);
+  for(const n of anebulae){const rg=actx.createRadialGradient(n.x*AW,n.y*AH,0,n.x*AW,n.y*AH,n.r*Math.min(AW,AH));rg.addColorStop(0,`rgba(146,98,45,${n.a})`);rg.addColorStop(.45,`rgba(65,49,43,${n.a*.55})`);rg.addColorStop(1,"rgba(0,0,0,0)");actx.fillStyle=rg;actx.fillRect(0,0,AW,AH)}
+  const px=AW*.78-acraft.x*18,py=AH*.24+acraft.y*9,pr=Math.min(AW,AH)*.29;
+  const pg=actx.createRadialGradient(px-pr*.34,py-pr*.30,pr*.04,px,py,pr);pg.addColorStop(0,"#d6c5a9");pg.addColorStop(.12,"#a18a66");pg.addColorStop(.38,"#4c4030");pg.addColorStop(.72,"#17130f");pg.addColorStop(1,"#040404");
+  actx.globalAlpha=.62;actx.fillStyle=pg;actx.beginPath();actx.arc(px,py,pr,0,Math.PI*2);actx.fill();actx.globalAlpha=1;
+  actx.save();actx.translate(px,py);actx.rotate(-.2);actx.strokeStyle="rgba(211,169,93,.20)";actx.lineWidth=1;[1.45,1.65].forEach(k=>{actx.beginPath();actx.ellipse(0,0,pr*k,pr*.34*k,0,0,Math.PI*2);actx.stroke()});actx.restore();
+  actx.save();actx.translate(AW/2,AH/2);actx.rotate(-acraft.roll*.025);actx.translate(-AW/2,-AH/2);
+  for(const s of astars){let x=(s.x*AW-acraft.x*31*s.z+acraft.yaw*18*s.z+AW)%AW,y=(s.y*AH+acraft.y*18*s.z+AH)%AH;actx.fillStyle=`hsla(${s.h},55%,82%,${s.a})`;const r=.4+s.z*1.25;actx.fillRect(x,y,r,r)}actx.restore();
+  for(const a of aasteroids){let rel=((a.z-acraft.distance)%9000+9000)%9000+300;const p=aproj(a.x,a.y,rel),r=aclamp(a.r*p.s*.18,1,22);actx.fillStyle=`rgba(55,49,40,${aclamp(1-rel/9200,.1,.7)})`;actx.beginPath();actx.arc(p.x,p.y,r,0,Math.PI*2);actx.fill()}
+  const intensity=aclamp((acraft.speed-150)/250,0,1);if(intensity>.02){actx.strokeStyle=`rgba(215,181,116,${.08+.16*intensity})`;actx.lineWidth=.7+intensity;for(const d of adust){const sx=AW*.5+d.x*AW*.48,sy=AH*.5+d.y*AH*.46,len=(8+35*intensity)*d.z;actx.beginPath();actx.moveTo(sx,sy);actx.lineTo(sx+d.x*len,sy+d.y*len);actx.stroke()}}
+}
+function aerisDrawGate(g){
+  const rel=g.z-acraft.distance;if(rel<40||rel>7000)return;const p=aproj(g.x,g.y,rel),r=aclamp(p.s*220,10,210),alpha=aclamp(1-rel/7200,.10,.96);
+  actx.save();actx.globalAlpha=alpha;actx.translate(p.x,p.y);actx.rotate(-acraft.roll*.12);const gr=actx.createLinearGradient(-r,0,r,0);gr.addColorStop(0,"rgba(105,73,31,.30)");gr.addColorStop(.5,"rgba(243,213,151,.96)");gr.addColorStop(1,"rgba(105,73,31,.30)");
+  actx.strokeStyle=gr;actx.lineWidth=Math.max(1.1,r*.038);actx.shadowColor="rgba(221,173,89,.68)";actx.shadowBlur=Math.min(26,r*.16);actx.beginPath();actx.ellipse(0,0,r,r*.60,0,0,Math.PI*2);actx.stroke();actx.shadowBlur=0;
+  actx.strokeStyle="rgba(238,213,163,.56)";actx.lineWidth=1;for(let i=0;i<8;i++){const a=i*Math.PI/4,rx=Math.cos(a)*r,ry=Math.sin(a)*r*.60;actx.beginPath();actx.moveTo(rx*.90,ry*.90);actx.lineTo(rx,ry);actx.stroke()}
+  if(g===agates[aerisSession.current]){actx.fillStyle="rgba(235,207,150,.82)";actx.font=`600 ${Math.max(8,r*.10)}px Inter`;actx.textAlign="center";actx.fillText("NEXT CHECKPOINT",0,-r*.74)}actx.restore();
+}
+function aerisDrawShip(){
+  const cx=AW*.5+acraft.x*AW*.12,cy=AH*.72+acraft.y*AH*.055,sc=aclamp(AW/1200,.76,1.18),bank=acraft.roll*.48;
+  actx.save();actx.translate(cx+arnd(-cameraShake,cameraShake),cy+arnd(-cameraShake*.45,cameraShake*.45));actx.rotate(bank);actx.scale(sc,sc);
+  actx.fillStyle="rgba(0,0,0,.38)";actx.beginPath();actx.ellipse(0,45,94,18,0,0,Math.PI*2);actx.fill();
+  const eg=actx.createRadialGradient(0,62,1,0,62,34);eg.addColorStop(0,"rgba(255,244,214,.95)");eg.addColorStop(.16,"rgba(222,166,76,.76)");eg.addColorStop(1,"rgba(222,166,76,0)");actx.fillStyle=eg;actx.beginPath();actx.arc(0,62,34,0,Math.PI*2);actx.fill();
+  let wg=actx.createLinearGradient(-120,0,120,0);wg.addColorStop(0,"#4e4b46");wg.addColorStop(.36,"#bfb8aa");wg.addColorStop(.50,"#f1eadf");wg.addColorStop(.64,"#bfb8aa");wg.addColorStop(1,"#4e4b46");actx.fillStyle=wg;
+  actx.beginPath();actx.moveTo(-12,-16);actx.lineTo(-126,32);actx.lineTo(-58,45);actx.lineTo(-13,24);actx.lineTo(13,24);actx.lineTo(58,45);actx.lineTo(126,32);actx.lineTo(12,-16);actx.closePath();actx.fill();
+  const fg=actx.createLinearGradient(-23,0,23,0);fg.addColorStop(0,"#5c5953");fg.addColorStop(.34,"#d6cfc2");fg.addColorStop(.52,"#f6eee1");fg.addColorStop(.72,"#aaa294");fg.addColorStop(1,"#494641");actx.fillStyle=fg;
+  actx.beginPath();actx.moveTo(0,-72);actx.bezierCurveTo(24,-46,27,10,14,66);actx.quadraticCurveTo(0,90,-14,66);actx.bezierCurveTo(-27,10,-24,-46,0,-72);actx.closePath();actx.fill();
+  actx.fillStyle="#aaa397";actx.beginPath();actx.moveTo(-8,49);actx.lineTo(-50,70);actx.lineTo(-12,67);actx.lineTo(0,57);actx.lineTo(12,67);actx.lineTo(50,70);actx.lineTo(8,49);actx.closePath();actx.fill();
+  actx.fillStyle="#121515";actx.beginPath();actx.ellipse(0,-30,12,25,0,0,Math.PI*2);actx.fill();actx.strokeStyle="rgba(219,181,111,.78)";actx.lineWidth=1.2;actx.stroke();actx.strokeStyle="#c79b52";actx.lineWidth=2;actx.beginPath();actx.moveTo(0,-68);actx.lineTo(0,62);actx.stroke();actx.restore();
+}
+function aerisFrame(now){const dt=Math.min(.035,(now-aLast)/1000);aLast=now;if(aerisOverlay.classList.contains("open")){aerisUpdate(dt);aerisDrawSpace();[...agates].sort((a,b)=>b.z-a.z).forEach(aerisDrawGate);aerisDrawShip()}requestAnimationFrame(aerisFrame)}
+
+/* controls */
+addEventListener("keydown",e=>{if(aerisOverlay.classList.contains("open")&&["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Space"].includes(e.code))e.preventDefault();akeys.add(e.code)},{passive:false});
+addEventListener("keyup",e=>akeys.delete(e.code));
+function aerisPad(pad,knob,type){let active=false,id=null;const max=40;const move=(x,y)=>{const r=pad.getBoundingClientRect();let dx=x-(r.left+r.width/2),dy=y-(r.top+r.height/2),l=Math.hypot(dx,dy);if(l>max){dx=dx/l*max;dy=dy/l*max}knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;if(type==="flight"){ainput.roll=dx/max;ainput.pitch=dy/max}else ainput.throttle=-dy/max};pad.addEventListener("pointerdown",e=>{active=true;id=e.pointerId;pad.setPointerCapture(id);move(e.clientX,e.clientY)});pad.addEventListener("pointermove",e=>{if(active&&e.pointerId===id)move(e.clientX,e.clientY)});const end=e=>{if(!active||e.pointerId!==id)return;active=false;knob.style.transform="translate(-50%,-50%)";if(type==="flight"){ainput.roll=0;ainput.pitch=0}else ainput.throttle=0};pad.addEventListener("pointerup",end);pad.addEventListener("pointercancel",end)}
+aerisPad($("#aerisFlightPad"),$("#aerisFlightKnob"),"flight");aerisPad($("#aerisThrottlePad"),$("#aerisThrottleKnob"),"throttle");
+addEventListener("resize",()=>{if(aerisOverlay.classList.contains("open"))aerisResize()});
+aerisResize();requestAnimationFrame(aerisFrame);
+})();
+</script>
+
+
+<script id="matiere-v1456-sfx-js">
+(()=>{
+"use strict";
+let matiereAudioCtx=null;
+
+function matiereAudio(){
+  if(!matiereAudioCtx){
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return null;
+    matiereAudioCtx=new AC();
+  }
+  if(matiereAudioCtx.state==="suspended"){
+    try{matiereAudioCtx.resume()}catch(_){}
+  }
+  return matiereAudioCtx;
+}
+
+function matiereTone(freq=440,duration=.12,type="sine",gain=.06,delay=0){
+  const ctx=matiereAudio(); if(!ctx)return;
+  const t=ctx.currentTime+delay;
+  const osc=ctx.createOscillator();
+  const g=ctx.createGain();
+  osc.type=type;
+  osc.frequency.setValueAtTime(freq,t);
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.exponentialRampToValueAtTime(Math.max(.0002,gain),t+.01);
+  g.gain.exponentialRampToValueAtTime(.0001,t+duration);
+  osc.connect(g);g.connect(ctx.destination);
+  osc.start(t);osc.stop(t+duration+.03);
+}
+
+window.matiereSfx={
+  checkpoint(){
+    matiereTone(240,.18,"sine",.045,0);
+    matiereTone(360,.20,"sine",.05,.07);
+    matiereTone(540,.22,"triangle",.045,.14);
+  },
+  mission(){
+    matiereTone(110,.22,"sine",.055,0);
+    matiereTone(220,.18,"triangle",.045,.08);
+  },
+  correct(){
+    matiereTone(523.25,.11,"triangle",.05,0);
+    matiereTone(659.25,.12,"triangle",.05,.08);
+    matiereTone(783.99,.14,"triangle",.045,.16);
+  },
+  fail(){
+    matiereTone(220,.16,"sawtooth",.045,0);
+    matiereTone(174.61,.18,"sawtooth",.04,.10);
+    matiereTone(130.81,.22,"sawtooth",.035,.22);
+  },
+  wordFound(){
+    matiereTone(659.25,.09,"sine",.045,0);
+    matiereTone(880,.12,"triangle",.042,.06);
+  },
+  letterCorrect(){
+    matiereTone(523.25,.07,"sine",.036,0);
+    matiereTone(659.25,.09,"sine",.032,.05);
+  }
+};
+
+document.addEventListener("pointerdown",()=>matiereAudio(),{once:true,capture:true});
+document.addEventListener("keydown",()=>matiereAudio(),{once:true,capture:true});
+})();
+</script>
 
 </body>
 </html>
