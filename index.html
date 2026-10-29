@@ -7557,6 +7557,152 @@ header.top{
 @media(max-width:700px){.aeris-mission-label{font-size:32px}}
 </style>
 
+
+<style id="matiere-v1459-game-ui-polish">
+#view-game .mode-row{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:0!important;
+  padding:4px!important;
+  margin:0 0 18px!important;
+  border:1px solid rgba(184,141,73,.42)!important;
+  border-radius:14px!important;
+  background:linear-gradient(180deg,#0e0d0b,#090908)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+  overflow:hidden!important;
+}
+#view-game .mode-row .mode-btn{
+  position:relative!important;
+  margin:0!important;
+  padding:12px 10px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  color:#92887a!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  letter-spacing:.08em!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+#view-game .mode-row .mode-btn + .mode-btn::before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important; top:22%!important; bottom:22%!important; width:1px!important;
+  background:rgba(184,141,73,.18)!important;
+}
+#view-game .mode-row .mode-btn.on{
+  background:linear-gradient(135deg,#1b1711,#12100d)!important;
+  color:#e7cf9d!important;
+  box-shadow:inset 0 0 0 1px rgba(214,177,103,.46),0 4px 14px rgba(0,0,0,.18)!important;
+}
+#view-game .mode-row .mode-btn.on::after{
+  content:""!important;
+  position:absolute!important;
+  left:22%!important; right:22%!important; bottom:5px!important; height:1px!important;
+  background:linear-gradient(90deg,transparent,#d6b16b,transparent)!important;
+}
+#view-game .mode-row .mode-btn:hover{
+  color:#d9c39a!important;
+  background:rgba(184,141,73,.045)!important;
+}
+#view-game .mode-row .mode-btn.on:hover{
+  background:linear-gradient(135deg,#1b1711,#12100d)!important;
+}
+
+#aerisDiffRow{gap:10px!important}
+#aerisDiffRow .aeris-diff{
+  min-height:78px!important;
+  padding:15px 14px!important;
+  border:1px solid rgba(184,141,73,.42)!important;
+  border-radius:12px!important;
+  background:
+    radial-gradient(circle at 100% 110%,rgba(184,141,73,.07),transparent 35%),
+    linear-gradient(145deg,#12110f,#0b0a09)!important;
+  color:#eee5d8!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+#aerisDiffRow .aeris-diff b{
+  color:#eee5d8!important;
+  font-family:Georgia,'Times New Roman',serif!important;
+  font-size:17px!important;
+  font-weight:700!important;
+}
+#aerisDiffRow .aeris-diff small{
+  color:#8f8679!important;
+  font-size:10px!important;
+}
+#aerisDiffRow .aeris-diff:hover{
+  border-color:rgba(216,177,103,.72)!important;
+  background:linear-gradient(145deg,#17140f,#0d0c0a)!important;
+}
+#aerisDiffRow .aeris-diff.on,
+#aerisDiffRow .aeris-diff.on:hover,
+#aerisDiffRow .aeris-diff:focus,
+#aerisDiffRow .aeris-diff:focus-visible{
+  border-color:#d9b46e!important;
+  background:
+    radial-gradient(circle at 100% 100%,rgba(236,207,151,.16),transparent 36%),
+    linear-gradient(135deg,#2a2115 0%,#18130e 58%,#100e0b 100%)!important;
+  color:#f2e8d7!important;
+  box-shadow:inset 0 0 0 1px rgba(234,204,145,.14),0 8px 22px rgba(0,0,0,.18)!important;
+  outline:none!important;
+}
+#aerisDiffRow .aeris-diff.on b{color:#e8cb91!important}
+#aerisDiffRow .aeris-diff.on small{color:#b8a78a!important}
+
+#aerisSetup .day-picker .day-chip,
+#aerisSetup .day-quick-row .day-quick-btn,
+#aerisSetup .day-unknown-access{
+  -webkit-tap-highlight-color:transparent!important;
+  transition:none!important;
+  transform:none!important;
+  outline:none!important;
+}
+#aerisSetup .day-picker .day-chip.selected,
+#aerisSetup .day-picker .day-chip.selected:hover,
+#aerisSetup .day-picker .day-chip.selected:active,
+#aerisSetup .day-picker .day-chip.selected:focus,
+#aerisSetup .day-picker .day-chip.selected:focus-visible,
+#aerisSetup .day-quick-row .day-quick-btn.selected,
+#aerisSetup .day-quick-row .day-quick-btn.selected:hover,
+#aerisSetup .day-quick-row .day-quick-btn.selected:active,
+#aerisSetup .day-quick-row .day-quick-btn.selected:focus,
+#aerisSetup .day-unknown-access.selected{
+  background:linear-gradient(135deg,#f0ddb2 0%,#d0a35c 58%,#a87737 100%)!important;
+  border-color:#f1dfba!important;
+  color:#17110a!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 0 1px rgba(208,163,92,.12)!important;
+}
+#aerisSetup .day-picker .day-chip:not(.selected),
+#aerisSetup .day-picker .day-chip:not(.selected):hover,
+#aerisSetup .day-picker .day-chip:not(.selected):active,
+#aerisSetup .day-picker .day-chip:not(.selected):focus,
+#aerisSetup .day-picker .day-chip:not(.selected):focus-visible,
+#aerisSetup .day-quick-row .day-quick-btn:not(.selected),
+#aerisSetup .day-quick-row .day-quick-btn:not(.selected):hover,
+#aerisSetup .day-quick-row .day-quick-btn:not(.selected):active,
+#aerisSetup .day-quick-row .day-quick-btn:not(.selected):focus{
+  background:#0f0e0c!important;
+  border-color:rgba(184,141,73,.58)!important;
+  color:#ece3d6!important;
+  box-shadow:none!important;
+}
+#aerisSetup .day-selected-summary{
+  color:#a9977b!important;
+  font-weight:700!important;
+}
+@media(max-width:700px){
+  #view-game .mode-row .mode-btn{
+    font-size:10px!important;
+    padding:11px 5px!important;
+    letter-spacing:.04em!important;
+  }
+  #aerisDiffRow .aeris-diff{min-height:70px!important}
+}
+</style>
+
 </head>
 <body>
 
@@ -15728,7 +15874,22 @@ if(dayPickerAeris){
   buildDayPicker(dayPickerAeris,selectedDaysAeris,aerisRefreshSetup);
   refreshDayPickerUI(dayPickerAeris,selectedDaysAeris);
   aerisRefreshSetup();
-  $("#aerisSetup").addEventListener("click",()=>setTimeout(aerisRefreshSetup,0));
+
+  dayPickerAeris.addEventListener("pointerup",()=>{
+    refreshDayPickerUI(dayPickerAeris,selectedDaysAeris);
+    requestAnimationFrame(()=>{
+      refreshDayPickerUI(dayPickerAeris,selectedDaysAeris);
+      const active=document.activeElement;
+      if(active && (active.classList?.contains("day-chip") || active.classList?.contains("day-quick-btn"))){
+        try{active.blur()}catch(_){}
+      }
+    });
+  },{passive:true});
+
+  $("#aerisSetup").addEventListener("click",()=>{
+    refreshDayPickerUI(dayPickerAeris,selectedDaysAeris);
+    setTimeout(aerisRefreshSetup,0);
+  });
 }
 $$("[data-aeris-diff]").forEach(btn=>btn.addEventListener("click",()=>{
   aerisDifficulty=btn.dataset.aerisDiff;
