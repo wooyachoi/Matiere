@@ -7883,8 +7883,8 @@ header.top{
           <li>Choose difficulty: CRUISE 10 checkpoints, VELOCITY 15, HYPER 20. Higher difficulty also increases flight speed.</li>
           <li>Fly the spacecraft yourself and enter each golden checkpoint ring.</li>
           <li>At every checkpoint, one random OX, short-answer, or five-choice vocabulary question appears.</li>
-          <li>A correct answer continues the expedition. One wrong answer, or missing a checkpoint, ends the mission.</li>
-          <li>AERIS currently runs as a standalone game mode and does not change existing Word Search / Hangman ranking records.</li>
+          <li>A correct answer continues the expedition. Missing the center of a checkpoint does not end the mission; precise entry only adds a flight bonus. One wrong vocabulary answer ends the mission.</li>
+          <li>Score = quiz points + checkpoint precision + completion bonus, then DAY / difficulty / average-speed multipliers are applied. Checkpoint misses give no flight bonus but never end the run. Only completed expeditions qualify for ranking records.</li>
         </ol>
       </div>
 
@@ -7898,9 +7898,9 @@ header.top{
 
           <div class="aeris-setup-label">DIFFICULTY</div>
           <div class="aeris-diff-row" id="aerisDiffRow">
-            <button type="button" class="gbtn aeris-diff on" data-aeris-diff="easy"><b>하 · CRUISE</b><small>10 words · 적당히 빠르게</small></button>
-            <button type="button" class="gbtn aeris-diff" data-aeris-diff="normal"><b>중 · VELOCITY</b><small>15 words · 꽤 빠르게</small></button>
-            <button type="button" class="gbtn aeris-diff" data-aeris-diff="hard"><b>상 · HYPER</b><small>20 words · 많이 빠르게</small></button>
+            <button type="button" class="gbtn aeris-diff on" data-aeris-diff="easy"><b>하 · CRUISE</b><small>10 words</small></button>
+            <button type="button" class="gbtn aeris-diff" data-aeris-diff="normal"><b>중 · VELOCITY</b><small>15 words</small></button>
+            <button type="button" class="gbtn aeris-diff" data-aeris-diff="hard"><b>상 · HYPER</b><small>20 words</small></button>
           </div>
 
           <div class="day-picker" id="dayPickerAeris"></div>
@@ -8045,7 +8045,7 @@ header.top{
         <div class="aeris-route-hud">
           <div class="aeris-route-kicker">DEEP SPACE ROUTE</div>
           <div class="aeris-route-title">AURELIA CORRIDOR</div>
-          <div class="aeris-route-sub" id="aerisRouteSub">황금 체크포인트 중앙으로 직접 진입하세요.</div>
+          <div class="aeris-route-sub" id="aerisRouteSub">황금 체크포인트 중앙으로 직접 진입하세요 · 스로틀로 속도를 조절할 수 있습니다.</div>
           <div class="aeris-progress"><div id="aerisProgressFill"></div></div>
         </div>
         <div class="aeris-reticle"><i></i></div>
@@ -15674,9 +15674,14 @@ const $$=s=>[...document.querySelectorAll(s)];
 const selectedDaysAeris=new Set();
 let aerisDifficulty="easy";
 const aerisLevels={
-  easy:{count:10,baseSpeed:190,maxSpeed:285,gateSpacing:1900},
-  normal:{count:15,baseSpeed:245,maxSpeed:350,gateSpacing:1780},
-  hard:{count:20,baseSpeed:305,maxSpeed:430,gateSpacing:1650}
+  easy:{count:10},
+  normal:{count:15},
+  hard:{count:20}
+};
+const AERIS_SPEED={
+  min:235,
+  cruise:300,
+  max:470
 };
 const dayPickerAeris=$("#dayPickerAeris");
 const aerisOverlay=$("#aerisFlightOverlay");
@@ -15687,8 +15692,18 @@ let aerisRunning=false,aerisPaused=true,aerisQuizOpen=false,aerisCheckpointTrans
 let aerisPhase="IDLE"; // IDLE | FLYING | CHECKPOINT_FX | QUIZ | RESULT
 let aerisPendingQuestionIndex=-1;
 let aerisQuizFallbackTimer=null;
-let aerisSession={count:10,current:0,answered:0,questions:[]};
-const acraft={x:0,y:0,vx:0,vy:0,roll:0,pitch:0,yaw:0,speed:190,throttle:.63,altitude:1400,distance:0};
+let aerisSession={
+  count:10,current:0,answered:0,questions:[],
+  checkpointBonus:0,
+  checkpointPerfect:0,
+  checkpointGreat:0,
+  checkpointClear:0,
+  speedSampleSum:0,
+  speedSampleTime:0,
+  avgSpeed:0,
+  finalScore:0
+};
+const acraft={x:0,y:0,vx:0,vy:0,roll:0,pitch:0,yaw:0,speed:AERIS_SPEED.cruise,throttle:.62,altitude:1400,distance:0};
 const ainput={roll:0,pitch:0,throttle:0},akeys=new Set();
 let agates=[],astars=[],adust=[],aasteroids=[],anebulae=[],cameraShake=0;
 
@@ -15756,9 +15771,10 @@ function aerisSeedSpace(){
 }
 function aerisBuildGates(){
   const cfg=aerisLevels[aerisDifficulty];agates=[];
+  const gateSpacing=1780;
+  const spread=.62;
   for(let i=0;i<cfg.count;i++){
-    const spread=aerisDifficulty==="hard"?.72:aerisDifficulty==="normal"?.64:.56;
-    agates.push({z:1500+i*cfg.gateSpacing,x:arnd(-spread,spread),y:arnd(-.28,.24),state:"future"});
+    agates.push({z:1500+i*gateSpacing,x:arnd(-spread,spread),y:arnd(-.28,.24),state:"future"});
   }
 }
 function aerisGenerateQuestions(){
@@ -15785,8 +15801,18 @@ function aerisStart(){
   const cfg=aerisLevels[aerisDifficulty],pool=aerisPool();
   if(pool.length<cfg.count){alert(`최소 ${cfg.count}개의 단어가 필요합니다.`);return}
   const questions=aerisGenerateQuestions();
-  aerisSession={count:cfg.count,current:0,answered:0,questions};
-  Object.assign(acraft,{x:0,y:0,vx:0,vy:0,roll:0,pitch:0,yaw:0,speed:cfg.baseSpeed,throttle:.63,altitude:1400,distance:0});
+  aerisSession={
+    count:cfg.count,current:0,answered:0,questions,
+    checkpointBonus:0,
+    checkpointPerfect:0,
+    checkpointGreat:0,
+    checkpointClear:0,
+    speedSampleSum:0,
+    speedSampleTime:0,
+    avgSpeed:0,
+    finalScore:0
+  };
+  Object.assign(acraft,{x:0,y:0,vx:0,vy:0,roll:0,pitch:0,yaw:0,speed:AERIS_SPEED.cruise,throttle:.62,altitude:1400,distance:0});
   aerisBuildGates();
   aerisOverlay.classList.add("open");aerisOverlay.setAttribute("aria-hidden","false");
   aerisRunning=true;aerisPaused=false;aerisQuizOpen=false;aerisCheckpointTransition=false;
@@ -15945,7 +15971,7 @@ function aerisJudge(ok,q){
 
     aerisPaused=false;
     aerisPhase="FLYING";
-    acraft.speed=Math.max(acraft.speed,aerisLevels[aerisDifficulty].baseSpeed*.87);
+    acraft.speed=Math.max(acraft.speed,AERIS_SPEED.min);
   }else{
     try{window.matiereSfx?.fail()}catch(_){}
     aerisPendingQuestionIndex=-1;
@@ -15954,20 +15980,104 @@ function aerisJudge(ok,q){
     aerisFinish(false,q);
   }
 }
+
+function aerisDayMultiplier(){
+  const n=Math.max(1,Math.min(DAY_MAX,selectedDaysAeris.size||1));
+  return 1+(n-1)*.01;
+}
+function aerisDifficultyMultiplier(){
+  // Difficulty now differs only by mission length.
+  // A small multiplier still rewards longer expeditions without changing flight physics.
+  return aerisDifficulty==="hard"?1.60:aerisDifficulty==="normal"?1.25:1.00;
+}
+function aerisSpeedMultiplier(avgSpeed){
+  // Stronger speed reward over a narrower scoring band.
+  // <=280kt -> 1.00x, 330kt -> ~1.13x, 380kt -> ~1.25x, >=420kt -> 1.35x
+  const scoreMin=280;
+  const scoreMax=420;
+  const normalized=aclamp((avgSpeed-scoreMin)/(scoreMax-scoreMin),0,1);
+  return 1+normalized*.35;
+}
+function aerisCalculateScore(success){
+  const quizScore=aerisSession.answered*300;
+  const completionBonus=success?1500:0;
+  const raw=quizScore+aerisSession.checkpointBonus+completionBonus;
+
+  const diffMult=aerisDifficultyMultiplier();
+  const dayMult=aerisDayMultiplier();
+  const avg=aerisSession.speedSampleTime>0?aerisSession.speedSampleSum/aerisSession.speedSampleTime:AERIS_SPEED.cruise;
+  const speedMult=aerisSpeedMultiplier(avg);
+
+  const finalScore=Math.round(raw*diffMult*dayMult*speedMult);
+  return {quizScore,completionBonus,raw,diffMult,dayMult,avgSpeed:avg,speedMult,finalScore};
+}
+
 function aerisFinish(success,q){
   aerisRunning=false;aerisPaused=true;
   aerisPhase="RESULT";
   aerisCheckpointTransition=false;
   if(aerisQuizFallbackTimer){clearTimeout(aerisQuizFallbackTimer);aerisQuizFallbackTimer=null}
+
+  const score=aerisCalculateScore(success);
+  aerisSession.avgSpeed=score.avgSpeed;
+  aerisSession.finalScore=score.finalScore;
+
   $("#aerisResultOverlay").classList.add("show");
   if(success){
-    $("#aerisResultKicker").textContent="AERIS · ROUTE COMPLETE";$("#aerisResultTitle").textContent="MISSION COMPLETE";
-    $("#aerisResultText").textContent="모든 체크포인트를 통과하고 어휘 탐사를 완료했습니다.";
+    $("#aerisResultKicker").textContent="AERIS · ROUTE COMPLETE";
+    $("#aerisResultTitle").textContent="MISSION COMPLETE";
+    $("#aerisResultText").innerHTML=
+      `모든 체크포인트를 통과하고 어휘 탐사를 완료했습니다.<br>`+
+      `<span style="color:#caa761">AVG SPEED ${Math.round(score.avgSpeed)} KT · SPEED ×${score.speedMult.toFixed(2)}</span>`;
   }else{
-    $("#aerisResultKicker").textContent="AERIS · EXPEDITION FAILED";$("#aerisResultTitle").textContent="MISSION FAILED";
-    $("#aerisResultText").innerHTML=q?`정답은 <strong>${aesc(q.item.word)}</strong> — ${aesc(q.item.meaning)} 입니다.`:"체크포인트 진입에 실패했습니다.";
+    $("#aerisResultKicker").textContent="AERIS · EXPEDITION FAILED";
+    $("#aerisResultTitle").textContent="MISSION FAILED";
+    $("#aerisResultText").innerHTML=q
+      ? `정답은 <strong>${aesc(q.item.word)}</strong> — ${aesc(q.item.meaning)} 입니다.<br><span style="color:#9d917f">실패 기록은 랭킹에 등록되지 않습니다.</span>`
+      : `탐사가 종료되었습니다.<br><span style="color:#9d917f">실패 기록은 랭킹에 등록되지 않습니다.</span>`;
   }
-  $("#aerisResultStat").textContent=`${aerisSession.answered} / ${aerisSession.count} CHECKPOINTS CLEARED`;
+
+  $("#aerisResultStat").innerHTML=
+    `<div style="font-size:26px;margin-bottom:8px">${score.finalScore.toLocaleString()} SCORE</div>`+
+    `<div style="font-size:11px;color:#9e9486;line-height:1.65">`+
+    `${aerisSession.answered} / ${aerisSession.count} MISSIONS · `+
+    `ENTRY +${aerisSession.checkpointBonus} · `+
+    `AVG ${Math.round(score.avgSpeed)}KT · `+
+    `SPEED ×${score.speedMult.toFixed(2)} · `+
+    `DAY ×${score.dayMult.toFixed(2)}`+
+    `</div>`;
+
+  // Ranking/Hall-of-Fame ready payload.
+  // Only completed expeditions qualify for permanent ranking records.
+  if(success){
+    const aerisRecord={
+      game:"aeris",
+      score:score.finalScore,
+      difficulty:aerisDifficulty,
+      missions:aerisSession.count,
+      cleared:aerisSession.answered,
+      avg_speed:Math.round(score.avgSpeed),
+      speed_multiplier:Number(score.speedMult.toFixed(4)),
+      checkpoint_bonus:aerisSession.checkpointBonus,
+      perfect_entries:aerisSession.checkpointPerfect,
+      great_entries:aerisSession.checkpointGreat,
+      clear_entries:aerisSession.checkpointClear,
+      selected_days:Array.from(selectedDaysAeris).sort((a,b)=>a-b),
+      day_count:selectedDaysAeris.size,
+      day_multiplier:Number(score.dayMult.toFixed(4)),
+      difficulty_multiplier:Number(score.diffMult.toFixed(4)),
+      completed:true,
+      created_at:new Date().toISOString()
+    };
+
+    try{
+      localStorage.setItem("matiere_aeris_best_last",JSON.stringify(aerisRecord));
+      const prev=JSON.parse(localStorage.getItem("matiere_aeris_best")||"null");
+      if(!prev || Number(aerisRecord.score)>Number(prev.score||0)){
+        localStorage.setItem("matiere_aeris_best",JSON.stringify(aerisRecord));
+      }
+    }catch(_){}
+  }
 }
 
 /* flight simulation */
@@ -15980,8 +16090,15 @@ function aerisUpdate(dt){
   if(akeys.has("ShiftLeft")||akeys.has("ShiftRight"))t=1;if(akeys.has("ControlLeft")||akeys.has("ControlRight"))t=-1;
   if(Math.abs(ainput.roll)>.03)r=ainput.roll;if(Math.abs(ainput.pitch)>.03)p=ainput.pitch;if(Math.abs(ainput.throttle)>.03)t=ainput.throttle;
   acraft.roll=alerp(acraft.roll,r,1-Math.pow(.0017,dt));acraft.pitch=alerp(acraft.pitch,p,1-Math.pow(.0017,dt));acraft.yaw=alerp(acraft.yaw,acraft.roll*.45,1-Math.pow(.04,dt));
-  acraft.throttle=aclamp(acraft.throttle+t*dt*.23,.48,1);
-  acraft.speed=alerp(acraft.speed,alerp(cfg.baseSpeed,cfg.maxSpeed,acraft.throttle),1-Math.pow(.10,dt));
+  // Throttle is now the primary speed control across every difficulty.
+  // Wider usable range + faster response makes the control feel much clearer.
+  acraft.throttle=aclamp(acraft.throttle+t*dt*.42,.20,1);
+  const throttle01=aclamp((acraft.throttle-.20)/.80,0,1);
+  const targetSpeed=alerp(AERIS_SPEED.min,AERIS_SPEED.max,throttle01);
+  acraft.speed=alerp(acraft.speed,targetSpeed,1-Math.pow(.035,dt));
+
+  aerisSession.speedSampleSum += acraft.speed*dt;
+  aerisSession.speedSampleTime += dt;
   acraft.vx+=(acraft.roll*.54+acraft.yaw*.20)*dt;acraft.vy+=acraft.pitch*.46*dt;acraft.vx*=Math.pow(.38,dt);acraft.vy*=Math.pow(.40,dt);
   acraft.x=aclamp(acraft.x+acraft.vx*dt,-1.25,1.25);acraft.y=aclamp(acraft.y+acraft.vy*dt,-.82,.72);
   acraft.altitude=aclamp(1400-acraft.y*780,520,2350);acraft.distance+=acraft.speed*.514444*dt;
@@ -16007,16 +16124,28 @@ function aerisUpdate(dt){
 
       if(inside){
         g.state="hit";
+
+        // Precision bonus based on normalized distance from the visible gate center.
+        const precision=Math.sqrt(dx*dx+dy*dy);
+        let bonus=20,label="CLEAR";
+        if(precision<=.30){bonus=100;label="PERFECT";aerisSession.checkpointPerfect++}
+        else if(precision<=.60){bonus=60;label="GREAT";aerisSession.checkpointGreat++}
+        else{aerisSession.checkpointClear++}
+        aerisSession.checkpointBonus += bonus;
+
+        $("#aerisRouteSub").textContent=`${label} ENTRY · +${bonus}`;
         aerisCheckpointFxThenQuiz();
       }else if(rel<20){
-        // Only fail after the craft has genuinely passed the gate plane.
-        g.state="missed";
-        try{window.matiereSfx?.fail()}catch(_){}
-        aerisFinish(false,null);
+        // Missing the visible ring no longer fails the expedition.
+        // Crossing the checkpoint plane still advances to the vocabulary mission,
+        // but no precision bonus is awarded.
+        g.state="passed";
+        $("#aerisRouteSub").textContent="CHECKPOINT PASS · +0";
+        aerisCheckpointFxThenQuiz();
       }
     }
   }
-  cameraShake=alerp(cameraShake,Math.abs(acraft.roll)*.48+(acraft.speed/cfg.maxSpeed)*.16,1-Math.pow(.08,dt));aerisUpdateHud();
+  cameraShake=alerp(cameraShake,Math.abs(acraft.roll)*.48+(acraft.speed/AERIS_SPEED.max)*.16,1-Math.pow(.08,dt));aerisUpdateHud();
 }
 function aerisUpdateHud(){
   $("#aerisSpeedHud").textContent=String(Math.round(acraft.speed)).padStart(3,"0");$("#aerisAltHud").textContent=String(Math.round(acraft.altitude)).padStart(4,"0");
