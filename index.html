@@ -8591,6 +8591,73 @@ header.top{
 }
 </style>
 
+
+<style id="matiere-v1466-home-no-glow">
+/* HOME HERO: remove every legacy light/gradient layer around greeting text */
+#view-home .home-hero::before,
+#view-home .home-hero::after,
+#view-home .home-hero-copy::before,
+#view-home .home-hero-copy::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  filter:none!important;
+  opacity:0!important;
+}
+
+#view-home .home-hero{
+  background-image:var(--home-hero-art)!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  filter:none!important;
+  box-shadow:none!important;
+}
+
+#view-home .home-hero-copy{
+  background:none!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  mix-blend-mode:normal!important;
+}
+
+#view-home .home-hero-copy h1,
+#view-home .home-hero-copy .home-kicker,
+#view-home .home-hero-copy p{
+  background:none!important;
+  box-shadow:none!important;
+  filter:none!important;
+  text-shadow:none!important;
+}
+
+@media(max-width:900px){
+  #view-home .home-hero{
+    background-position:center center!important;
+  }
+}
+</style>
+
+
+<style id="matiere-v1467-short-launch">
+#aerisLaunchCount{
+  font-size:clamp(72px,12vw,150px)!important;
+  font-weight:900!important;
+  line-height:.9!important;
+  letter-spacing:-.04em!important;
+  text-shadow:0 6px 28px rgba(0,0,0,.72)!important;
+}
+#aerisLaunchWord{
+  margin-top:12px!important;
+  font-size:clamp(13px,1.6vw,20px)!important;
+  letter-spacing:.20em!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -17380,86 +17447,67 @@ function aerisUpdate(dt){
 
   if(aerisPhase==="LAUNCH"){
     aerisLaunchElapsed+=dt;
-    const total=7.8;
+    const total=4.0;
     const t=aclamp(aerisLaunchElapsed/total,0,1);
+    const count=$("#aerisLaunchCount"),word=$("#aerisLaunchWord");
 
-    // 0.0–1.4 s: ignition / engine spool
-    // 1.4–3.0 s: thrust build / vehicle starts moving
-    // 3.0–5.4 s: liftoff and positive climb
-    // 5.4–7.8 s: steep climb into the lower atmosphere
-    let phaseT=0;
-
-    if(aerisLaunchElapsed<1.4){
-      phaseT=aclamp(aerisLaunchElapsed/1.4,0,1);
-      const e=phaseT*phaseT*(3-2*phaseT);
-      acraft.throttle=alerp(.18,.46,e);
-      acraft.speed=alerp(0,55,e);
+    if(aerisLaunchElapsed<.8){
+      acraft.throttle=.30;
+      acraft.speed=0;
       acraft.altitude=8;
       acraft.y=.52;
       acraft.pitch=-.01;
-      cameraShake=alerp(cameraShake,1.0+2.1*e,1-Math.pow(.018,dt));
-    }else if(aerisLaunchElapsed<3.0){
-      phaseT=aclamp((aerisLaunchElapsed-1.4)/1.6,0,1);
-      const e=phaseT*phaseT*(3-2*phaseT);
-      acraft.throttle=alerp(.46,.82,e);
-      acraft.speed=alerp(55,390,e);
-      acraft.altitude=alerp(8,110,e);
-      acraft.y=alerp(.52,.35,e);
-      acraft.pitch=alerp(-.01,-.045,e);
-      cameraShake=alerp(cameraShake,3.2+2.0*e,1-Math.pow(.012,dt));
-    }else if(aerisLaunchElapsed<5.4){
-      phaseT=aclamp((aerisLaunchElapsed-3.0)/2.4,0,1);
-      const e=1-Math.pow(1-phaseT,2.2);
-      acraft.throttle=alerp(.82,.96,e);
-      acraft.speed=alerp(390,980,e);
-      acraft.altitude=alerp(110,3200,e);
-      acraft.y=alerp(.35,.02,e);
-      acraft.pitch=alerp(-.045,-.12,e);
-      cameraShake=alerp(cameraShake,4.4-1.7*e,1-Math.pow(.018,dt));
+      cameraShake=1.2;
+      if(count){count.textContent="3";word.textContent="";}
+    }else if(aerisLaunchElapsed<1.6){
+      acraft.throttle=.42;
+      acraft.speed=0;
+      acraft.altitude=8;
+      acraft.y=.52;
+      acraft.pitch=-.01;
+      cameraShake=1.5;
+      if(count){count.textContent="2";word.textContent="";}
+    }else if(aerisLaunchElapsed<2.4){
+      acraft.throttle=.58;
+      acraft.speed=40;
+      acraft.altitude=8;
+      acraft.y=.50;
+      acraft.pitch=-.01;
+      cameraShake=2.0;
+      if(count){count.textContent="1";word.textContent="";}
+    }else if(aerisLaunchElapsed<2.9){
+      const p=(aerisLaunchElapsed-2.4)/.5;
+      acraft.throttle=alerp(.70,.96,p);
+      acraft.speed=alerp(80,380,p);
+      acraft.altitude=alerp(8,160,p);
+      acraft.y=alerp(.50,.34,p);
+      acraft.pitch=alerp(-.01,-.05,p);
+      cameraShake=3.5;
+      if(count){count.textContent="GO";word.textContent="LIFTOFF";}
     }else{
-      phaseT=aclamp((aerisLaunchElapsed-5.4)/2.4,0,1);
-      const e=phaseT*phaseT*(3-2*phaseT);
+      const p=aclamp((aerisLaunchElapsed-2.9)/1.1,0,1);
+      const e=1-Math.pow(1-p,2);
       acraft.throttle=alerp(.96,.72,e);
-      acraft.speed=alerp(980,1680,e);
-      acraft.altitude=alerp(3200,9200,e);
-      acraft.y=alerp(.02,-.08,e);
-      acraft.pitch=alerp(-.12,-.055,e);
-      cameraShake=alerp(cameraShake,.65,1-Math.pow(.025,dt));
+      acraft.speed=alerp(380,1550,e);
+      acraft.altitude=alerp(160,8200,e);
+      acraft.y=alerp(.34,-.03,e);
+      acraft.pitch=alerp(-.05,-.08,e);
+      cameraShake=alerp(3.0,.4,e);
+      if(count){count.textContent="";word.textContent="AERIS DEPARTURE";}
     }
 
     aerisMaxSpeed=Math.max(aerisMaxSpeed,acraft.speed);
-
-    const count=$("#aerisLaunchCount"),word=$("#aerisLaunchWord");
-    if(count){
-      if(aerisLaunchElapsed<.7){
-        count.textContent="3"; word.textContent="IGNITION SEQUENCE";
-      }else if(aerisLaunchElapsed<1.4){
-        count.textContent="2"; word.textContent="ENGINES SPOOLING";
-      }else if(aerisLaunchElapsed<2.2){
-        count.textContent="1"; word.textContent="THRUST BUILD";
-      }else if(aerisLaunchElapsed<3.0){
-        count.textContent=""; word.textContent="RELEASE";
-      }else if(aerisLaunchElapsed<4.25){
-        count.textContent=""; word.textContent="LIFTOFF";
-      }else if(aerisLaunchElapsed<5.4){
-        count.textContent=""; word.textContent="POSITIVE CLIMB";
-      }else if(aerisLaunchElapsed<6.6){
-        count.textContent=""; word.textContent="GEAR RETRACTED";
-      }else{
-        count.textContent=""; word.textContent="AERIS DEPARTURE";
-      }
-    }
 
     if(t>=1){
       $("#aerisLaunchOverlay")?.classList.remove("show");
       aerisOverlay.classList.remove("aeris-launching");
       aerisPhase="FLYING";
       acraft.y=.06;
-      acraft.altitude=9200;
-      acraft.speed=1680;
+      acraft.altitude=8800;
+      acraft.speed=1550;
       acraft.throttle=.72;
       acraft.pitch=-.035;
-      cameraShake=.35;
+      cameraShake=.3;
       $("#aerisRouteSub").textContent="이륙 완료 · 첫 번째 미션 항로로 진입합니다.";
     }
 
@@ -17830,9 +17878,9 @@ function aerisDrawSpace(){
 
   // Ground-launch effects: exhaust glow, dust and rapidly stretching runway lights.
   if(stage==="LAUNCH" && aerisPhase==="LAUNCH"){
-    const lt=aclamp(aerisLaunchElapsed/7.8,0,1);
-    const ignition=aclamp(aerisLaunchElapsed/1.8,0,1);
-    const lift=aclamp((aerisLaunchElapsed-2.4)/3.2,0,1);
+    const lt=aclamp(aerisLaunchElapsed/4.0,0,1);
+    const ignition=aclamp(aerisLaunchElapsed/2.6,0,1);
+    const lift=aclamp((aerisLaunchElapsed-2.4)/1.6,0,1);
 
     actx.save();
     actx.globalCompositeOperation="screen";
@@ -17861,7 +17909,7 @@ function aerisDrawSpace(){
     }
 
     // Perspective light streaks appear as the craft accelerates away from the pad.
-    const motion=aclamp((aerisLaunchElapsed-1.8)/4.4,0,1);
+    const motion=aclamp((aerisLaunchElapsed-2.2)/1.8,0,1);
     if(motion>.01){
       actx.strokeStyle=`rgba(242,206,139,${.05+.20*motion})`;
       actx.lineWidth=.8+motion*1.8;
@@ -17879,8 +17927,8 @@ function aerisDrawSpace(){
     actx.restore();
 
     // A short exposure-like flash at liftoff.
-    if(aerisLaunchElapsed>2.85 && aerisLaunchElapsed<3.22){
-      const f=1-Math.abs(aerisLaunchElapsed-3.035)/.185;
+    if(aerisLaunchElapsed>2.42 && aerisLaunchElapsed<2.72){
+      const f=1-Math.abs(aerisLaunchElapsed-2.57)/.15;
       actx.fillStyle=`rgba(255,239,204,${aclamp(f,0,1)*.11})`;
       actx.fillRect(0,0,AW,AH);
     }
@@ -17911,7 +17959,7 @@ function aerisDrawShip(){
   const damage=aerisSession.damage||0;
   const crashDrop=aerisPhase==="CRASH"?aclamp(aerisCrashElapsed/3.35,0,1)*AH*.42:0;
   const cx=AW*.5+acraft.x*AW*.12;
-  const launchVisualT=aerisPhase==="LAUNCH"?aclamp(aerisLaunchElapsed/7.8,0,1):1;
+  const launchVisualT=aerisPhase==="LAUNCH"?aclamp(aerisLaunchElapsed/4.0,0,1):1;
   const launchBaseY=aerisPhase==="LAUNCH"
     ? alerp(AH*.82,AH*.69,1-Math.pow(1-launchVisualT,1.7))
     : AH*.72;
@@ -17944,13 +17992,9 @@ function aerisDrawShip(){
     const engineY=targetH*.33;
     const engineX=targetW*.19;
     const launchBoost=aerisPhase==="LAUNCH"
-      ? (aerisLaunchElapsed<1.4
-          ? alerp(.25,.85,aclamp(aerisLaunchElapsed/1.4,0,1))
-          : aerisLaunchElapsed<3.0
-            ? alerp(.85,1.45,aclamp((aerisLaunchElapsed-1.4)/1.6,0,1))
-            : aerisLaunchElapsed<5.4
-              ? alerp(1.45,1.20,aclamp((aerisLaunchElapsed-3.0)/2.4,0,1))
-              : alerp(1.20,.72,aclamp((aerisLaunchElapsed-5.4)/2.4,0,1)))
+      ? (aerisLaunchElapsed<2.4 ? .55 :
+         aerisLaunchElapsed<2.9 ? alerp(.9,1.5,aclamp((aerisLaunchElapsed-2.4)/.5,0,1)) :
+         alerp(1.5,.82,aclamp((aerisLaunchElapsed-2.9)/1.1,0,1)))
       : 1;
     const plume=(18+62*speedN)*(aerisPhase==="LAUNCH"?2.15*launchBoost:1);
     const eg=actx.createLinearGradient(0,engineY,0,engineY+plume);
