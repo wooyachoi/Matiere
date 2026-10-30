@@ -8545,6 +8545,52 @@ header.top{
 }
 </style>
 
+
+<style id="matiere-v1465-home-clean">
+#view-home .home-hero{
+  background-image:var(--home-hero-art)!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+#view-home .home-hero:after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+}
+#homeDailyQuote{
+  background:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+@media(max-width:900px){
+  #view-home .home-hero{
+    background-position:56% center!important;
+  }
+}
+</style>
+
+
+<style id="matiere-v1465-aeris-launch">
+.aeris-launch-overlay{
+  background:transparent!important;
+}
+.aeris-launch-copy{
+  margin-top:-10vh!important;
+  text-shadow:0 3px 18px rgba(0,0,0,.86)!important;
+}
+.aeris-launch-count{
+  transition:opacity .18s ease,transform .18s ease;
+}
+.aeris-launch-word{
+  letter-spacing:.24em!important;
+}
+#aerisFlightOverlay.aeris-launching .aeris-flight-top{
+  opacity:.44!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -17334,28 +17380,89 @@ function aerisUpdate(dt){
 
   if(aerisPhase==="LAUNCH"){
     aerisLaunchElapsed+=dt;
-    const t=aclamp(aerisLaunchElapsed/5.6,0,1);
-    const ease=t*t*(3-2*t);
-    acraft.throttle=alerp(.24,.88,ease);
-    acraft.speed=alerp(0,1450,ease);
-    acraft.altitude=alerp(8,7200,ease);
-    acraft.y=alerp(.48,-.10,ease);
-    acraft.pitch=alerp(-.02,-.13,Math.sin(t*Math.PI)*.72);
+    const total=7.8;
+    const t=aclamp(aerisLaunchElapsed/total,0,1);
+
+    // 0.0–1.4 s: ignition / engine spool
+    // 1.4–3.0 s: thrust build / vehicle starts moving
+    // 3.0–5.4 s: liftoff and positive climb
+    // 5.4–7.8 s: steep climb into the lower atmosphere
+    let phaseT=0;
+
+    if(aerisLaunchElapsed<1.4){
+      phaseT=aclamp(aerisLaunchElapsed/1.4,0,1);
+      const e=phaseT*phaseT*(3-2*phaseT);
+      acraft.throttle=alerp(.18,.46,e);
+      acraft.speed=alerp(0,55,e);
+      acraft.altitude=8;
+      acraft.y=.52;
+      acraft.pitch=-.01;
+      cameraShake=alerp(cameraShake,1.0+2.1*e,1-Math.pow(.018,dt));
+    }else if(aerisLaunchElapsed<3.0){
+      phaseT=aclamp((aerisLaunchElapsed-1.4)/1.6,0,1);
+      const e=phaseT*phaseT*(3-2*phaseT);
+      acraft.throttle=alerp(.46,.82,e);
+      acraft.speed=alerp(55,390,e);
+      acraft.altitude=alerp(8,110,e);
+      acraft.y=alerp(.52,.35,e);
+      acraft.pitch=alerp(-.01,-.045,e);
+      cameraShake=alerp(cameraShake,3.2+2.0*e,1-Math.pow(.012,dt));
+    }else if(aerisLaunchElapsed<5.4){
+      phaseT=aclamp((aerisLaunchElapsed-3.0)/2.4,0,1);
+      const e=1-Math.pow(1-phaseT,2.2);
+      acraft.throttle=alerp(.82,.96,e);
+      acraft.speed=alerp(390,980,e);
+      acraft.altitude=alerp(110,3200,e);
+      acraft.y=alerp(.35,.02,e);
+      acraft.pitch=alerp(-.045,-.12,e);
+      cameraShake=alerp(cameraShake,4.4-1.7*e,1-Math.pow(.018,dt));
+    }else{
+      phaseT=aclamp((aerisLaunchElapsed-5.4)/2.4,0,1);
+      const e=phaseT*phaseT*(3-2*phaseT);
+      acraft.throttle=alerp(.96,.72,e);
+      acraft.speed=alerp(980,1680,e);
+      acraft.altitude=alerp(3200,9200,e);
+      acraft.y=alerp(.02,-.08,e);
+      acraft.pitch=alerp(-.12,-.055,e);
+      cameraShake=alerp(cameraShake,.65,1-Math.pow(.025,dt));
+    }
+
     aerisMaxSpeed=Math.max(aerisMaxSpeed,acraft.speed);
+
     const count=$("#aerisLaunchCount"),word=$("#aerisLaunchWord");
     if(count){
-      if(t<.17){count.textContent="3";word.textContent="ENGINE START"}
-      else if(t<.32){count.textContent="2";word.textContent="THRUST VERIFIED"}
-      else if(t<.47){count.textContent="1";word.textContent="FLIGHT CONTROLS GREEN"}
-      else{count.textContent="";word.textContent=t<.68?"ROTATE":"POSITIVE CLIMB"}
+      if(aerisLaunchElapsed<.7){
+        count.textContent="3"; word.textContent="IGNITION SEQUENCE";
+      }else if(aerisLaunchElapsed<1.4){
+        count.textContent="2"; word.textContent="ENGINES SPOOLING";
+      }else if(aerisLaunchElapsed<2.2){
+        count.textContent="1"; word.textContent="THRUST BUILD";
+      }else if(aerisLaunchElapsed<3.0){
+        count.textContent=""; word.textContent="RELEASE";
+      }else if(aerisLaunchElapsed<4.25){
+        count.textContent=""; word.textContent="LIFTOFF";
+      }else if(aerisLaunchElapsed<5.4){
+        count.textContent=""; word.textContent="POSITIVE CLIMB";
+      }else if(aerisLaunchElapsed<6.6){
+        count.textContent=""; word.textContent="GEAR RETRACTED";
+      }else{
+        count.textContent=""; word.textContent="AERIS DEPARTURE";
+      }
     }
+
     if(t>=1){
       $("#aerisLaunchOverlay")?.classList.remove("show");
       aerisOverlay.classList.remove("aeris-launching");
       aerisPhase="FLYING";
-      acraft.y=.06;acraft.altitude=8800;acraft.speed=1480;acraft.throttle=.64;
-      $("#aerisRouteSub").textContent="지구 하늘에서 첫 번째 미션으로 접근합니다.";
+      acraft.y=.06;
+      acraft.altitude=9200;
+      acraft.speed=1680;
+      acraft.throttle=.72;
+      acraft.pitch=-.035;
+      cameraShake=.35;
+      $("#aerisRouteSub").textContent="이륙 완료 · 첫 번째 미션 항로로 진입합니다.";
     }
+
     aerisUpdateHud();
     return;
   }
@@ -17721,6 +17828,64 @@ function aerisDrawSpace(){
 
   } // end procedural environment fallback
 
+  // Ground-launch effects: exhaust glow, dust and rapidly stretching runway lights.
+  if(stage==="LAUNCH" && aerisPhase==="LAUNCH"){
+    const lt=aclamp(aerisLaunchElapsed/7.8,0,1);
+    const ignition=aclamp(aerisLaunchElapsed/1.8,0,1);
+    const lift=aclamp((aerisLaunchElapsed-2.4)/3.2,0,1);
+
+    actx.save();
+    actx.globalCompositeOperation="screen";
+
+    // Exhaust glow below the spacecraft.
+    const gx=AW*.5, gy=AH*.84-lift*AH*.13;
+    const glow=actx.createRadialGradient(gx,gy,0,gx,gy,AH*(.06+.12*ignition));
+    glow.addColorStop(0,`rgba(255,244,210,${.16+.34*ignition})`);
+    glow.addColorStop(.26,`rgba(238,169,72,${.12+.24*ignition})`);
+    glow.addColorStop(1,"rgba(190,105,30,0)");
+    actx.fillStyle=glow;
+    actx.fillRect(0,AH*.55,AW,AH*.45);
+
+    // Dust / vapor spreading sideways at ignition.
+    actx.strokeStyle=`rgba(214,183,133,${.05+.17*ignition*(1-lift*.55)})`;
+    actx.lineWidth=1.1;
+    for(let i=0;i<34;i++){
+      const side=i%2?-1:1;
+      const n=(i+1)/34;
+      const len=(40+AW*.19*n)*ignition;
+      const y=AH*(.82+.13*n)-lift*AH*.10;
+      actx.beginPath();
+      actx.moveTo(AW*.5+side*AW*.018,y);
+      actx.lineTo(AW*.5+side*len,y+Math.sin(i*1.7)*7);
+      actx.stroke();
+    }
+
+    // Perspective light streaks appear as the craft accelerates away from the pad.
+    const motion=aclamp((aerisLaunchElapsed-1.8)/4.4,0,1);
+    if(motion>.01){
+      actx.strokeStyle=`rgba(242,206,139,${.05+.20*motion})`;
+      actx.lineWidth=.8+motion*1.8;
+      for(let i=0;i<26;i++){
+        const lane=(i%2?-1:1)*(18+(i%13)*17);
+        const y0=AH*.73+(i%13)*AH*.021;
+        const stretch=(22+130*motion)*(1+(i%7)*.08);
+        actx.beginPath();
+        actx.moveTo(AW*.5+lane,y0);
+        actx.lineTo(AW*.5+lane*(1+motion*.85),y0+stretch);
+        actx.stroke();
+      }
+    }
+
+    actx.restore();
+
+    // A short exposure-like flash at liftoff.
+    if(aerisLaunchElapsed>2.85 && aerisLaunchElapsed<3.22){
+      const f=1-Math.abs(aerisLaunchElapsed-3.035)/.185;
+      actx.fillStyle=`rgba(255,239,204,${aclamp(f,0,1)*.11})`;
+      actx.fillRect(0,0,AW,AH);
+    }
+  }
+
   // Dynamic particles remain over both cinematic and procedural backgrounds.
   const intensity=aclamp((acraft.speed-900)/(AERIS_SPEED.max-900),0,1);
   if(intensity>.01 && stage!=="LAUNCH"){
@@ -17746,7 +17911,11 @@ function aerisDrawShip(){
   const damage=aerisSession.damage||0;
   const crashDrop=aerisPhase==="CRASH"?aclamp(aerisCrashElapsed/3.35,0,1)*AH*.42:0;
   const cx=AW*.5+acraft.x*AW*.12;
-  const cy=(stage==="LAUNCH"?AH*.69:AH*.72)+acraft.y*AH*.055+crashDrop;
+  const launchVisualT=aerisPhase==="LAUNCH"?aclamp(aerisLaunchElapsed/7.8,0,1):1;
+  const launchBaseY=aerisPhase==="LAUNCH"
+    ? alerp(AH*.82,AH*.69,1-Math.pow(1-launchVisualT,1.7))
+    : AH*.72;
+  const cy=launchBaseY+acraft.y*AH*.055+crashDrop;
   const sc=aclamp(AW/1200,.76,1.18)*(stage==="LAUNCH"?1.04:1);
   const bank=acraft.roll*.58;
 
@@ -17774,7 +17943,16 @@ function aerisDrawShip(){
     // Engine aura is dynamic while the detailed body stays raster-sharp.
     const engineY=targetH*.33;
     const engineX=targetW*.19;
-    const plume=18+62*speedN;
+    const launchBoost=aerisPhase==="LAUNCH"
+      ? (aerisLaunchElapsed<1.4
+          ? alerp(.25,.85,aclamp(aerisLaunchElapsed/1.4,0,1))
+          : aerisLaunchElapsed<3.0
+            ? alerp(.85,1.45,aclamp((aerisLaunchElapsed-1.4)/1.6,0,1))
+            : aerisLaunchElapsed<5.4
+              ? alerp(1.45,1.20,aclamp((aerisLaunchElapsed-3.0)/2.4,0,1))
+              : alerp(1.20,.72,aclamp((aerisLaunchElapsed-5.4)/2.4,0,1)))
+      : 1;
+    const plume=(18+62*speedN)*(aerisPhase==="LAUNCH"?2.15*launchBoost:1);
     const eg=actx.createLinearGradient(0,engineY,0,engineY+plume);
     eg.addColorStop(0,"rgba(255,249,224,.85)");
     eg.addColorStop(.18,"rgba(239,181,79,.72)");
