@@ -7703,6 +7703,174 @@ header.top{
 }
 </style>
 
+
+<style id="matiere-v1457-aeris-cinematic">
+/* AERIS V14.57 — cinematic flight layer. Existing learning / MP / ranking systems are untouched. */
+#aerisFlightOverlay{
+  background:#020204!important;
+}
+#aerisCanvas{
+  filter:saturate(1.08) contrast(1.03);
+}
+#aerisFlightOverlay.aeris-launching .aeris-flight-top{
+  opacity:.28;
+}
+.aeris-stage-badge{
+  position:absolute;
+  left:50%;
+  top:132px;
+  transform:translateX(-50%);
+  z-index:5;
+  padding:7px 13px;
+  border:1px solid rgba(226,190,120,.34);
+  border-radius:999px;
+  background:rgba(6,6,6,.46);
+  color:#d8bc84;
+  font:800 8px/1 Inter,sans-serif;
+  letter-spacing:.22em;
+  pointer-events:none;
+  backdrop-filter:blur(7px);
+  opacity:.9;
+}
+.aeris-launch-overlay{
+  position:absolute;
+  inset:0;
+  z-index:8;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 72%,rgba(213,161,79,.17),transparent 28%),
+    linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.02) 54%,rgba(0,0,0,.28));
+}
+.aeris-launch-overlay.show{display:flex}
+.aeris-launch-copy{
+  margin-top:-7vh;
+  text-align:center;
+  color:#f5ecdd;
+  text-shadow:0 10px 34px #000;
+}
+.aeris-launch-kicker{
+  font:800 9px/1 Inter,sans-serif;
+  letter-spacing:.34em;
+  color:#c6a267;
+  margin-bottom:16px;
+}
+.aeris-launch-count{
+  font:500 clamp(54px,9vw,116px)/.9 Georgia,serif;
+  letter-spacing:.06em;
+  color:#f4e4c3;
+  text-shadow:0 0 30px rgba(224,180,98,.26),0 8px 30px #000;
+  min-height:1em;
+}
+.aeris-launch-word{
+  margin-top:18px;
+  font:700 12px/1 Inter,sans-serif;
+  letter-spacing:.42em;
+  color:#e4c98f;
+}
+.aeris-complete-overlay{
+  position:absolute;
+  inset:0;
+  z-index:12;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 48%,rgba(236,200,128,.20),transparent 25%),
+    rgba(0,0,0,.28);
+  backdrop-filter:blur(2px);
+}
+.aeris-complete-overlay.show{
+  display:flex;
+  animation:aerisCompleteBackdrop 3.35s ease both;
+}
+.aeris-complete-overlay:before,
+.aeris-complete-overlay:after{
+  content:"";
+  position:absolute;
+  left:50%;top:50%;
+  width:24vmin;height:24vmin;
+  border:1px solid rgba(242,214,157,.72);
+  border-radius:50%;
+  transform:translate(-50%,-50%) scale(.2);
+  opacity:0;
+}
+.aeris-complete-overlay.show:before{animation:aerisCompleteRing 2.1s ease-out .18s both}
+.aeris-complete-overlay.show:after{animation:aerisCompleteRing 2.35s ease-out .42s both}
+.aeris-complete-copy{
+  position:relative;
+  text-align:center;
+  padding:30px;
+  opacity:0;
+  transform:translateY(20px) scale(.96);
+}
+.aeris-complete-overlay.show .aeris-complete-copy{
+  animation:aerisCompleteCopy 3.15s cubic-bezier(.2,.8,.2,1) .15s both;
+}
+.aeris-complete-kicker{
+  font:800 9px/1 Inter,sans-serif;
+  letter-spacing:.36em;
+  color:#c5a160;
+  margin-bottom:13px;
+}
+.aeris-complete-title{
+  font:500 clamp(42px,7vw,92px)/.95 Georgia,serif;
+  letter-spacing:.025em;
+  color:#f5e8cf;
+  text-shadow:0 0 34px rgba(222,177,92,.26),0 12px 50px #000;
+}
+.aeris-complete-line{
+  width:min(330px,55vw);
+  height:1px;
+  margin:18px auto;
+  background:linear-gradient(90deg,transparent,#d9b46e,transparent);
+}
+.aeris-complete-sub{
+  font-size:11px;
+  letter-spacing:.16em;
+  color:#a99980;
+}
+.aeris-warp-flash{
+  position:absolute;
+  inset:-20%;
+  background:radial-gradient(circle at 50% 52%,rgba(255,247,225,.82),rgba(227,183,97,.32) 16%,transparent 46%);
+  opacity:0;
+  mix-blend-mode:screen;
+}
+.aeris-complete-overlay.show .aeris-warp-flash{
+  animation:aerisWarpFlash 1.3s ease-out .05s both;
+}
+@keyframes aerisCompleteBackdrop{
+  0%{background-color:rgba(0,0,0,0)}
+  20%,78%{background-color:rgba(0,0,0,.30)}
+  100%{background-color:rgba(0,0,0,.72)}
+}
+@keyframes aerisCompleteRing{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}
+  18%{opacity:.9}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(6.4)}
+}
+@keyframes aerisCompleteCopy{
+  0%{opacity:0;transform:translateY(20px) scale(.96);filter:blur(8px)}
+  22%,76%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+  100%{opacity:0;transform:translateY(-10px) scale(1.025);filter:blur(5px)}
+}
+@keyframes aerisWarpFlash{
+  0%{opacity:0;transform:scale(.55)}
+  24%{opacity:.9}
+  100%{opacity:0;transform:scale(1.45)}
+}
+@media(max-width:700px){
+  .aeris-stage-badge{top:116px;font-size:7px}
+  .aeris-launch-copy{margin-top:-4vh}
+  .aeris-launch-word{font-size:10px}
+}
+</style>
+
 </head>
 <body>
 
@@ -8026,10 +8194,10 @@ header.top{
         <strong>AERIS EXPEDITION · RULES</strong>
         <ol>
           <li>Choose your vocabulary book and select one or more Days / lessons.</li>
-          <li>Choose difficulty: CRUISE 10 checkpoints, VELOCITY 15, HYPER 20. Higher difficulty also increases flight speed.</li>
+          <li>Choose difficulty: CRUISE 10 checkpoints, VELOCITY 15, HYPER 20. Every expedition launches from Earth and progresses through atmosphere, orbit, and deep space.</li>
           <li>Fly the spacecraft yourself and enter each golden checkpoint ring.</li>
           <li>At every checkpoint, one random OX, short-answer, or five-choice vocabulary question appears.</li>
-          <li>A correct answer continues the expedition. Missing the center of a checkpoint does not end the mission; precise entry only adds a flight bonus. One wrong vocabulary answer ends the mission.</li>
+          <li>Fly with the touch controls or keyboard arrows (← → ↑ ↓). SHIFT accelerates and CTRL decelerates. A correct answer continues the expedition; one wrong vocabulary answer ends the mission.</li>
           <li>Score = quiz points + checkpoint precision + completion bonus, then DAY / difficulty / average-speed multipliers are applied. Checkpoint misses give no flight bonus but never end the run. Only completed expeditions qualify for ranking records.</li>
         </ol>
       </div>
@@ -8166,7 +8334,26 @@ header.top{
         <div class="aeris-mission-label" id="aerisMissionLabel">MISSION #1</div>
         <div class="aeris-mission-sub" id="aerisMissionSub">VOCABULARY CHECK</div>
       </div>
-      <div id="aerisCheckpointFx" class="aeris-checkpoint-fx">
+      
+      <div id="aerisStageBadge" class="aeris-stage-badge">EARTH · LAUNCH</div>
+      <div id="aerisLaunchOverlay" class="aeris-launch-overlay">
+        <div class="aeris-launch-copy">
+          <div class="aeris-launch-kicker">AERIS · EARTH DEPARTURE</div>
+          <div id="aerisLaunchCount" class="aeris-launch-count">3</div>
+          <div id="aerisLaunchWord" class="aeris-launch-word">ENGINE SEQUENCE</div>
+        </div>
+      </div>
+      <div id="aerisCompleteFx" class="aeris-complete-overlay">
+        <div class="aeris-warp-flash"></div>
+        <div class="aeris-complete-copy">
+          <div class="aeris-complete-kicker">AERIS · EXPEDITION</div>
+          <div class="aeris-complete-title">MISSION COMPLETE</div>
+          <div class="aeris-complete-line"></div>
+          <div id="aerisCompleteSub" class="aeris-complete-sub">ROUTE CLEARED · RETURNING TELEMETRY</div>
+        </div>
+      </div>
+
+<div id="aerisCheckpointFx" class="aeris-checkpoint-fx">
         <div class="aeris-fx-ring r1"></div>
         <div class="aeris-fx-ring r2"></div>
         <div class="aeris-fx-ring r3"></div>
@@ -8202,7 +8389,7 @@ header.top{
         <div id="aerisFlightPad" class="aeris-pad"><div id="aerisFlightKnob" class="aeris-knob"></div><span>ROLL / PITCH</span></div>
         <div id="aerisThrottlePad" class="aeris-pad"><div id="aerisThrottleKnob" class="aeris-knob"></div><span>THROTTLE</span></div>
       </div>
-      <div class="aeris-desktop-hint">WASD / ARROWS · SHIFT / CTRL</div>
+      <div class="aeris-desktop-hint">← → 좌우 · ↑ ↓ 상승/하강 · SHIFT 가속 · CTRL 감속 · WASD 지원</div>
 
       <div id="aerisQuizOverlay" class="aeris-quiz-overlay">
         <div class="aeris-quiz-card">
@@ -15825,9 +16012,13 @@ const aerisLevels={
   hard:{count:20}
 };
 const AERIS_SPEED={
-  min:235,
-  cruise:300,
-  max:470
+  min:260,
+  cruise:620,
+  max:5200
+};
+const AERIS_TRAVEL={
+  min:245,
+  max:560
 };
 const dayPickerAeris=$("#dayPickerAeris");
 const aerisOverlay=$("#aerisFlightOverlay");
@@ -15835,8 +16026,12 @@ const aerisCanvas=$("#aerisCanvas");
 const actx=aerisCanvas.getContext("2d",{alpha:false});
 let AW=1,AH=1,ADPR=1,aLast=performance.now();
 let aerisRunning=false,aerisPaused=true,aerisQuizOpen=false,aerisCheckpointTransition=false;
-let aerisPhase="IDLE"; // IDLE | FLYING | CHECKPOINT_FX | QUIZ | RESULT
+let aerisPhase="IDLE"; // IDLE | LAUNCH | FLYING | CHECKPOINT_FX | QUIZ | COMPLETE | RESULT
 let aerisPendingQuestionIndex=-1;
+let aerisLaunchElapsed=0;
+let aerisElapsed=0;
+let aerisMaxSpeed=0;
+let aerisCompleteTimer=null;
 let aerisQuizFallbackTimer=null;
 let aerisSession={
   count:10,current:0,answered:0,questions:[],
@@ -15847,7 +16042,9 @@ let aerisSession={
   speedSampleSum:0,
   speedSampleTime:0,
   avgSpeed:0,
-  finalScore:0
+  finalScore:0,
+  maxSpeed:0,
+  elapsed:0
 };
 const acraft={x:0,y:0,vx:0,vy:0,roll:0,pitch:0,yaw:0,speed:AERIS_SPEED.cruise,throttle:.62,altitude:1400,distance:0};
 const ainput={roll:0,pitch:0,throttle:0},akeys=new Set();
@@ -15925,14 +16122,14 @@ function aerisResize(){
   aerisSeedSpace();
 }
 function aerisSeedSpace(){
-  astars=Array.from({length:280},()=>({x:Math.random(),y:Math.random(),z:arnd(.15,1),a:arnd(.18,.88),h:arnd(34,48)}));
-  adust=Array.from({length:80},()=>({x:arnd(-1,1),y:arnd(-1,1),z:arnd(.1,1)}));
-  aasteroids=Array.from({length:24},()=>({x:arnd(-1.8,1.8),y:arnd(-.9,.8),z:arnd(1200,9000),r:arnd(10,42)}));
-  anebulae=Array.from({length:4},()=>({x:arnd(.1,.9),y:arnd(.1,.7),r:arnd(.14,.32),a:arnd(.025,.065)}));
+  astars=Array.from({length:420},()=>({x:Math.random(),y:Math.random(),z:arnd(.12,1),a:arnd(.16,.94),h:arnd(30,58)}));
+  adust=Array.from({length:150},()=>({x:arnd(-1,1),y:arnd(-1,1),z:arnd(.1,1)}));
+  aasteroids=Array.from({length:38},()=>({x:arnd(-1.9,1.9),y:arnd(-.95,.85),z:arnd(1200,9000),r:arnd(10,48)}));
+  anebulae=Array.from({length:7},()=>({x:arnd(.05,.95),y:arnd(.06,.78),r:arnd(.15,.38),a:arnd(.03,.09)}));
 }
 function aerisBuildGates(){
   const cfg=aerisLevels[aerisDifficulty];agates=[];
-  const gateSpacing=1780;
+  const gateSpacing=1960;
   const spread=.62;
   for(let i=0;i<cfg.count;i++){
     agates.push({z:1500+i*gateSpacing,x:arnd(-spread,spread),y:arnd(-.28,.24),state:"future"});
@@ -15973,13 +16170,18 @@ function aerisStart(){
     avgSpeed:0,
     finalScore:0
   };
-  Object.assign(acraft,{x:0,y:0,vx:0,vy:0,roll:0,pitch:0,yaw:0,speed:AERIS_SPEED.cruise,throttle:.62,altitude:1400,distance:0});
+  Object.assign(acraft,{x:0,y:.44,vx:0,vy:0,roll:0,pitch:-.06,yaw:0,speed:0,throttle:.28,altitude:18,distance:0});
   aerisBuildGates();
-  aerisOverlay.classList.add("open");aerisOverlay.setAttribute("aria-hidden","false");
+  aerisOverlay.classList.add("open","aeris-launching");aerisOverlay.setAttribute("aria-hidden","false");
   aerisRunning=true;aerisPaused=false;aerisQuizOpen=false;aerisCheckpointTransition=false;
-  aerisPhase="FLYING";aerisPendingQuestionIndex=-1;
+  aerisPhase="LAUNCH";aerisPendingQuestionIndex=-1;
+  aerisLaunchElapsed=0;aerisElapsed=0;aerisMaxSpeed=0;
+  if(aerisCompleteTimer){clearTimeout(aerisCompleteTimer);aerisCompleteTimer=null}
   if(aerisQuizFallbackTimer){clearTimeout(aerisQuizFallbackTimer);aerisQuizFallbackTimer=null}
   $("#aerisQuizOverlay").classList.remove("show");$("#aerisResultOverlay").classList.remove("show");
+  $("#aerisCompleteFx")?.classList.remove("show");
+  $("#aerisLaunchOverlay")?.classList.add("show");
+  $("#aerisStageBadge").textContent="EARTH · LAUNCH";
   aerisResize();aLast=performance.now();aerisUpdateHud();
 }
 $("#aerisStartBtn")?.addEventListener("click",aerisStart);
@@ -15988,7 +16190,10 @@ function aerisExit(){
   aerisRunning=false;aerisPaused=true;aerisQuizOpen=false;aerisCheckpointTransition=false;
   aerisPhase="IDLE";aerisPendingQuestionIndex=-1;
   if(aerisQuizFallbackTimer){clearTimeout(aerisQuizFallbackTimer);aerisQuizFallbackTimer=null}
-  aerisOverlay.classList.remove("open");aerisOverlay.setAttribute("aria-hidden","true");
+  if(aerisCompleteTimer){clearTimeout(aerisCompleteTimer);aerisCompleteTimer=null}
+  $("#aerisLaunchOverlay")?.classList.remove("show");
+  $("#aerisCompleteFx")?.classList.remove("show");
+  aerisOverlay.classList.remove("open","aeris-launching");aerisOverlay.setAttribute("aria-hidden","true");
   $("#aerisQuizOverlay").classList.remove("show");$("#aerisResultOverlay").classList.remove("show");
   setTimeout(aerisRefreshSetup,0);
 }
@@ -16120,7 +16325,7 @@ function aerisJudge(ok,q){
     aerisQuizOpen=false;
 
     if(aerisSession.current>=aerisSession.count){
-      aerisFinish(true);
+      aerisCompleteSequence();
       return;
     }
 
@@ -16152,10 +16357,10 @@ function aerisDifficultyMultiplier(){
   return aerisDifficulty==="hard"?1.60:aerisDifficulty==="normal"?1.25:1.00;
 }
 function aerisSpeedMultiplier(avgSpeed){
-  // Stronger speed reward over a narrower scoring band.
-  // <=280kt -> 1.00x, 330kt -> ~1.13x, 380kt -> ~1.25x, >=420kt -> 1.35x
-  const scoreMin=280;
-  const scoreMax=420;
+  // Dramatic AERIS speed band: reward sustained high-speed flight without making it mandatory.
+  // <=900kt -> 1.00x, >=4200kt -> 1.35x.
+  const scoreMin=900;
+  const scoreMax=4200;
   const normalized=aclamp((avgSpeed-scoreMin)/(scoreMax-scoreMin),0,1);
   return 1+normalized*.35;
 }
@@ -16173,6 +16378,29 @@ function aerisCalculateScore(success){
   return {quizScore,completionBonus,raw,diffMult,dayMult,avgSpeed:avg,speedMult,finalScore};
 }
 
+
+function aerisCompleteSequence(){
+  if(aerisPhase==="COMPLETE"||aerisPhase==="RESULT")return;
+  aerisPaused=true;
+  aerisRunning=true;
+  aerisPhase="COMPLETE";
+  aerisCheckpointTransition=false;
+  $("#aerisQuizOverlay").classList.remove("show");
+  $("#aerisApproach").classList.remove("show");
+  $("#aerisStageBadge").textContent="FINAL · AURELIA GATE";
+  $("#aerisCompleteSub").textContent=`${aerisSession.count} / ${aerisSession.count} MISSIONS · MAX ${Math.round(aerisMaxSpeed).toLocaleString()} KT`;
+  const fx=$("#aerisCompleteFx");
+  fx.classList.remove("show");
+  void fx.offsetWidth;
+  fx.classList.add("show");
+  try{window.matiereSfx?.mission()}catch(_){}
+  aerisCompleteTimer=setTimeout(()=>{
+    fx.classList.remove("show");
+    aerisCompleteTimer=null;
+    aerisFinish(true);
+  },3350);
+}
+
 function aerisFinish(success,q){
   aerisRunning=false;aerisPaused=true;
   aerisPhase="RESULT";
@@ -16182,6 +16410,8 @@ function aerisFinish(success,q){
   const score=aerisCalculateScore(success);
   aerisSession.avgSpeed=score.avgSpeed;
   aerisSession.finalScore=score.finalScore;
+  aerisSession.maxSpeed=Math.round(aerisMaxSpeed);
+  aerisSession.elapsed=aerisElapsed;
 
   $("#aerisResultOverlay").classList.add("show");
   if(success){
@@ -16189,7 +16419,7 @@ function aerisFinish(success,q){
     $("#aerisResultTitle").textContent="MISSION COMPLETE";
     $("#aerisResultText").innerHTML=
       `모든 체크포인트를 통과하고 어휘 탐사를 완료했습니다.<br>`+
-      `<span style="color:#caa761">AVG SPEED ${Math.round(score.avgSpeed)} KT · SPEED ×${score.speedMult.toFixed(2)}</span>`;
+      `<span style="color:#caa761">AVG ${Math.round(score.avgSpeed).toLocaleString()} KT · MAX ${Math.round(aerisMaxSpeed).toLocaleString()} KT · SPEED ×${score.speedMult.toFixed(2)}</span>`;
   }else{
     $("#aerisResultKicker").textContent="AERIS · EXPEDITION FAILED";
     $("#aerisResultTitle").textContent="MISSION FAILED";
@@ -16203,7 +16433,9 @@ function aerisFinish(success,q){
     `<div style="font-size:11px;color:#9e9486;line-height:1.65">`+
     `${aerisSession.answered} / ${aerisSession.count} MISSIONS · `+
     `ENTRY +${aerisSession.checkpointBonus} · `+
-    `AVG ${Math.round(score.avgSpeed)}KT · `+
+    `AVG ${Math.round(score.avgSpeed).toLocaleString()}KT · `+
+    `MAX ${Math.round(aerisMaxSpeed).toLocaleString()}KT · `+
+    `TIME ${Math.floor(aerisElapsed/60)}:${String(Math.floor(aerisElapsed%60)).padStart(2,"0")} · `+
     `SPEED ×${score.speedMult.toFixed(2)} · `+
     `DAY ×${score.dayMult.toFixed(2)}`+
     `</div>`;
@@ -16218,6 +16450,8 @@ function aerisFinish(success,q){
       missions:aerisSession.count,
       cleared:aerisSession.answered,
       avg_speed:Math.round(score.avgSpeed),
+      max_speed:Math.round(aerisMaxSpeed),
+      elapsed_seconds:Math.round(aerisElapsed),
       speed_multiplier:Number(score.speedMult.toFixed(4)),
       checkpoint_bonus:aerisSession.checkpointBonus,
       perfect_entries:aerisSession.checkpointPerfect,
@@ -16242,91 +16476,258 @@ function aerisFinish(success,q){
 }
 
 /* flight simulation */
+function aerisSceneStage(){
+  if(aerisPhase==="LAUNCH")return "LAUNCH";
+  const ratio=aerisSession.count?Math.min(1,aerisSession.answered/aerisSession.count):0;
+  if(ratio<.18)return "ATMOSPHERE";
+  if(ratio<.38)return "EDGE";
+  if(ratio<.70)return "ORBIT";
+  return "DEEP";
+}
+function aerisStageLabel(stage){
+  return ({LAUNCH:"EARTH · LAUNCH",ATMOSPHERE:"ATMOSPHERE · ASCENT",EDGE:"EDGE OF SPACE",ORBIT:"EARTH ORBIT",DEEP:"DEEP SPACE"})[stage]||"AERIS";
+}
 function aerisUpdate(dt){
   if(!aerisRunning||aerisPaused)return;
-  const cfg=aerisLevels[aerisDifficulty];
+  aerisElapsed+=dt;
+
+  /* 5.2 s cinematic launch: Earth surface -> clouds -> upper atmosphere. */
+  if(aerisPhase==="LAUNCH"){
+    aerisLaunchElapsed+=dt;
+    const t=aclamp(aerisLaunchElapsed/5.2,0,1);
+    const ease=t*t*(3-2*t);
+    acraft.throttle=alerp(.28,.86,ease);
+    acraft.speed=alerp(0,920,ease);
+    acraft.altitude=alerp(18,11800,ease);
+    acraft.y=alerp(.44,-.15,ease);
+    acraft.pitch=alerp(-.03,-.16,Math.sin(t*Math.PI)*.7);
+    aerisMaxSpeed=Math.max(aerisMaxSpeed,acraft.speed);
+    const count=$("#aerisLaunchCount"),word=$("#aerisLaunchWord");
+    if(count){
+      if(t<.18){count.textContent="3";word.textContent="ENGINE SEQUENCE"}
+      else if(t<.34){count.textContent="2";word.textContent="THRUST STABLE"}
+      else if(t<.50){count.textContent="1";word.textContent="AERIS READY"}
+      else{count.textContent="";word.textContent=t<.72?"LAUNCH":"ATMOSPHERIC ASCENT"}
+    }
+    if(t>=1){
+      $("#aerisLaunchOverlay")?.classList.remove("show");
+      aerisOverlay.classList.remove("aeris-launching");
+      aerisPhase="FLYING";
+      acraft.y=0;acraft.altitude=14600;acraft.speed=1050;acraft.throttle=.60;
+      $("#aerisRouteSub").textContent="대기권을 벗어나 첫 번째 체크포인트로 진입하세요.";
+    }
+    aerisUpdateHud();
+    return;
+  }
+
+  if(aerisPhase!=="FLYING")return;
+
   let r=0,p=0,t=0;
-  if(akeys.has("ArrowLeft")||akeys.has("KeyA"))r=-1;if(akeys.has("ArrowRight")||akeys.has("KeyD"))r=1;
-  if(akeys.has("ArrowUp")||akeys.has("KeyW"))p=-1;if(akeys.has("ArrowDown")||akeys.has("KeyS"))p=1;
-  if(akeys.has("ShiftLeft")||akeys.has("ShiftRight"))t=1;if(akeys.has("ControlLeft")||akeys.has("ControlRight"))t=-1;
-  if(Math.abs(ainput.roll)>.03)r=ainput.roll;if(Math.abs(ainput.pitch)>.03)p=ainput.pitch;if(Math.abs(ainput.throttle)>.03)t=ainput.throttle;
-  acraft.roll=alerp(acraft.roll,r,1-Math.pow(.0017,dt));acraft.pitch=alerp(acraft.pitch,p,1-Math.pow(.0017,dt));acraft.yaw=alerp(acraft.yaw,acraft.roll*.45,1-Math.pow(.04,dt));
-  // Throttle is now the primary speed control across every difficulty.
-  // Wider usable range + faster response makes the control feel much clearer.
-  acraft.throttle=aclamp(acraft.throttle+t*dt*.42,.20,1);
-  const throttle01=aclamp((acraft.throttle-.20)/.80,0,1);
-  const targetSpeed=alerp(AERIS_SPEED.min,AERIS_SPEED.max,throttle01);
-  acraft.speed=alerp(acraft.speed,targetSpeed,1-Math.pow(.035,dt));
+  if(akeys.has("ArrowLeft")||akeys.has("KeyA"))r=-1;
+  if(akeys.has("ArrowRight")||akeys.has("KeyD"))r=1;
+  if(akeys.has("ArrowUp")||akeys.has("KeyW"))p=-1;
+  if(akeys.has("ArrowDown")||akeys.has("KeyS"))p=1;
+  if(akeys.has("ShiftLeft")||akeys.has("ShiftRight"))t=1;
+  if(akeys.has("ControlLeft")||akeys.has("ControlRight"))t=-1;
+  if(Math.abs(ainput.roll)>.03)r=ainput.roll;
+  if(Math.abs(ainput.pitch)>.03)p=ainput.pitch;
+  if(Math.abs(ainput.throttle)>.03)t=ainput.throttle;
+
+  acraft.roll=alerp(acraft.roll,r,1-Math.pow(.0017,dt));
+  acraft.pitch=alerp(acraft.pitch,p,1-Math.pow(.0017,dt));
+  acraft.yaw=alerp(acraft.yaw,acraft.roll*.45,1-Math.pow(.04,dt));
+
+  /* More dramatic throttle response. */
+  acraft.throttle=aclamp(acraft.throttle+t*dt*.56,.12,1);
+  const throttle01=aclamp((acraft.throttle-.12)/.88,0,1);
+  const stage=aerisSceneStage();
+  const stageBoost=stage==="ATMOSPHERE"?0:stage==="EDGE"?320:stage==="ORBIT"?720:1450;
+  const stageCap=stage==="ATMOSPHERE"?2100:stage==="EDGE"?3000:stage==="ORBIT"?4100:AERIS_SPEED.max;
+  const targetSpeed=aclamp(alerp(AERIS_SPEED.min,AERIS_SPEED.max,Math.pow(throttle01,1.35))+stageBoost,AERIS_SPEED.min,stageCap);
+  acraft.speed=alerp(acraft.speed,targetSpeed,1-Math.pow(.018,dt));
+  aerisMaxSpeed=Math.max(aerisMaxSpeed,acraft.speed);
 
   aerisSession.speedSampleSum += acraft.speed*dt;
   aerisSession.speedSampleTime += dt;
-  acraft.vx+=(acraft.roll*.54+acraft.yaw*.20)*dt;acraft.vy+=acraft.pitch*.46*dt;acraft.vx*=Math.pow(.38,dt);acraft.vy*=Math.pow(.40,dt);
-  acraft.x=aclamp(acraft.x+acraft.vx*dt,-1.25,1.25);acraft.y=aclamp(acraft.y+acraft.vy*dt,-.82,.72);
-  acraft.altitude=aclamp(1400-acraft.y*780,520,2350);acraft.distance+=acraft.speed*.514444*dt;
+
+  acraft.vx+=(acraft.roll*.62+acraft.yaw*.22)*dt;
+  acraft.vy+=acraft.pitch*.54*dt;
+  acraft.vx*=Math.pow(.34,dt);
+  acraft.vy*=Math.pow(.36,dt);
+  acraft.x=aclamp(acraft.x+acraft.vx*dt,-1.25,1.25);
+  acraft.y=aclamp(acraft.y+acraft.vy*dt,-.82,.72);
+
+  const stageAlt=stage==="ATMOSPHERE"?18000:stage==="EDGE"?52000:stage==="ORBIT"?180000:420000;
+  acraft.altitude=stageAlt-acraft.y*(stage==="ATMOSPHERE"?5000:stage==="EDGE"?13000:stage==="ORBIT"?35000:80000);
+
+  /* Displayed speed is dramatic; route travel stays fair/playable. */
+  const travelNorm=aclamp((acraft.speed-AERIS_SPEED.min)/(AERIS_SPEED.max-AERIS_SPEED.min),0,1);
+  const travelSpeed=alerp(AERIS_TRAVEL.min,AERIS_TRAVEL.max,Math.pow(travelNorm,.72));
+  acraft.distance+=travelSpeed*.514444*dt;
+
   const g=agates[aerisSession.current];
   if(g && aerisPhase==="FLYING"){
     const rel=g.z-acraft.distance;
     $("#aerisApproach").classList.toggle("show",rel<950&&rel>120);
 
     if(rel<115 && g.state==="future"){
-      // Use the same projection as the rendered gate, so visual alignment and hit detection agree.
       const gp=aproj(g.x,g.y,Math.max(70,rel));
       const gateR=aclamp(gp.s*220,10,210);
-
-      // Ship screen center uses the same values as aerisDrawShip().
       const shipX=AW*.5+acraft.x*AW*.12;
       const shipY=AH*.72+acraft.y*AH*.055;
-
-      // The drawn gate is elliptical (height = 0.60 * radius).
-      // Give a small margin so entering the visible ring feels fair on touch devices.
       const dx=(shipX-gp.x)/(gateR*.78);
       const dy=(shipY-gp.y)/(gateR*.60*.78);
       const inside=(dx*dx+dy*dy)<=1;
 
       if(inside){
         g.state="hit";
-
-        // Precision bonus based on normalized distance from the visible gate center.
         const precision=Math.sqrt(dx*dx+dy*dy);
         let bonus=20,label="CLEAR";
         if(precision<=.30){bonus=100;label="PERFECT";aerisSession.checkpointPerfect++}
         else if(precision<=.60){bonus=60;label="GREAT";aerisSession.checkpointGreat++}
         else{aerisSession.checkpointClear++}
         aerisSession.checkpointBonus += bonus;
-
         $("#aerisRouteSub").textContent=`${label} ENTRY · +${bonus}`;
         aerisCheckpointFxThenQuiz();
       }else if(rel<20){
-        // Missing the visible ring no longer fails the expedition.
-        // Crossing the checkpoint plane still advances to the vocabulary mission,
-        // but no precision bonus is awarded.
         g.state="passed";
         $("#aerisRouteSub").textContent="CHECKPOINT PASS · +0";
         aerisCheckpointFxThenQuiz();
       }
     }
   }
-  cameraShake=alerp(cameraShake,Math.abs(acraft.roll)*.48+(acraft.speed/AERIS_SPEED.max)*.16,1-Math.pow(.08,dt));aerisUpdateHud();
+  cameraShake=alerp(
+    cameraShake,
+    Math.abs(acraft.roll)*.62+aclamp(acraft.speed/AERIS_SPEED.max,0,1)*.48,
+    1-Math.pow(.055,dt)
+  );
+  aerisUpdateHud();
 }
 function aerisUpdateHud(){
-  $("#aerisSpeedHud").textContent=String(Math.round(acraft.speed)).padStart(3,"0");$("#aerisAltHud").textContent=String(Math.round(acraft.altitude)).padStart(4,"0");
-  $("#aerisThrHud").textContent=String(Math.round(acraft.throttle*100)).padStart(2,"0");$("#aerisCpHud").textContent=`${aerisSession.answered}/${aerisSession.count}`;
+  $("#aerisSpeedHud").textContent=Math.round(acraft.speed).toLocaleString();
+  $("#aerisAltHud").textContent=Math.max(0,Math.round(acraft.altitude)).toLocaleString();
+  $("#aerisThrHud").textContent=String(Math.round(acraft.throttle*100)).padStart(2,"0");
+  $("#aerisCpHud").textContent=`${aerisSession.answered}/${aerisSession.count}`;
   $("#aerisProgressFill").style.width=(aerisSession.count?aerisSession.answered/aerisSession.count*100:0)+"%";
+  const stage=aerisSceneStage();
+  const badge=$("#aerisStageBadge");if(badge)badge.textContent=aerisStageLabel(stage);
+  const kicker=document.querySelector(".aeris-route-kicker");
+  const title=document.querySelector(".aeris-route-title");
+  if(kicker&&title){
+    kicker.textContent=stage==="LAUNCH"?"EARTH DEPARTURE":stage==="ATMOSPHERE"?"ASCENT CORRIDOR":stage==="EDGE"?"KÁRMÁN TRANSITION":stage==="ORBIT"?"ORBITAL CORRIDOR":"DEEP SPACE ROUTE";
+    title.textContent=stage==="LAUNCH"?"AERIS LAUNCH SITE":stage==="ATMOSPHERE"?"TROPOSPHERE ASCENT":stage==="EDGE"?"EDGE OF SPACE":stage==="ORBIT"?"EARTH ORBIT":"AURELIA CORRIDOR";
+  }
 }
 
 /* rendering */
 function aproj(x,y,z){const f=520/Math.max(70,z);return{x:AW*.5+(x-acraft.x*.42)*f*AW*.70,y:AH*.47+(y-acraft.y*.38)*f*AH*.68,s:f}}
 function aerisDrawSpace(){
-  let g=actx.createLinearGradient(0,0,0,AH);g.addColorStop(0,"#020203");g.addColorStop(.52,"#060607");g.addColorStop(1,"#0b0806");actx.fillStyle=g;actx.fillRect(0,0,AW,AH);
-  for(const n of anebulae){const rg=actx.createRadialGradient(n.x*AW,n.y*AH,0,n.x*AW,n.y*AH,n.r*Math.min(AW,AH));rg.addColorStop(0,`rgba(146,98,45,${n.a})`);rg.addColorStop(.45,`rgba(65,49,43,${n.a*.55})`);rg.addColorStop(1,"rgba(0,0,0,0)");actx.fillStyle=rg;actx.fillRect(0,0,AW,AH)}
-  const px=AW*.78-acraft.x*18,py=AH*.24+acraft.y*9,pr=Math.min(AW,AH)*.29;
-  const pg=actx.createRadialGradient(px-pr*.34,py-pr*.30,pr*.04,px,py,pr);pg.addColorStop(0,"#d6c5a9");pg.addColorStop(.12,"#a18a66");pg.addColorStop(.38,"#4c4030");pg.addColorStop(.72,"#17130f");pg.addColorStop(1,"#040404");
-  actx.globalAlpha=.62;actx.fillStyle=pg;actx.beginPath();actx.arc(px,py,pr,0,Math.PI*2);actx.fill();actx.globalAlpha=1;
-  actx.save();actx.translate(px,py);actx.rotate(-.2);actx.strokeStyle="rgba(211,169,93,.20)";actx.lineWidth=1;[1.45,1.65].forEach(k=>{actx.beginPath();actx.ellipse(0,0,pr*k,pr*.34*k,0,0,Math.PI*2);actx.stroke()});actx.restore();
-  actx.save();actx.translate(AW/2,AH/2);actx.rotate(-acraft.roll*.025);actx.translate(-AW/2,-AH/2);
-  for(const s of astars){let x=(s.x*AW-acraft.x*31*s.z+acraft.yaw*18*s.z+AW)%AW,y=(s.y*AH+acraft.y*18*s.z+AH)%AH;actx.fillStyle=`hsla(${s.h},55%,82%,${s.a})`;const r=.4+s.z*1.25;actx.fillRect(x,y,r,r)}actx.restore();
-  for(const a of aasteroids){let rel=((a.z-acraft.distance)%9000+9000)%9000+300;const p=aproj(a.x,a.y,rel),r=aclamp(a.r*p.s*.18,1,22);actx.fillStyle=`rgba(55,49,40,${aclamp(1-rel/9200,.1,.7)})`;actx.beginPath();actx.arc(p.x,p.y,r,0,Math.PI*2);actx.fill()}
-  const intensity=aclamp((acraft.speed-150)/250,0,1);if(intensity>.02){actx.strokeStyle=`rgba(215,181,116,${.08+.16*intensity})`;actx.lineWidth=.7+intensity;for(const d of adust){const sx=AW*.5+d.x*AW*.48,sy=AH*.5+d.y*AH*.46,len=(8+35*intensity)*d.z;actx.beginPath();actx.moveTo(sx,sy);actx.lineTo(sx+d.x*len,sy+d.y*len);actx.stroke()}}
+  const stage=aerisSceneStage();
+  const speedN=aclamp(acraft.speed/AERIS_SPEED.max,0,1);
+
+  /* Stage-specific sky/background. */
+  let bg=actx.createLinearGradient(0,0,0,AH);
+  if(stage==="LAUNCH"){
+    bg.addColorStop(0,"#243b56");bg.addColorStop(.55,"#8c7658");bg.addColorStop(1,"#20150e");
+  }else if(stage==="ATMOSPHERE"){
+    bg.addColorStop(0,"#05111f");bg.addColorStop(.40,"#163a60");bg.addColorStop(.78,"#6f96b1");bg.addColorStop(1,"#d8b782");
+  }else if(stage==="EDGE"){
+    bg.addColorStop(0,"#010206");bg.addColorStop(.58,"#071427");bg.addColorStop(.84,"#12365a");bg.addColorStop(1,"#4f83a8");
+  }else if(stage==="ORBIT"){
+    bg.addColorStop(0,"#010104");bg.addColorStop(.56,"#03050a");bg.addColorStop(1,"#07101a");
+  }else{
+    bg.addColorStop(0,"#010103");bg.addColorStop(.42,"#06040a");bg.addColorStop(1,"#10080a");
+  }
+  actx.fillStyle=bg;actx.fillRect(0,0,AW,AH);
+
+  /* Earth / atmosphere narrative. */
+  if(stage==="LAUNCH"){
+    const groundY=AH*.80;
+    const gg=actx.createLinearGradient(0,groundY,0,AH);
+    gg.addColorStop(0,"rgba(72,49,29,.55)");gg.addColorStop(1,"#080604");
+    actx.fillStyle=gg;actx.fillRect(0,groundY,AW,AH-groundY);
+    actx.fillStyle="rgba(255,219,157,.10)";
+    for(let i=0;i<18;i++){const x=(i*97+AW*.07)%AW,h=18+(i%5)*12;actx.fillRect(x,groundY-h,3,h)}
+    const sun=actx.createRadialGradient(AW*.72,AH*.48,0,AW*.72,AH*.48,AH*.25);
+    sun.addColorStop(0,"rgba(255,226,169,.50)");sun.addColorStop(.18,"rgba(229,169,90,.18)");sun.addColorStop(1,"rgba(0,0,0,0)");
+    actx.fillStyle=sun;actx.fillRect(0,0,AW,AH);
+  }else if(stage==="ATMOSPHERE"){
+    /* Fast-moving cloud decks below the ship. */
+    for(let i=0;i<18;i++){
+      const x=((i*137+acraft.distance*.12)% (AW+240))-120;
+      const y=AH*.70+(i%4)*28+Math.sin(i*1.7+acraft.distance*.001)*18;
+      const r=55+(i%5)*16;
+      const cg=actx.createRadialGradient(x,y,0,x,y,r);
+      cg.addColorStop(0,"rgba(245,244,235,.50)");cg.addColorStop(1,"rgba(255,255,255,0)");
+      actx.fillStyle=cg;actx.fillRect(x-r,y-r,r*2,r*2);
+    }
+  }else{
+    /* Earth curvature falls away through edge/orbit, then recedes in deep space. */
+    const earthScale=stage==="EDGE"?1.22:stage==="ORBIT"?.88:.45;
+    const er=Math.max(AW,AH)*earthScale;
+    const ex=AW*.48,ey=AH+(stage==="EDGE"?er*.42:stage==="ORBIT"?er*.58:er*.76);
+    const eg=actx.createRadialGradient(ex-er*.18,ey-er*.30,er*.05,ex,ey,er);
+    eg.addColorStop(0,"#527da1");eg.addColorStop(.22,"#285a80");eg.addColorStop(.48,"#143148");eg.addColorStop(.80,"#06121e");eg.addColorStop(1,"#010306");
+    actx.fillStyle=eg;actx.beginPath();actx.arc(ex,ey,er,0,Math.PI*2);actx.fill();
+    actx.strokeStyle=stage==="EDGE"?"rgba(126,205,255,.86)":"rgba(102,174,221,.42)";
+    actx.lineWidth=stage==="EDGE"?6:3;actx.shadowColor="rgba(70,170,255,.42)";actx.shadowBlur=18;
+    actx.beginPath();actx.arc(ex,ey,er,Math.PI*1.05,Math.PI*1.95);actx.stroke();actx.shadowBlur=0;
+  }
+
+  /* Richer deep-space color fields. */
+  if(stage==="ORBIT"||stage==="DEEP"){
+    for(const n of anebulae){
+      const hue=stage==="DEEP"?(n.x>.5?[116,76,141]:[83,52,115]):[80,66,48];
+      const rg=actx.createRadialGradient(n.x*AW,n.y*AH,0,n.x*AW,n.y*AH,n.r*Math.min(AW,AH));
+      rg.addColorStop(0,`rgba(${hue[0]},${hue[1]},${hue[2]},${n.a*(stage==="DEEP"?1.55:.65)})`);
+      rg.addColorStop(.45,`rgba(55,38,65,${n.a*.45})`);
+      rg.addColorStop(1,"rgba(0,0,0,0)");
+      actx.fillStyle=rg;actx.fillRect(0,0,AW,AH);
+    }
+  }
+
+  /* Stars appear gradually as Earth atmosphere thins. */
+  const starAlpha=stage==="LAUNCH"?0:stage==="ATMOSPHERE"?.16:stage==="EDGE"?.55:1;
+  actx.save();
+  actx.globalAlpha=starAlpha;
+  actx.translate(AW/2,AH/2);actx.rotate(-acraft.roll*.028);actx.translate(-AW/2,-AH/2);
+  for(const s of astars){
+    const x=(s.x*AW-acraft.x*31*s.z+acraft.yaw*18*s.z+AW)%AW;
+    const y=(s.y*AH+acraft.y*18*s.z+AH)%AH;
+    const r=.35+s.z*(1.05+speedN*1.1);
+    actx.fillStyle=`hsla(${s.h},55%,86%,${s.a})`;actx.fillRect(x,y,r,r);
+  }
+  actx.restore();actx.globalAlpha=1;
+
+  if(stage==="ORBIT"||stage==="DEEP"){
+    for(const a of aasteroids){
+      const rel=((a.z-acraft.distance)%9000+9000)%9000+300,p=aproj(a.x,a.y,rel),r=aclamp(a.r*p.s*.18,1,26);
+      actx.fillStyle=`rgba(66,57,46,${aclamp(1-rel/9200,.08,stage==="DEEP"?.82:.42)})`;
+      actx.beginPath();actx.arc(p.x,p.y,r,0,Math.PI*2);actx.fill();
+    }
+  }
+
+  /* Speed streaks become dramatically longer above ~2,000 KT. */
+  const intensity=aclamp((acraft.speed-600)/3900,0,1);
+  if(intensity>.01){
+    actx.strokeStyle=`rgba(226,195,136,${.08+.34*intensity})`;
+    actx.lineWidth=.7+intensity*1.8;
+    for(const d of adust){
+      const sx=AW*.5+d.x*AW*.48,sy=AH*.5+d.y*AH*.46;
+      const len=(12+150*intensity)*d.z;
+      actx.beginPath();actx.moveTo(sx,sy);actx.lineTo(sx+d.x*len,sy+d.y*len);actx.stroke();
+    }
+  }
+
+  /* Deep-space destination planet. */
+  if(stage==="DEEP"){
+    const px=AW*.80-acraft.x*18,py=AH*.23+acraft.y*8,pr=Math.min(AW,AH)*.22;
+    const pg=actx.createRadialGradient(px-pr*.35,py-pr*.34,pr*.05,px,py,pr);
+    pg.addColorStop(0,"#c8b594");pg.addColorStop(.16,"#8b7255");pg.addColorStop(.48,"#3d3028");pg.addColorStop(.82,"#15100f");pg.addColorStop(1,"#030303");
+    actx.globalAlpha=.82;actx.fillStyle=pg;actx.beginPath();actx.arc(px,py,pr,0,Math.PI*2);actx.fill();actx.globalAlpha=1;
+    actx.save();actx.translate(px,py);actx.rotate(-.18);actx.strokeStyle="rgba(222,184,115,.34)";actx.lineWidth=1.4;
+    [1.45,1.68].forEach(k=>{actx.beginPath();actx.ellipse(0,0,pr*k,pr*.31*k,0,0,Math.PI*2);actx.stroke()});actx.restore();
+  }
 }
 function aerisDrawGate(g){
   const rel=g.z-acraft.distance;if(rel<40||rel>7000)return;const p=aproj(g.x,g.y,rel),r=aclamp(p.s*220,10,210),alpha=aclamp(1-rel/7200,.10,.96);
@@ -16336,16 +16737,42 @@ function aerisDrawGate(g){
   if(g===agates[aerisSession.current]){actx.fillStyle="rgba(235,207,150,.82)";actx.font=`600 ${Math.max(8,r*.10)}px Inter`;actx.textAlign="center";actx.fillText("NEXT CHECKPOINT",0,-r*.74)}actx.restore();
 }
 function aerisDrawShip(){
-  const cx=AW*.5+acraft.x*AW*.12,cy=AH*.72+acraft.y*AH*.055,sc=aclamp(AW/1200,.76,1.18),bank=acraft.roll*.48;
-  actx.save();actx.translate(cx+arnd(-cameraShake,cameraShake),cy+arnd(-cameraShake*.45,cameraShake*.45));actx.rotate(bank);actx.scale(sc,sc);
-  actx.fillStyle="rgba(0,0,0,.38)";actx.beginPath();actx.ellipse(0,45,94,18,0,0,Math.PI*2);actx.fill();
-  const eg=actx.createRadialGradient(0,62,1,0,62,34);eg.addColorStop(0,"rgba(255,244,214,.95)");eg.addColorStop(.16,"rgba(222,166,76,.76)");eg.addColorStop(1,"rgba(222,166,76,0)");actx.fillStyle=eg;actx.beginPath();actx.arc(0,62,34,0,Math.PI*2);actx.fill();
-  let wg=actx.createLinearGradient(-120,0,120,0);wg.addColorStop(0,"#4e4b46");wg.addColorStop(.36,"#bfb8aa");wg.addColorStop(.50,"#f1eadf");wg.addColorStop(.64,"#bfb8aa");wg.addColorStop(1,"#4e4b46");actx.fillStyle=wg;
-  actx.beginPath();actx.moveTo(-12,-16);actx.lineTo(-126,32);actx.lineTo(-58,45);actx.lineTo(-13,24);actx.lineTo(13,24);actx.lineTo(58,45);actx.lineTo(126,32);actx.lineTo(12,-16);actx.closePath();actx.fill();
-  const fg=actx.createLinearGradient(-23,0,23,0);fg.addColorStop(0,"#5c5953");fg.addColorStop(.34,"#d6cfc2");fg.addColorStop(.52,"#f6eee1");fg.addColorStop(.72,"#aaa294");fg.addColorStop(1,"#494641");actx.fillStyle=fg;
-  actx.beginPath();actx.moveTo(0,-72);actx.bezierCurveTo(24,-46,27,10,14,66);actx.quadraticCurveTo(0,90,-14,66);actx.bezierCurveTo(-27,10,-24,-46,0,-72);actx.closePath();actx.fill();
+  const stage=aerisSceneStage();
+  const speedN=aclamp(acraft.speed/AERIS_SPEED.max,0,1);
+  const cx=AW*.5+acraft.x*AW*.12,cy=(stage==="LAUNCH"?AH*.69:AH*.72)+acraft.y*AH*.055;
+  const sc=aclamp(AW/1200,.76,1.18)*(stage==="LAUNCH"?1.04:1);
+  const bank=acraft.roll*.58;
+  actx.save();
+  actx.translate(cx+arnd(-cameraShake,cameraShake),cy+arnd(-cameraShake*.48,cameraShake*.48));
+  actx.rotate(bank);
+  actx.scale(sc,sc);
+
+  actx.fillStyle="rgba(0,0,0,.42)";actx.beginPath();actx.ellipse(0,48,98,18,0,0,Math.PI*2);actx.fill();
+
+  /* Engine plume length reacts strongly to speed / launch. */
+  const plume=stage==="LAUNCH"?92:44+speedN*115;
+  const eg=actx.createLinearGradient(0,48,0,48+plume);
+  eg.addColorStop(0,"rgba(255,250,235,.96)");
+  eg.addColorStop(.12,"rgba(240,192,99,.92)");
+  eg.addColorStop(.42,"rgba(111,155,255,.52)");
+  eg.addColorStop(1,"rgba(75,110,255,0)");
+  actx.fillStyle=eg;
+  actx.beginPath();
+  actx.moveTo(-13,50);actx.quadraticCurveTo(-4,50+plume*.72,0,50+plume);
+  actx.quadraticCurveTo(4,50+plume*.72,13,50);actx.closePath();actx.fill();
+
+  let wg=actx.createLinearGradient(-120,0,120,0);
+  wg.addColorStop(0,"#4e4b46");wg.addColorStop(.36,"#bfb8aa");wg.addColorStop(.50,"#f1eadf");wg.addColorStop(.64,"#bfb8aa");wg.addColorStop(1,"#4e4b46");
+  actx.fillStyle=wg;actx.beginPath();actx.moveTo(-12,-16);actx.lineTo(-126,32);actx.lineTo(-58,45);actx.lineTo(-13,24);actx.lineTo(13,24);actx.lineTo(58,45);actx.lineTo(126,32);actx.lineTo(12,-16);actx.closePath();actx.fill();
+
+  const fg=actx.createLinearGradient(-23,0,23,0);
+  fg.addColorStop(0,"#5c5953");fg.addColorStop(.34,"#d6cfc2");fg.addColorStop(.52,"#f6eee1");fg.addColorStop(.72,"#aaa294");fg.addColorStop(1,"#494641");
+  actx.fillStyle=fg;actx.beginPath();actx.moveTo(0,-72);actx.bezierCurveTo(24,-46,27,10,14,66);actx.quadraticCurveTo(0,90,-14,66);actx.bezierCurveTo(-27,10,-24,-46,0,-72);actx.closePath();actx.fill();
+
   actx.fillStyle="#aaa397";actx.beginPath();actx.moveTo(-8,49);actx.lineTo(-50,70);actx.lineTo(-12,67);actx.lineTo(0,57);actx.lineTo(12,67);actx.lineTo(50,70);actx.lineTo(8,49);actx.closePath();actx.fill();
-  actx.fillStyle="#121515";actx.beginPath();actx.ellipse(0,-30,12,25,0,0,Math.PI*2);actx.fill();actx.strokeStyle="rgba(219,181,111,.78)";actx.lineWidth=1.2;actx.stroke();actx.strokeStyle="#c79b52";actx.lineWidth=2;actx.beginPath();actx.moveTo(0,-68);actx.lineTo(0,62);actx.stroke();actx.restore();
+  actx.fillStyle="#121515";actx.beginPath();actx.ellipse(0,-30,12,25,0,0,Math.PI*2);actx.fill();actx.strokeStyle="rgba(219,181,111,.78)";actx.lineWidth=1.2;actx.stroke();
+  actx.strokeStyle="#c79b52";actx.lineWidth=2;actx.beginPath();actx.moveTo(0,-68);actx.lineTo(0,62);actx.stroke();
+  actx.restore();
 }
 function aerisFrame(now){const dt=Math.min(.035,(now-aLast)/1000);aLast=now;if(aerisOverlay.classList.contains("open")){aerisUpdate(dt);aerisDrawSpace();[...agates].sort((a,b)=>b.z-a.z).forEach(aerisDrawGate);aerisDrawShip()}requestAnimationFrame(aerisFrame)}
 
