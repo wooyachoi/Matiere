@@ -9344,11 +9344,24 @@ header.top{
 .op-stage{position:relative!important;overflow:hidden!important;background:#050504!important}
 #onlinePenalty3DCanvas{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;z-index:1!important;pointer-events:none!important;background:#050504!important}
 #onlinePenaltyCanvas{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;z-index:2!important;background:transparent!important}
-.op-stage.penalty-3d-ready #onlinePenaltyCanvas{display:none!important}
+.op-stage.penalty-3d-ready #onlinePenaltyCanvas{opacity:.001!important;pointer-events:auto!important;display:block!important}
 .op-stage.penalty-3d-fallback #onlinePenalty3DCanvas{display:none!important}
 @media(max-width:700px){.op-stage{min-height:500px!important}}
 </style>
 
+<style id="matiere-v1482-gameplay-fix">
+.op-stage.penalty-3d-ready #onlinePenaltyCanvas{
+  opacity:.001!important;
+  display:block!important;
+  pointer-events:auto!important;
+  z-index:3!important;
+  background:transparent!important;
+}
+#aerisFlightOverlay.aeris-3d-ready #aerisCanvas{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+</style>
 </head>
 <body>
 
@@ -19191,10 +19204,10 @@ aerisResize();requestAnimationFrame(aerisFrame);
     });
     const engineGlowL=new THREE.Sprite(engineGlowMat.clone());
     const engineGlowR=new THREE.Sprite(engineGlowMat.clone());
-    engineGlowL.scale.set(.34,.82,1);
-    engineGlowR.scale.set(.34,.82,1);
-    engineGlowL.position.set(-.80,-1.42,.15);
-    engineGlowR.position.set(.80,-1.42,.15);
+    engineGlowL.scale.set(.18,.42,1);
+    engineGlowR.scale.set(.18,.42,1);
+    engineGlowL.position.set(-.62,-1.04,.10);
+    engineGlowR.position.set(.62,-1.04,.10);
     ship.add(engineGlowL,engineGlowR);
     // Real 3D checkpoint rings.
     const gateGroup=new THREE.Group();
@@ -19211,11 +19224,6 @@ aerisResize();requestAnimationFrame(aerisFrame);
           })
         );
         g.add(ring);
-        const inner=new THREE.Mesh(
-          new THREE.TorusGeometry(1.42,.022,8,64),
-          new THREE.MeshBasicMaterial({color:0xffedaa,transparent:true,opacity:.60})
-        );
-        g.add(inner);
         for(let i=0;i<4;i++){
           const tick=new THREE.Mesh(new THREE.BoxGeometry(.06,.34,.04),new THREE.MeshBasicMaterial({color:0xffe79a}));
           tick.position.set(Math.sin(i*Math.PI/2)*1.43,Math.cos(i*Math.PI/2)*1.43,0);
@@ -19259,7 +19267,7 @@ aerisResize();requestAnimationFrame(aerisFrame);
     }
 
     // Subtle speed particles.
-    const streakCount=90;
+    const streakCount=34;
     const streakGroup=new THREE.Group();
     scene.add(streakGroup);
     const streakMat=new THREE.MeshBasicMaterial({color:0xd6c49f,transparent:true,opacity:.0});
@@ -19306,11 +19314,11 @@ aerisResize();requestAnimationFrame(aerisFrame);
 
       // Map existing 2D flight state into actual world-space motion.
       const shipX=(c.x||0)*3.45;
-      const shipY=-(c.y||0)*2.15 + (launch ? -1.08 : -.66);
-      ship.position.x+=(shipX-ship.position.x)*Math.min(1,(state.dt||.016)*7.2);
-      ship.position.y+=(shipY-ship.position.y)*Math.min(1,(state.dt||.016)*7.2);
+      const shipY=-(c.y||0)*1.85 + (launch ? -1.10 : -.86);
+      ship.position.x+=(shipX-ship.position.x)*Math.min(1,(state.dt||.016)*8.8);
+      ship.position.y+=(shipY-ship.position.y)*Math.min(1,(state.dt||.016)*8.8);
       ship.position.z=0;
-      ship.rotation.z=-(c.roll||0)*.32;
+      ship.rotation.z=-(c.roll||0)*.22;
       ship.rotation.x=0;
       ship.rotation.y=0;
       if(crash){
@@ -19320,15 +19328,15 @@ aerisResize();requestAnimationFrame(aerisFrame);
       const dmg=Math.max(0,state.damage||0);
 
       // Bigger craft in the foreground. Scale is limited to avoid pixel stretching.
-      const craftScale=1.0+speedN*.035;
+      const craftScale=1.0+speedN*.02;
       ship.scale.setScalar(craftScale);
 
-      engineLight.intensity=5+speedN*12+(launch?7:0);
+      engineLight.intensity=2.2+speedN*4.2+(launch?2.0:0);
       const glowScale=1+speedN*.65+(launch?.35:0);
-      engineGlowL.scale.set(.34*glowScale,.82*(1+speedN*1.25+(launch?.75:0)),1);
+      engineGlowL.scale.set(.18*glowScale,.42*(1+speedN*.55+(launch?.30:0)),1);
       engineGlowR.scale.copy(engineGlowL.scale);
-      engineGlowL.material.opacity=.50+speedN*.34;
-      engineGlowR.material.opacity=.50+speedN*.34;
+      engineGlowL.material.opacity=.16+speedN*.18;
+      engineGlowR.material.opacity=.16+speedN*.18;
 
       // Damage subtly darkens and shakes the craft rather than deforming the sprite.
       shipSprite.material.opacity=1-Math.min(.22,dmg*.045);
@@ -19341,20 +19349,20 @@ aerisResize();requestAnimationFrame(aerisFrame);
 
       const shake=(state.shake||0)*.012;
       camTarget.set(
-        ship.position.x*.14+(Math.random()-.5)*shake,
-        1.82+ship.position.y*.10+(Math.random()-.5)*shake,
-        6.15-speedN*.42-lockN*.62
+        ship.position.x*.20+(Math.random()-.5)*shake,
+        1.70+ship.position.y*.16+(Math.random()-.5)*shake,
+        6.00-speedN*.30-lockN*.45
       );
       camera.position.lerp(camTarget,Math.min(1,(state.dt||.016)*5.4));
-      lookTarget.set(ship.position.x*.12,ship.position.y*.12,-23-speedN*22);
+      lookTarget.set(ship.position.x*.18,ship.position.y*.14,-20-speedN*18);
       camera.lookAt(lookTarget);
 
       // Place up to five upcoming checkpoints in genuine depth.
       const gs=state.gates||[];
-      ensureGates(Math.max(5,gs.length));
+      ensureGates(Math.max(1,gs.length));
       gateMeshes.forEach((mesh,i)=>{
         const g=gs[i];
-        if(!g){mesh.visible=false;return}
+        if(!g || i>0){mesh.visible=false;return}
         mesh.visible=g.rel>-250&&g.rel<14000&&g.state!=="hit";
         if(!mesh.visible)return;
         const depth=-Math.max(7,Math.min(180,g.rel/44));
@@ -19390,12 +19398,12 @@ aerisResize();requestAnimationFrame(aerisFrame);
 
       stars.position.z=(stars.position.z+(state.dt||.016)*(2+speedN*22))%18;
       streaks.forEach((s,i)=>{
-        const on=speedN>.22;
+        const on=speedN>.58;
         s.visible=on;
         if(!on)return;
-        s.material.opacity=.05+speedN*.42;
-        s.scale.z=.35+speedN*4.8;
-        s.position.z+=(state.dt||.016)*(7+speedN*80);
+        s.material.opacity=.015+speedN*.10;
+        s.scale.z=.22+speedN*1.65;
+        s.position.z+=(state.dt||.016)*(4+speedN*38);
         if(s.position.z>6){
           s.position.z=-70-Math.random()*35;
           s.position.x=(Math.random()-.5)*18;
