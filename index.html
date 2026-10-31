@@ -9083,6 +9083,262 @@ header.top{
 }
 </style>
 
+
+<style id="matiere-v1474-warm-obsidian">
+/* =========================================================
+   MATIÈRE V14.74 — WARM OBSIDIAN WORD / FLASHCARD
+   Layout untouched. Palette/texture only.
+   ========================================================= */
+
+:root{
+  --wo-black:#090806;
+  --wo-black2:#0f0d0a;
+  --wo-black3:#15110d;
+  --wo-charcoal:#1a1713;
+  --wo-gold:#c79a4b;
+  --wo-gold2:#e6c178;
+  --wo-champagne:#f1dfb5;
+  --wo-line:rgba(199,154,75,.46);
+  --wo-text:#f4efe6;
+  --wo-muted:#aaa197;
+}
+
+/* Overall section treatment: no navy cast */
+#view-words,
+#view-cards{
+  color:var(--wo-text)!important;
+}
+#view-words .section-header,
+#view-cards .section-header{
+  background:
+    radial-gradient(circle at 82% 18%,rgba(204,160,83,.045),transparent 26%),
+    linear-gradient(180deg,rgba(255,255,255,.012),transparent 72%)!important;
+}
+#view-words .section-header h2,
+#view-cards .section-header h2{
+  color:#f5f1e9!important;
+}
+#view-words .section-header p,
+#view-cards .section-header p{
+  color:#aaa39a!important;
+}
+#view-words .section-kicker,
+#view-cards .section-kicker{
+  color:#d8af64!important;
+}
+#view-words .section-rule,
+#view-cards .section-rule{
+  background:linear-gradient(90deg,transparent,rgba(225,188,113,.92),transparent)!important;
+  box-shadow:0 0 10px rgba(202,155,73,.08)!important;
+}
+
+/* Setup cards: warm black glass instead of navy */
+#view-words #wordsSetup,
+#view-cards #cardsSetup{
+  background:
+    radial-gradient(circle at 92% 2%,rgba(217,172,91,.08),transparent 25%),
+    radial-gradient(circle at 8% 98%,rgba(137,91,39,.07),transparent 28%),
+    linear-gradient(145deg,#14110e 0%,#0d0b09 60%,#080706 100%)!important;
+  border:1px solid rgba(202,156,78,.48)!important;
+  box-shadow:
+    0 16px 34px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.025),
+    inset 0 0 40px rgba(151,102,42,.025)!important;
+}
+#view-words #wordsSetup h2,
+#view-cards #cardsSetup h2{
+  color:#f4efe6!important;
+}
+#view-words #wordsSetup p,
+#view-cards #cardsSetup p,
+#view-words .count-line,
+#view-cards .count-line{
+  color:#aaa198!important;
+}
+
+/* Vocabulary book selector row */
+#view-words .rescue-book-switcher,
+#view-cards .rescue-book-switcher{
+  background:#0c0a08!important;
+  border-color:rgba(199,154,75,.34)!important;
+}
+
+/* Day picker surfaces */
+#view-words .day-picker,
+#view-cards .day-picker{
+  background:
+    linear-gradient(145deg,rgba(17,14,11,.94),rgba(9,8,7,.98))!important;
+  border:1px solid rgba(199,154,75,.30)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.015),
+    inset 0 0 24px rgba(176,120,47,.025)!important;
+}
+
+#view-words .day-chip,
+#view-cards .day-chip,
+#view-words .day-quick-btn,
+#view-cards .day-quick-btn,
+#view-words .day-unknown-access,
+#view-cards .day-unknown-access{
+  background:linear-gradient(180deg,#15120f,#0e0c0a)!important;
+  color:#efe9df!important;
+  border:1px solid rgba(199,154,75,.48)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.015),
+    0 2px 6px rgba(0,0,0,.18)!important;
+}
+
+#view-words .day-picker .day-chip.selected,
+#view-cards .day-picker .day-chip.selected,
+#view-words .day-quick-row .day-quick-btn.selected,
+#view-cards .day-quick-row .day-quick-btn.selected,
+#view-words .day-unknown-access.selected,
+#view-cards .day-unknown-access.selected{
+  background:
+    linear-gradient(135deg,#f0d796 0%,#d7a752 55%,#a96f2b 100%)!important;
+  color:#17110a!important;
+  border-color:#f0d08d!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.34),
+    0 4px 13px rgba(0,0,0,.22)!important;
+}
+
+/* Primary buttons */
+#view-words #wordsStartBtn,
+#view-cards #cardsOkBtn,
+#view-words #wordsNextBtn,
+#view-cards #flipBtn{
+  background:
+    linear-gradient(135deg,#f2dda4,#d8aa58 58%,#a9712d)!important;
+  color:#17110a!important;
+  border-color:#efd08c!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.36),
+    0 7px 18px rgba(0,0,0,.22)!important;
+}
+
+/* Study cards — warm obsidian, subtle metallic atmosphere */
+#view-words .word-viewer,
+#view-cards .flashcard{
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 84% 14%,rgba(229,190,112,.065),transparent 24%),
+    radial-gradient(circle at 10% 86%,rgba(161,105,44,.055),transparent 28%),
+    linear-gradient(145deg,#17130f 0%,#0e0c0a 56%,#090807 100%)!important;
+  border:1px solid rgba(211,169,87,.68)!important;
+  box-shadow:
+    0 20px 42px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.028),
+    inset 0 0 60px rgba(117,77,30,.035)!important;
+}
+
+/* Decorative rings become bronze, subtle not blue */
+#view-words .word-viewer::before,
+#view-words .word-viewer::after,
+#view-cards .flashcard::before,
+#view-cards .flashcard::after{
+  border-color:rgba(202,156,78,.16)!important;
+}
+#view-words .word-viewer::before,
+#view-cards .flashcard::before{
+  box-shadow:0 0 28px rgba(190,137,61,.02)!important;
+}
+#view-words .word-viewer::after,
+#view-cards .flashcard::after{
+  box-shadow:0 0 20px rgba(224,183,103,.02)!important;
+}
+
+/* Day tag */
+#view-words .word-viewer-day,
+#view-cards .flashcard .daytag{
+  background:rgba(15,12,9,.92)!important;
+  color:#e3bd73!important;
+  border-color:rgba(211,169,87,.72)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+
+/* Main content */
+#view-words .word-viewer-word,
+#view-cards .flashcard .cardmain.word{
+  color:#faf6ee!important;
+  text-shadow:0 2px 14px rgba(0,0,0,.34)!important;
+}
+#view-words .word-viewer-meaning,
+#view-cards .flashcard .cardmain.meaning{
+  color:#e7e0d5!important;
+}
+#view-words .word-viewer-divider{
+  background:linear-gradient(90deg,transparent,#d8ad5b,transparent)!important;
+  box-shadow:0 0 9px rgba(204,154,70,.12)!important;
+}
+#view-cards .flashcard .hint{
+  color:#948c83!important;
+}
+
+/* Controls */
+#view-words .words-controls .gbtn,
+#view-cards .card-controls .gbtn,
+#view-words #wordUnknownBtn,
+#view-cards #cardUnknownBtn{
+  background:linear-gradient(180deg,#15120f,#0c0a08)!important;
+  color:#eee8df!important;
+  border:1px solid rgba(199,154,75,.48)!important;
+}
+#view-words #wordUnknownBtn,
+#view-cards #cardUnknownBtn{
+  background:#100e0b!important;
+}
+#view-words #wordUnknownBtn.on,
+#view-cards #cardUnknownBtn.on{
+  background:#342018!important;
+  color:#f0cfc2!important;
+  border-color:#9f5946!important;
+}
+
+/* Progress bars */
+#view-words .progress-bar,
+#view-cards .progress-bar{
+  background:#26211b!important;
+  border:1px solid rgba(199,154,75,.22)!important;
+}
+#view-words .progress-bar>div,
+#view-cards .progress-bar>div{
+  background:linear-gradient(90deg,#ecd18d,#c99445)!important;
+  box-shadow:0 0 8px rgba(205,159,76,.15)!important;
+}
+
+/* Small text / links */
+#view-words .back-link,
+#view-cards .back-link,
+#view-cards .shuffle{
+  color:#d9ad5d!important;
+}
+#view-words .words-hint{
+  color:#8d857c!important;
+}
+#view-words .words-topline,
+#view-cards .count-line{
+  color:#e6dfd4!important;
+}
+
+/* Remove any residual blue/navy inherited fills in these views */
+#view-words [style*="#07101a"],
+#view-cards [style*="#07101a"]{
+  background:#0f0d0a!important;
+}
+
+/* Mobile keeps same structure, just slightly warmer contrast */
+@media(max-width:700px){
+  #view-words .word-viewer,
+  #view-cards .flashcard{
+    background:
+      radial-gradient(circle at 88% 10%,rgba(225,184,104,.055),transparent 24%),
+      linear-gradient(145deg,#15120f,#0b0908 70%)!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
