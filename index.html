@@ -9504,6 +9504,79 @@ header.top{
 }
 </style>
 
+
+<style id="matiere-v1465-dialogue-preset">
+/* DIALOGUE: setup first, then conversation — same flow as other games */
+.dialogue-setup-screen{max-width:1120px;margin:0 auto 24px}
+.dialogue-preflight-panel{
+  padding:26px!important;
+  border:1px solid rgba(205,165,89,.42)!important;
+  border-radius:16px!important;
+  background:linear-gradient(145deg,#0d0d0c,#090908)!important;
+}
+.dialogue-preflight-head{text-align:center;padding:5px 10px 22px;border-bottom:1px solid rgba(212,175,55,.13)}
+.dialogue-preflight-kicker{font-size:9px;letter-spacing:.28em;color:#b88f4d;font-weight:900}
+.dialogue-preflight-head h3{margin:7px 0 5px;font:700 clamp(26px,3.5vw,38px)/1 Georgia,serif;color:#eee5d8}
+.dialogue-preflight-head p{margin:0;color:#857a6b;font-size:11px}
+.dialogue-preflight-section{padding:20px 0 4px}
+.dialogue-preflight-section+.dialogue-preflight-section{border-top:1px solid rgba(212,175,55,.10);margin-top:12px}
+.dialogue-preflight-label{display:flex;align-items:center;gap:9px;margin:0 0 12px}
+.dialogue-preflight-label>b{
+  width:29px;height:29px;border-radius:8px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#d8b467,#9f702e);color:#171109;font-size:9px
+}
+.dialogue-preflight-label>span{font-size:10px;letter-spacing:.16em;font-weight:900;color:#d9c9aa}
+.dialogue-preflight-label>small{margin-left:auto;font-size:9px;color:#776e62}
+#dialogueSetupScreen .day-picker{
+  max-height:none!important;overflow:visible!important;padding:12px!important;
+}
+.dialogue-preflight-modes{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.dialogue-preflight-modes button{min-height:78px!important;text-align:center!important;padding:12px 9px!important}
+.dialogue-preflight-modes button b{font-size:10px!important;letter-spacing:.04em}
+.dialogue-preflight-modes button small{display:block;margin-top:6px;font-size:8px!important;line-height:1.35}
+.dialogue-target-preview{min-height:42px;padding:8px 0}
+.dialogue-refresh-targets{
+  margin-top:8px;border:0;background:transparent;color:#bd944d;font-size:8px;font-weight:900;cursor:pointer
+}
+.dialogue-preflight-start{margin-top:22px!important;min-height:58px!important;font-size:12px!important}
+.dialogue-play-screen{max-width:1320px;margin:0 auto}
+.dialogue-play-topbar{
+  min-height:54px;padding:9px 14px 9px 17px;margin-bottom:10px;border:1px solid rgba(212,175,55,.24);
+  border-radius:11px;background:#0d0d0c;display:flex;align-items:center;justify-content:space-between;gap:12px
+}
+.dialogue-play-topbar>div{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
+.dialogue-play-topbar span{
+  padding:5px 8px;border-radius:999px;background:linear-gradient(135deg,#d7b262,#a47331);color:#171109;
+  font-size:8px;font-weight:950
+}
+.dialogue-play-topbar b{font-size:11px;color:#ddd0bc}
+.dialogue-play-topbar small{font-size:8px;color:#8b7e6c;letter-spacing:.08em}
+.dialogue-play-topbar button{
+  flex:0 0 auto;border:1px solid rgba(212,175,55,.30);border-radius:999px;background:#12110f;
+  color:#c4a264;padding:8px 12px;font-size:9px;font-weight:900;cursor:pointer
+}
+.dialogue-live-sidebar{min-height:670px}
+.dialogue-session-note{
+  padding:12px;border:1px dashed rgba(212,175,55,.20);border-radius:10px;color:#71685c;font-size:9px;line-height:1.55
+}
+.dialogue-session-note b{color:#b58d4b;font-size:8px;letter-spacing:.14em}
+.dialogue-session-note p{margin:5px 0 0}
+.dialogue-session-note strong{color:#c9aa6e}
+@media(max-width:1050px){
+  .dialogue-preflight-modes{grid-template-columns:1fr 1fr!important}
+  .dialogue-preflight-modes button:first-child{grid-column:1/-1}
+}
+@media(max-width:700px){
+  .dialogue-preflight-panel{padding:16px!important}
+  .dialogue-preflight-section{padding-top:15px}
+  .dialogue-preflight-modes{grid-template-columns:1fr!important}
+  .dialogue-preflight-modes button:first-child{grid-column:auto}
+  .dialogue-preflight-modes button{min-height:62px!important}
+  .dialogue-play-topbar{align-items:flex-start}
+  .dialogue-play-topbar button{margin-left:auto}
+}
+</style>
+
 </head>
 <body>
 
@@ -9655,84 +9728,131 @@ header.top{
         </div>
       </section>
 
-      <div class="dialogue-layout">
-        <section class="dialogue-chat-shell">
-          <div class="dialogue-chat-head">
-            <div class="dialogue-tutor">
-              <span class="dialogue-avatar" aria-hidden="true"></span>
-              <div><b>Matière Tutor <i>AI</i></b><small>Your English Conversation Partner</small></div>
+      <!-- STEP 1 · 다른 게임처럼 먼저 학습 범위/모드 선택 -->
+      <section id="dialogueSetupScreen" class="dialogue-setup-screen">
+        <div class="panel dialogue-preflight-panel">
+          <div class="dialogue-preflight-head">
+            <div class="dialogue-preflight-kicker">MATIÈRE · CONVERSATION SESSION</div>
+            <h3>Choose your study range</h3>
+            <p>대화를 시작하기 전에 사용할 단어장과 Day/강, 대화 모드를 선택하세요.</p>
+          </div>
+
+          <div class="dialogue-preflight-section">
+            <div class="dialogue-preflight-label">
+              <b>01</b><span>VOCABULARY RANGE</span>
+              <small id="dialoguePoolLabel">0 words selected</small>
             </div>
-            <div class="dialogue-session-state">
-              <span id="dialogueModeBadge">AUTO</span>
-              <button type="button" id="dialogueResetBtn" title="대화 초기화">↻</button>
-            </div>
-          </div>
-
-          <div id="dialogueChat" class="dialogue-chat" aria-live="polite">
-            <div class="dialogue-empty">
-              <span class="dialogue-avatar large" aria-hidden="true"></span>
-              <b>Ready when you are.</b>
-              <p>오른쪽에서 단어장과 범위를 고른 뒤 대화를 시작하세요.</p>
-            </div>
-          </div>
-
-          <div id="dialogueQuickActions" class="dialogue-quick-actions">
-            <button type="button" data-dialogue-quick="quiz">단어 퀴즈</button>
-            <button type="button" data-dialogue-quick="context">문맥에서 뜻 확인</button>
-            <button type="button" data-dialogue-quick="sentence">예문 만들어보기</button>
-            <button type="button" data-dialogue-quick="talk">일상 대화</button>
-          </div>
-
-          <div class="dialogue-composer">
-            <textarea id="dialogueInput" rows="1" maxlength="1200" placeholder="Type a message in English..." autocomplete="off"></textarea>
-            <button type="button" id="dialogueSendBtn" aria-label="Send message">➤</button>
-          </div>
-          <div id="dialogueStatus" class="dialogue-status">대화를 시작하면 선택 단어의 숙련도가 자동으로 추적됩니다.</div>
-        </section>
-
-        <aside class="dialogue-study-shell">
-          <div class="dialogue-setting-title"><span>▣</span><div><b>Study Setting</b><small>학습 설정</small></div></div>
-
-          <div class="dialogue-setup-block">
             <div class="day-picker" id="dayPickerDialogue"></div>
-            <div class="dialogue-pool-line">
-              <span id="dialoguePoolLabel">0 words selected</span>
-              <button type="button" id="dialogueShuffleTargets">TARGET 새로고침</button>
+          </div>
+
+          <div class="dialogue-preflight-section">
+            <div class="dialogue-preflight-label">
+              <b>02</b><span>CONVERSATION MODE</span>
+              <small>기본값 AUTO</small>
+            </div>
+            <div class="dialogue-mode-grid dialogue-preflight-modes" id="dialogueModeGrid">
+              <button type="button" class="on" data-dialogue-mode="auto"><b>AUTO</b><small>프리토킹 + 퀴즈 + 문맥 + 작문 자동 혼합</small></button>
+              <button type="button" data-dialogue-mode="talk"><b>FREE TALK</b><small>자연스러운 영어 일상 대화</small></button>
+              <button type="button" data-dialogue-mode="quiz"><b>QUIZ</b><small>선택 범위 단어 뜻 빠르게 확인</small></button>
+              <button type="button" data-dialogue-mode="context"><b>CONTEXT</b><small>AI 예문 속에서 단어 의미 판단</small></button>
+              <button type="button" data-dialogue-mode="sentence"><b>SENTENCE</b><small>단어를 사용해 직접 영어 문장 작성</small></button>
             </div>
           </div>
 
-          <div class="dialogue-side-card">
-            <div class="dialogue-side-head"><div><b>★ Today's Target Words</b><small>오늘의 핵심 어휘</small></div><span id="dialogueTargetCount">0</span></div>
-            <div id="dialogueTargets" class="dialogue-targets"><span>범위를 선택하세요.</span></div>
-          </div>
-
-          <div class="dialogue-side-card">
-            <div class="dialogue-side-head"><div><b>Conversation Mode</b><small>대화 모드</small></div></div>
-            <div class="dialogue-mode-grid" id="dialogueModeGrid">
-              <button type="button" class="on" data-dialogue-mode="auto"><b>AUTO</b><small>자동 혼합</small></button>
-              <button type="button" data-dialogue-mode="talk"><b>FREE TALK</b><small>일상 대화</small></button>
-              <button type="button" data-dialogue-mode="quiz"><b>QUIZ</b><small>뜻 확인</small></button>
-              <button type="button" data-dialogue-mode="context"><b>CONTEXT</b><small>문맥 확인</small></button>
-              <button type="button" data-dialogue-mode="sentence"><b>SENTENCE</b><small>직접 작문</small></button>
+          <div class="dialogue-preflight-section">
+            <div class="dialogue-preflight-label">
+              <b>03</b><span>TARGET PREVIEW</span>
+              <small>숙련도가 낮은 단어 우선</small>
             </div>
-          </div>
-
-          <div class="dialogue-side-card dialogue-feedback-card">
-            <div class="dialogue-side-head"><div><b>Correction & Feedback</b><small>최근 문장 교정</small></div></div>
-            <div id="dialogueCorrection" class="dialogue-correction-empty">영어 문장을 보내면 문법·자연스러움·단어 사용을 함께 확인합니다.</div>
-          </div>
-
-          <div class="dialogue-side-card">
-            <div class="dialogue-side-head"><div><b>Word Mastery</b><small>선택 범위 숙련도</small></div><span id="dialogueMasteryPct">0%</span></div>
-            <div class="dialogue-mastery-bar"><i id="dialogueMasteryFill"></i></div>
-            <div class="dialogue-mastery-legend">
-              <span><i>0</i>UNSEEN</span><span><i>1</i>RECOGNIZED</span><span><i>2</i>CONTEXT</span><span><i>3</i>PRODUCED</span><span><i>4</i>MASTERED</span>
+            <div id="dialogueTargets" class="dialogue-targets dialogue-target-preview">
+              <span>범위를 선택하세요.</span>
             </div>
+            <button type="button" id="dialogueShuffleTargets" class="dialogue-refresh-targets">TARGET 새로고침</button>
           </div>
 
-          <button type="button" id="dialogueStartBtn" class="dialogue-start-btn">▶ START CONVERSATION</button>
-        </aside>
-      </div>
+          <button type="button" id="dialogueStartBtn" class="dialogue-start-btn dialogue-preflight-start">▶ START CONVERSATION</button>
+        </div>
+      </section>
+
+      <!-- STEP 2 · 대화 시작 후에만 표시 -->
+      <section id="dialoguePlayScreen" class="dialogue-play-screen" style="display:none;">
+        <div class="dialogue-play-topbar">
+          <div>
+            <span id="dialoguePlayBook">RESCUE</span>
+            <b id="dialoguePlayRange">DAY —</b>
+            <small id="dialoguePlayMode">AUTO MODE</small>
+          </div>
+          <button type="button" id="dialogueChangeRangeBtn">← 학습 범위 변경</button>
+        </div>
+
+        <div class="dialogue-layout">
+          <section class="dialogue-chat-shell">
+            <div class="dialogue-chat-head">
+              <div class="dialogue-tutor">
+                <span class="dialogue-avatar" aria-hidden="true"></span>
+                <div><b>Matière Tutor <i>AI</i></b><small>Your English Conversation Partner</small></div>
+              </div>
+              <div class="dialogue-session-state">
+                <span id="dialogueModeBadge">AUTO</span>
+                <button type="button" id="dialogueResetBtn" title="대화 초기화">↻</button>
+              </div>
+            </div>
+
+            <div id="dialogueChat" class="dialogue-chat" aria-live="polite">
+              <div class="dialogue-empty">
+                <span class="dialogue-avatar large" aria-hidden="true"></span>
+                <b>Ready when you are.</b>
+                <p>영어로 자유롭게 대화를 시작하세요.</p>
+              </div>
+            </div>
+
+            <div id="dialogueQuickActions" class="dialogue-quick-actions">
+              <button type="button" data-dialogue-quick="quiz">단어 퀴즈</button>
+              <button type="button" data-dialogue-quick="context">문맥에서 뜻 확인</button>
+              <button type="button" data-dialogue-quick="sentence">예문 만들어보기</button>
+              <button type="button" data-dialogue-quick="talk">일상 대화</button>
+            </div>
+
+            <div class="dialogue-composer">
+              <textarea id="dialogueInput" rows="1" maxlength="1200" placeholder="Type a message in English..." autocomplete="off"></textarea>
+              <button type="button" id="dialogueSendBtn" aria-label="Send message">➤</button>
+            </div>
+            <div id="dialogueStatus" class="dialogue-status">선택한 단어의 숙련도가 계정별로 추적됩니다.</div>
+          </section>
+
+          <aside class="dialogue-study-shell dialogue-live-sidebar">
+            <div class="dialogue-setting-title">
+              <span>◉</span><div><b>Live Study</b><small>현재 대화 학습</small></div>
+            </div>
+
+            <div class="dialogue-side-card">
+              <div class="dialogue-side-head">
+                <div><b>★ Today's Target Words</b><small>오늘의 핵심 어휘</small></div>
+                <span id="dialogueTargetCount">0</span>
+              </div>
+              <div id="dialogueLiveTargets" class="dialogue-targets"><span>Target words</span></div>
+            </div>
+
+            <div class="dialogue-side-card dialogue-feedback-card">
+              <div class="dialogue-side-head"><div><b>Correction & Feedback</b><small>최근 문장 교정</small></div></div>
+              <div id="dialogueCorrection" class="dialogue-correction-empty">영어 문장을 보내면 문법·자연스러움·단어 사용을 함께 확인합니다.</div>
+            </div>
+
+            <div class="dialogue-side-card">
+              <div class="dialogue-side-head"><div><b>Word Mastery</b><small>선택 범위 숙련도</small></div><span id="dialogueMasteryPct">0%</span></div>
+              <div class="dialogue-mastery-bar"><i id="dialogueMasteryFill"></i></div>
+              <div class="dialogue-mastery-legend">
+                <span><i>0</i>UNSEEN</span><span><i>1</i>RECOGNIZED</span><span><i>2</i>CONTEXT</span><span><i>3</i>PRODUCED</span><span><i>4</i>MASTERED</span>
+              </div>
+            </div>
+
+            <div class="dialogue-session-note">
+              <b>SESSION RULE</b>
+              <p>대화 중 학습 범위는 고정됩니다. 범위를 바꾸려면 위의 <strong>학습 범위 변경</strong>을 누르세요.</p>
+            </div>
+          </aside>
+        </div>
+      </section>
     </div>
 
     <!-- ===== FLASHCARDS ===== -->
@@ -14704,7 +14824,15 @@ function setTab(active){
   if(active==="words"){tabWords.classList.add("active");viewWords.style.display="block";}
   if(active==="quiz"){tabQuiz.classList.add("active");viewQuiz.style.display="block";}
   if(active==="game"){tabGame.classList.add("active");viewGame.style.display="block";}
-  if(active==="dialogue"){viewDialogue.style.display="block";dialogueUpdateSetup();dialogueLoadMastery();}
+  if(active==="dialogue"){
+    viewDialogue.style.display="block";
+    if(!dialogueSessionStarted){
+      if(dialogueSetupScreen)dialogueSetupScreen.style.display="block";
+      if(dialoguePlayScreen)dialoguePlayScreen.style.display="none";
+    }
+    dialogueUpdateSetup();
+    dialogueLoadMastery();
+  }
   if(active==="ranking"){tabRanking.classList.add("active");viewRanking.style.display="block";renderRanking();}
   if(active==="football"){tabFootball.classList.add("active");viewFootball.style.display="block";renderFootballHub();}
 }
@@ -20079,6 +20207,9 @@ const dialogueCorrection=document.getElementById("dialogueCorrection");
 const dialogueMasteryFill=document.getElementById("dialogueMasteryFill");
 const dialogueMasteryPct=document.getElementById("dialogueMasteryPct");
 const dialogueModeBadge=document.getElementById("dialogueModeBadge");
+const dialogueSetupScreen=document.getElementById("dialogueSetupScreen");
+const dialoguePlayScreen=document.getElementById("dialoguePlayScreen");
+const dialogueLiveTargets=document.getElementById("dialogueLiveTargets");
 
 let dialogueMode="auto";
 let dialogueSessionStarted=false;
@@ -20158,9 +20289,11 @@ function dialogueRenderTargets(){
   if(!dialogueTargets)return;
   const count=document.getElementById("dialogueTargetCount");
   if(count)count.textContent=String(dialogueTargetWords.length);
-  dialogueTargets.innerHTML=dialogueTargetWords.length
+  const targetHtml=dialogueTargetWords.length
     ?dialogueTargetWords.map(w=>`<span title="${dialogueEsc(w.meaning)}">${dialogueEsc(w.word)}</span>`).join("")
     :"<span>범위를 선택하세요.</span>";
+  dialogueTargets.innerHTML=targetHtml;
+  if(dialogueLiveTargets)dialogueLiveTargets.innerHTML=targetHtml;
 }
 function dialogueUpdateSetup(){
   if(!dialogueDayPicker)return;
@@ -20331,10 +20464,42 @@ async function dialogueInvokeAI(message,forcedMode=null){
   }
 }
 
+function dialogueSelectionLabel(){
+  const book=dialogueBookKey()==="black"?"어휘끝 BLACK":"RESCUE";
+  const units=[...dialogueSelectedDays].sort((a,b)=>a-b);
+  let range="선택 없음";
+  if(units.length===1)range=`${dialogueBookKey()==="black"?"강":"DAY"} ${units[0]}`;
+  else if(units.length>1)range=`${dialogueBookKey()==="black"?"강":"DAY"} ${units.join(", ")}`;
+  return {book,range};
+}
+function dialogueEnterPlay(){
+  const info=dialogueSelectionLabel();
+  const bookEl=document.getElementById("dialoguePlayBook");
+  const rangeEl=document.getElementById("dialoguePlayRange");
+  const modeEl=document.getElementById("dialoguePlayMode");
+  if(bookEl)bookEl.textContent=info.book;
+  if(rangeEl)rangeEl.textContent=info.range;
+  if(modeEl)modeEl.textContent=dialogueMode.toUpperCase()+" MODE";
+  if(dialogueSetupScreen)dialogueSetupScreen.style.display="none";
+  if(dialoguePlayScreen)dialoguePlayScreen.style.display="block";
+}
+function dialogueReturnToSetup(){
+  dialogueSessionStarted=false;
+  dialogueBusy=false;
+  dialogueHistory=[];
+  dialogueLocalQuiz=null;
+  if(dialoguePlayScreen)dialoguePlayScreen.style.display="none";
+  if(dialogueSetupScreen)dialogueSetupScreen.style.display="block";
+  dialogueReset();
+  dialogueUpdateSetup();
+  requestAnimationFrame(()=>dialogueSetupScreen?.scrollIntoView({behavior:"smooth",block:"start"}));
+}
+
 async function dialogueStartSession(){
   const pool=dialogueGetPool();
   if(!pool.length){alert("먼저 학습할 Day/강을 선택해 주세요.");return;}
   dialogueSessionStarted=true;dialogueHistory=[];dialogueLocalQuiz=null;
+  dialogueEnterPlay();
   dialogueChat.innerHTML="";
   dialoguePickTargets(true);
   dialogueSetBusy(true,"Matière Tutor가 학습 세션을 준비하는 중…");
@@ -20354,7 +20519,7 @@ async function dialogueSend(){
 }
 function dialogueReset(){
   dialogueSessionStarted=false;dialogueHistory=[];dialogueLocalQuiz=null;
-  if(dialogueChat)dialogueChat.innerHTML='<div class="dialogue-empty"><span class="dialogue-avatar large" aria-hidden="true"></span><b>Ready when you are.</b><p>오른쪽에서 단어장과 범위를 고른 뒤 대화를 시작하세요.</p></div>';
+  if(dialogueChat)dialogueChat.innerHTML='<div class="dialogue-empty"><span class="dialogue-avatar large" aria-hidden="true"></span><b>Ready when you are.</b><p>영어로 자유롭게 대화를 시작하세요.</p></div>';
   dialogueRenderCorrection(null);
   if(dialogueStatus)dialogueStatus.textContent="대화를 시작하면 선택 단어의 숙련도가 자동으로 추적됩니다.";
 }
@@ -20369,6 +20534,7 @@ if(dialogueDayPicker){
 dialogueStartBtn?.addEventListener("click",dialogueStartSession);
 dialogueSendBtn?.addEventListener("click",dialogueSend);
 document.getElementById("dialogueResetBtn")?.addEventListener("click",dialogueReset);
+document.getElementById("dialogueChangeRangeBtn")?.addEventListener("click",dialogueReturnToSetup);
 document.getElementById("dialogueShuffleTargets")?.addEventListener("click",()=>dialoguePickTargets(true));
 dialogueInput?.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();dialogueSend();}
