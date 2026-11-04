@@ -9671,6 +9671,13 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
 }
 </style>
 
+<style id="matiere-v1470-module-hero-sync">
+#view-cards,#view-words,#view-quiz,#view-game{padding:0 4px 24px;color:#f5f0e7}
+#view-cards .module-top-hero,#view-words .module-top-hero,#view-quiz .module-top-hero,#view-game .module-top-hero{margin-bottom:16px}
+@media(max-width:700px){
+  #view-cards,#view-words,#view-quiz,#view-game{padding:0}
+}
+</style>
 
 <style id="matiere-v1470-dialogue-hero">
 .dialogue-hero{
@@ -11214,7 +11221,14 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
     <!-- ===== FLASHCARDS ===== -->
     <div id="view-cards">
 
-      <div class="section-header"><div class="section-kicker">FLASHCARD</div><h2>Flashcard Study</h2><p>Tap a card to flip it and review the meaning at your own pace.</p><div class="section-rule"></div></div>
+      <section class="dialogue-hero module-top-hero">
+        <div>
+          <div class="dialogue-kicker">FLASHCARD</div>
+          <h2>Flashcard Study</h2>
+          <p>Tap a card to flip it and review the meaning at your own pace.</p>
+        </div>
+        <div class="dialogue-hero-art" aria-hidden="true"></div>
+      </section>
 
       <div id="cardsSetup" class="panel">
         <h2>Choose your days, then tap OK</h2>
@@ -11254,7 +11268,14 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
     <!-- ===== WORDS: WORD + MEANING VIEWER ===== -->
     <div id="view-words" style="display:none;">
 
-      <div class="section-header"><div class="section-kicker">WORD</div><h2>Words &amp; Meanings</h2><p>Browse each word with its Korean meaning and mark unfamiliar words for later review.</p><div class="section-rule"></div></div>
+      <section class="dialogue-hero module-top-hero">
+        <div>
+          <div class="dialogue-kicker">WORD</div>
+          <h2>Words &amp; Meanings</h2>
+          <p>Browse each word with its Korean meaning and mark unfamiliar words for later review.</p>
+        </div>
+        <div class="dialogue-hero-art" aria-hidden="true"></div>
+      </section>
 
       <div id="wordsSetup" class="panel">
         <div class="section-kicker">WORD BOOK</div>
@@ -11308,7 +11329,14 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
     <!-- ===== QUIZ ===== -->
     <div id="view-quiz">
 
-      <div class="section-header"><div class="section-kicker">QUIZ</div><h2>Test Your Vocabulary</h2><p>Choose a quiz mode and build your accuracy through repeated practice.</p><div class="section-rule"></div></div>
+      <section class="dialogue-hero module-top-hero">
+        <div>
+          <div class="dialogue-kicker">QUIZ</div>
+          <h2>Test Your Vocabulary</h2>
+          <p>Choose a quiz mode and build your accuracy through repeated practice.</p>
+        </div>
+        <div class="dialogue-hero-art" aria-hidden="true"></div>
+      </section>
 
       <div id="quizSetup">
         <div class="day-picker" id="dayPickerQuiz"></div>
@@ -11387,7 +11415,14 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
 
     <!-- ===== GAME: WORD SEARCH ===== -->
     <div id="view-game">
-      <div class="section-header"><div class="section-kicker">GAME</div><h2>Vocabulary Games</h2><p>Practice vocabulary through Word Search, Hangman, and AERIS Expedition.</p><div class="section-rule"></div></div>
+      <section class="dialogue-hero module-top-hero">
+        <div>
+          <div class="dialogue-kicker">GAME</div>
+          <h2>Vocabulary Games</h2>
+          <p>Practice vocabulary through Word Search, Hangman, and AERIS Expedition.</p>
+        </div>
+        <div class="dialogue-hero-art" aria-hidden="true"></div>
+      </section>
       <div class="game-mode-row">
         <button class="gbtn mode-btn on" id="gameModeWS">WORD SEARCH</button>
         <button class="gbtn mode-btn" id="gameModeHang">HANGMAN</button>
