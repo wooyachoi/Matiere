@@ -9577,6 +9577,19 @@ header.top{
 }
 </style>
 
+<style id="matiere-v1467-local-tutor">.dialogue-tutor b i{color:#e3bf73!important;border-color:rgba(227,191,115,.48)!important}.dialogue-status{color:#9d895f!important}</style>
+
+<style id="matiere-v1468-adaptive">
+.dialogue-adaptive-card{background:linear-gradient(145deg,rgba(32,27,18,.72),rgba(13,13,12,.94))!important}
+.dialogue-adaptive-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.dialogue-adaptive-grid>div{padding:9px 7px;border:1px solid rgba(212,175,55,.15);border-radius:8px;background:#0f0e0c;min-width:0}
+.dialogue-adaptive-grid small{display:block;color:#6f6659;font-size:7px;letter-spacing:.08em;white-space:nowrap}
+.dialogue-adaptive-grid b{display:block;margin-top:4px;color:#d9b66c;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dialogue-adaptive-note{margin-top:8px;color:#8a806f;font-size:8px;line-height:1.45}
+#dialogueAdaptiveLevel{padding:4px 7px;border-radius:999px;border:1px solid rgba(212,175,55,.3);font-size:8px!important}
+@media(max-width:700px){.dialogue-adaptive-grid{grid-template-columns:1fr 1fr}.dialogue-adaptive-grid>div:last-child{grid-column:1/-1}}
+</style>
+
 </head>
 <body>
 
@@ -9790,7 +9803,7 @@ header.top{
             <div class="dialogue-chat-head">
               <div class="dialogue-tutor">
                 <span class="dialogue-avatar" aria-hidden="true"></span>
-                <div><b>Matière Tutor <i>AI</i></b><small>Your English Conversation Partner</small></div>
+                <div><b>Matière Tutor <i>ADAPTIVE</i></b><small>Adaptive English Conversation Partner</small></div>
               </div>
               <div class="dialogue-session-state">
                 <span id="dialogueModeBadge">AUTO</span>
@@ -9844,6 +9857,19 @@ header.top{
               <div class="dialogue-mastery-legend">
                 <span><i>0</i>UNSEEN</span><span><i>1</i>RECOGNIZED</span><span><i>2</i>CONTEXT</span><span><i>3</i>PRODUCED</span><span><i>4</i>MASTERED</span>
               </div>
+            </div>
+
+            <div class="dialogue-side-card dialogue-adaptive-card">
+              <div class="dialogue-side-head">
+                <div><b>Adaptive Tutor</b><small>사용자 맞춤 학습 엔진</small></div>
+                <span id="dialogueAdaptiveLevel">L1</span>
+              </div>
+              <div class="dialogue-adaptive-grid">
+                <div><small>REVIEW QUEUE</small><b id="dialogueReviewQueue">0</b></div>
+                <div><small>SENTENCE ACC.</small><b id="dialogueSentenceAccuracy">—</b></div>
+                <div><small>FOCUS</small><b id="dialogueAdaptiveFocus">NEW WORDS</b></div>
+              </div>
+              <div class="dialogue-adaptive-note" id="dialogueAdaptiveNote">학습 기록을 바탕으로 다음 문제를 자동 조정합니다.</div>
             </div>
 
             <div class="dialogue-session-note">
@@ -20188,369 +20214,169 @@ document.addEventListener("keydown",()=>matiereAudio(),{once:true,capture:true})
 </script>
 
 
-<script id="matiere-v1464-dialogue-js">
-/* =========================================================
-   MATIÈRE DIALOGUE
-   - Works immediately with local Quick Quiz fallback.
-   - Rich AI modes call Supabase Edge Function: matiere-dialogue
-   - Word mastery syncs to matiere_word_mastery when the table exists.
-   ========================================================= */
-const dialogueDayPicker=document.getElementById("dayPickerDialogue");
-const dialogueSelectedDays=new Set();
-const dialogueChat=document.getElementById("dialogueChat");
-const dialogueInput=document.getElementById("dialogueInput");
-const dialogueSendBtn=document.getElementById("dialogueSendBtn");
-const dialogueStartBtn=document.getElementById("dialogueStartBtn");
-const dialogueStatus=document.getElementById("dialogueStatus");
-const dialogueTargets=document.getElementById("dialogueTargets");
-const dialogueCorrection=document.getElementById("dialogueCorrection");
-const dialogueMasteryFill=document.getElementById("dialogueMasteryFill");
-const dialogueMasteryPct=document.getElementById("dialogueMasteryPct");
-const dialogueModeBadge=document.getElementById("dialogueModeBadge");
-const dialogueSetupScreen=document.getElementById("dialogueSetupScreen");
-const dialoguePlayScreen=document.getElementById("dialoguePlayScreen");
-const dialogueLiveTargets=document.getElementById("dialogueLiveTargets");
+<script id="matiere-v1467-dialogue-local-js">
+const dialogueDayPicker=document.getElementById("dayPickerDialogue"),dialogueSelectedDays=new Set(),dialogueChat=document.getElementById("dialogueChat"),dialogueInput=document.getElementById("dialogueInput"),dialogueSendBtn=document.getElementById("dialogueSendBtn"),dialogueStartBtn=document.getElementById("dialogueStartBtn"),dialogueStatus=document.getElementById("dialogueStatus"),dialogueTargets=document.getElementById("dialogueTargets"),dialogueCorrection=document.getElementById("dialogueCorrection"),dialogueMasteryFill=document.getElementById("dialogueMasteryFill"),dialogueMasteryPct=document.getElementById("dialogueMasteryPct"),dialogueModeBadge=document.getElementById("dialogueModeBadge"),dialogueSetupScreen=document.getElementById("dialogueSetupScreen"),dialoguePlayScreen=document.getElementById("dialoguePlayScreen"),dialogueLiveTargets=document.getElementById("dialogueLiveTargets");
+let dialogueMode="auto",dialogueSessionStarted=false,dialogueBusy=false,dialogueTargetWords=[],dialogueHistory=[],dialogueMasteryMap=new Map(),dialoguePending=null,dialogueTurnCount=0,dialogueLastTargetKey="";
+let dialogueAdaptiveProfile={words:{},grammar:{},sentenceAttempts:0,sentenceSuccess:0,totalAnswers:0,totalCorrect:0,sessions:0,lastSessionAt:null};
 
-let dialogueMode="auto";
-let dialogueSessionStarted=false;
-let dialogueBusy=false;
-let dialogueTargetWords=[];
-let dialogueHistory=[];
-let dialogueMasteryMap=new Map();
-let dialogueLocalQuiz=null;
-let dialogueBackendState="unknown";
-
-function dialogueBookKey(){return typeof rescueGetBook==="function"&&rescueGetBook()==="black"?"black":"rescue";}
-function dialogueUnitOf(w){return Number(w?.lesson||w?.day||0)||0;}
-function dialogueWordKey(w){return `${dialogueBookKey()}|${dialogueUnitOf(w)}|${String(w?.word||"").trim().toLowerCase()}|${String(w?.meaning||"").trim()}`;}
-function dialogueGetPool(){
-  if(!dialogueDayPicker)return[];
-  return poolForPicker(dialogueDayPicker,dialogueSelectedDays).filter(w=>w?.word&&w?.meaning);
+function dialogueAdaptiveStorageKey(){
+  return "matiere_adaptive_tutor_"+(currentUser?.id||"guest");
 }
-function dialogueEsc(s){return escapeHtml(String(s??""));}
-function dialogueClock(){
-  try{return new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit"}).format(new Date());}
-  catch(_){return "";}
-}
-function dialogueSetBusy(on,label=""){
-  dialogueBusy=!!on;
-  if(dialogueSendBtn)dialogueSendBtn.disabled=dialogueBusy;
-  if(dialogueStartBtn)dialogueStartBtn.disabled=dialogueBusy;
-  if(dialogueStatus&&label)dialogueStatus.textContent=label;
-}
-function dialogueScroll(){if(dialogueChat)requestAnimationFrame(()=>{dialogueChat.scrollTop=dialogueChat.scrollHeight;});}
-
-function dialogueAddMessage(role,text,{activity="",targetWord=null}={}){
-  if(!dialogueChat)return;
-  dialogueChat.querySelector(".dialogue-empty")?.remove();
-  const row=document.createElement("div");
-  row.className=`dialogue-row ${role==="user"?"user":"ai"}`;
-  if(role!=="user"){
-    const av=document.createElement("span");av.className="dialogue-avatar";row.appendChild(av);
-  }
-  const bubble=document.createElement("div");bubble.className="dialogue-bubble";bubble.textContent=String(text||"");row.appendChild(bubble);
-  const meta=document.createElement("span");meta.className="dialogue-meta";meta.textContent=dialogueClock();row.appendChild(meta);
-  dialogueChat.appendChild(row);
-  dialogueHistory.push({role:role==="user"?"user":"assistant",content:String(text||"")});
-  if(dialogueHistory.length>14)dialogueHistory=dialogueHistory.slice(-14);
-  dialogueScroll();
-}
-function dialogueAddActivity(title,body,target){
-  if(!dialogueChat)return;
-  const card=document.createElement("div");card.className="dialogue-activity-card";
-  card.innerHTML=`<div class="kicker">${dialogueEsc(title)}</div><b>${dialogueEsc(target?.word||"")}</b><p>${dialogueEsc(body||"")}</p>`;
-  dialogueChat.appendChild(card);dialogueScroll();
-}
-function dialogueRenderCorrection(c){
-  if(!dialogueCorrection)return;
-  if(!c||(!c.suggested&&!c.explanation)){
-    dialogueCorrection.className="dialogue-correction-empty";
-    dialogueCorrection.textContent="대화 중 교정할 부분이 생기면 이곳에 표시됩니다.";
-    return;
-  }
-  dialogueCorrection.className="";
-  dialogueCorrection.innerHTML=`<div class="dialogue-correction-grid">
-    <span>YOUR</span><p>${dialogueEsc(c.original||"—")}</p>
-    <span>BETTER</span><p><b>${dialogueEsc(c.suggested||c.original||"—")}</b></p>
-    <span>WHY</span><p>${dialogueEsc(c.explanation||"")}</p>
-  </div>`;
-}
-
-function dialoguePickTargets(force=false){
-  const pool=dialogueGetPool();
-  if(!pool.length){dialogueTargetWords=[];dialogueRenderTargets();return;}
-  if(!force&&dialogueTargetWords.length&&dialogueTargetWords.every(w=>pool.some(x=>dialogueWordKey(x)===dialogueWordKey(w))))return;
-  const scored=pool.map(w=>({w,level:Number(dialogueMasteryMap.get(dialogueWordKey(w))?.level||0),r:Math.random()}))
-    .sort((a,b)=>a.level-b.level||a.r-b.r);
-  dialogueTargetWords=scored.slice(0,Math.min(5,scored.length)).map(x=>x.w);
-  dialogueRenderTargets();
-}
-function dialogueRenderTargets(){
-  if(!dialogueTargets)return;
-  const count=document.getElementById("dialogueTargetCount");
-  if(count)count.textContent=String(dialogueTargetWords.length);
-  const targetHtml=dialogueTargetWords.length
-    ?dialogueTargetWords.map(w=>`<span title="${dialogueEsc(w.meaning)}">${dialogueEsc(w.word)}</span>`).join("")
-    :"<span>범위를 선택하세요.</span>";
-  dialogueTargets.innerHTML=targetHtml;
-  if(dialogueLiveTargets)dialogueLiveTargets.innerHTML=targetHtml;
-}
-function dialogueUpdateSetup(){
-  if(!dialogueDayPicker)return;
-  try{refreshDayPickerUI(dialogueDayPicker,dialogueSelectedDays);}catch(_){}
-  const pool=dialogueGetPool();
-  const label=document.getElementById("dialoguePoolLabel");
-  if(label)label.textContent=`${pool.length.toLocaleString()} words selected`;
-  dialoguePickTargets(true);
-  dialogueRenderMastery();
-  if(dialogueStartBtn)dialogueStartBtn.disabled=pool.length===0;
-}
-function dialogueOnDayChange(){dialogueUpdateSetup();dialogueLoadMastery();}
-
-function dialogueRenderMastery(){
-  const pool=dialogueGetPool();
-  if(!pool.length){
-    if(dialogueMasteryFill)dialogueMasteryFill.style.width="0%";
-    if(dialogueMasteryPct)dialogueMasteryPct.textContent="0%";
-    return;
-  }
-  let total=0;
-  pool.forEach(w=>total+=Math.max(0,Math.min(4,Number(dialogueMasteryMap.get(dialogueWordKey(w))?.level||0))));
-  const pct=Math.round((total/(pool.length*4))*100);
-  if(dialogueMasteryFill)dialogueMasteryFill.style.width=pct+"%";
-  if(dialogueMasteryPct)dialogueMasteryPct.textContent=pct+"%";
-}
-
-async function dialogueLoadMastery(){
-  if(!currentUser?.id){dialogueMasteryMap=new Map();dialogueRenderMastery();return;}
+function dialogueLoadAdaptive(){
   try{
-    const {data,error}=await supabaseClient.from("matiere_word_mastery")
-      .select("book,unit,word,meaning,level,recognition_hits,context_hits,production_hits")
-      .eq("user_id",currentUser.id);
-    if(error)throw error;
-    const map=new Map();
-    (data||[]).forEach(r=>map.set(`${r.book}|${Number(r.unit)||0}|${String(r.word||"").trim().toLowerCase()}|${String(r.meaning||"").trim()}`,r));
-    dialogueMasteryMap=map;
-    dialogueRenderMastery();dialoguePickTargets(true);
-  }catch(e){
-    // Table may not be installed yet; keep a per-account local fallback.
-    try{
-      const raw=JSON.parse(localStorage.getItem("matiere_dialogue_mastery_"+currentUser.id)||"{}");
-      dialogueMasteryMap=new Map(Object.entries(raw));
-    }catch(_){dialogueMasteryMap=new Map();}
-    dialogueRenderMastery();dialoguePickTargets(true);
-  }
-}
-async function dialogueApplyMastery(events){
-  if(!Array.isArray(events)||!events.length)return;
-  const pool=dialogueGetPool();
-  const rows=[];
-  events.forEach(ev=>{
-    const word=String(ev?.word||"").trim();
-    const found=pool.find(w=>String(w.word).toLowerCase()===word.toLowerCase())||dialogueTargetWords.find(w=>String(w.word).toLowerCase()===word.toLowerCase());
-    if(!found)return;
-    const key=dialogueWordKey(found);
-    const prev=dialogueMasteryMap.get(key)||{};
-    const nextLevel=Math.max(Number(prev.level||0),Math.max(0,Math.min(4,Number(ev.level||0))));
-    const next={
-      ...prev,book:dialogueBookKey(),unit:dialogueUnitOf(found),word:found.word,meaning:found.meaning,level:nextLevel,
-      recognition_hits:Number(prev.recognition_hits||0)+(ev.kind==="recognition"?1:0),
-      context_hits:Number(prev.context_hits||0)+(ev.kind==="context"?1:0),
-      production_hits:Number(prev.production_hits||0)+(ev.kind==="production"?1:0)
-    };
-    dialogueMasteryMap.set(key,next);rows.push(next);
-  });
-  dialogueRenderMastery();dialoguePickTargets();
-  if(!currentUser?.id)return;
-  try{
-    const dbRows=rows.map(r=>({
-      user_id:currentUser.id,book:r.book,unit:r.unit,word:r.word,meaning:r.meaning,level:r.level,
-      recognition_hits:r.recognition_hits||0,context_hits:r.context_hits||0,production_hits:r.production_hits||0,
-      last_reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString()
-    }));
-    if(dbRows.length){
-      const {error}=await supabaseClient.from("matiere_word_mastery").upsert(dbRows,{onConflict:"user_id,book,unit,word,meaning"});
-      if(error)throw error;
+    const raw=JSON.parse(localStorage.getItem(dialogueAdaptiveStorageKey())||"null");
+    if(raw&&typeof raw==="object"){
+      dialogueAdaptiveProfile={...dialogueAdaptiveProfile,...raw,words:raw.words||{},grammar:raw.grammar||{}};
     }
-  }catch(_){
-    try{localStorage.setItem("matiere_dialogue_mastery_"+currentUser.id,JSON.stringify(Object.fromEntries(dialogueMasteryMap)));}catch(__){}
-  }
+  }catch(_){}
+  dialogueRenderAdaptive();
 }
-
-function dialogueSetMode(mode){
-  const allowed=["auto","talk","quiz","context","sentence"];
-  dialogueMode=allowed.includes(mode)?mode:"auto";
-  document.querySelectorAll("[data-dialogue-mode]").forEach(b=>b.classList.toggle("on",b.dataset.dialogueMode===dialogueMode));
-  if(dialogueModeBadge)dialogueModeBadge.textContent=dialogueMode.toUpperCase();
+function dialogueSaveAdaptive(){
+  try{localStorage.setItem(dialogueAdaptiveStorageKey(),JSON.stringify(dialogueAdaptiveProfile));}catch(_){}
+  dialogueRenderAdaptive();
 }
-document.querySelectorAll("[data-dialogue-mode]").forEach(b=>b.addEventListener("click",()=>dialogueSetMode(b.dataset.dialogueMode)));
-
-function dialogueLocalQuizStart(){
-  const pool=dialogueGetPool();
-  if(!pool.length){dialogueAddMessage("ai","먼저 단어장과 Day/강 범위를 선택해 주세요.");return;}
-  const target=dialogueTargetWords[0]||pool[Math.floor(Math.random()*pool.length)];
-  const others=pool.filter(w=>dialogueWordKey(w)!==dialogueWordKey(target)).sort(()=>Math.random()-.5).slice(0,3);
-  const options=[target,...others].sort(()=>Math.random()-.5);
-  dialogueLocalQuiz={target,answered:false};
-  dialogueAddMessage("ai",`Quick quiz. What does “${target.word}” mean?`);
-  const card=document.createElement("div");card.className="dialogue-activity-card";
-  card.innerHTML=`<div class="kicker">VOCABULARY QUIZ</div><b>${dialogueEsc(target.word)}</b><div class="dialogue-quiz-options"></div>`;
-  const box=card.querySelector(".dialogue-quiz-options");
-  options.forEach(o=>{
-    const btn=document.createElement("button");btn.type="button";btn.textContent=o.meaning;
-    btn.addEventListener("click",async()=>{
-      if(dialogueLocalQuiz?.answered)return;dialogueLocalQuiz.answered=true;
-      const ok=dialogueWordKey(o)===dialogueWordKey(target);
-      btn.classList.add(ok?"correct":"wrong");
-      [...box.children].forEach(x=>x.disabled=true);
-      dialogueAddMessage("ai",ok?`Correct. “${target.word}” means ${target.meaning}.`:`Not quite. “${target.word}” means ${target.meaning}.`);
-      if(ok)await dialogueApplyMastery([{word:target.word,level:1,kind:"recognition"}]);
-    });
-    box.appendChild(btn);
-  });
-  dialogueChat.appendChild(card);dialogueScroll();
+function dialogueAdaptiveWordState(w){
+  const key=dialogueWordKey(w);
+  if(!dialogueAdaptiveProfile.words[key]){
+    dialogueAdaptiveProfile.words[key]={attempts:0,correct:0,wrong:0,lastSeen:0,nextReview:0,streak:0,lastType:""};
+  }
+  return dialogueAdaptiveProfile.words[key];
 }
-function dialogueFallback(mode,message){
-  if(mode==="quiz")return dialogueLocalQuizStart();
-  const target=dialogueTargetWords[0]||dialogueGetPool()[0];
-  if(mode==="context"){
-    dialogueAddActivity("CONTEXT CHECK","AI 서버 연결 후 자연스러운 예문 속 의미 판단 문제를 생성합니다.",target);
-    dialogueAddMessage("ai",target?`For now, remember the meaning of “${target.word}”: ${target.meaning}.`:"Choose a vocabulary range first.");
-    return;
-  }
-  if(mode==="sentence"){
-    dialogueAddActivity("USE THE WORD","AI 서버 연결 후 작성한 문장의 단어 사용·문법·자연스러움을 각각 평가합니다.",target);
-    dialogueAddMessage("ai",target?`Try making one English sentence using “${target.word}”.`:"Choose a vocabulary range first.");
-    return;
-  }
-  if(message){
-    dialogueAddMessage("ai","I can keep the interface running, but rich free conversation needs the MATIÈRE AI Edge Function to be deployed. You can still use Quick Quiz right now.");
+function dialogueAdaptiveRecord(w,ok,type){
+  if(!w)return;
+  const s=dialogueAdaptiveWordState(w),now=Date.now();
+  s.attempts++; s.lastSeen=now; s.lastType=type||"";
+  dialogueAdaptiveProfile.totalAnswers++;
+  if(ok){
+    s.correct++; s.streak++; dialogueAdaptiveProfile.totalCorrect++;
+    const intervals=[6*60*60*1000,24*60*60*1000,3*24*60*60*1000,7*24*60*60*1000,14*24*60*60*1000];
+    s.nextReview=now+intervals[Math.min(s.streak-1,intervals.length-1)];
   }else{
-    dialogueAddMessage("ai","Good to see you. Quick Quiz works now; free conversation, context practice, and grammar feedback will activate when the AI Edge Function is connected.");
+    s.wrong++; s.streak=0;
+    s.nextReview=now+30*60*1000;
+  }
+  dialogueSaveAdaptive();
+}
+function dialogueAdaptiveRecordSentence(ok,correction){
+  dialogueAdaptiveProfile.sentenceAttempts++;
+  if(ok)dialogueAdaptiveProfile.sentenceSuccess++;
+  const exp=String(correction?.explanation||"");
+  const tags=[
+    ["capitalization","대문자"],["punctuation","문장 부호"],["agreement","3인칭 단수"],
+    ["verb_form","과거형"],["comparison","비교급"],["word_choice","자연스럽"]
+  ];
+  tags.forEach(([k,needle])=>{if(exp.includes(needle))dialogueAdaptiveProfile.grammar[k]=(dialogueAdaptiveProfile.grammar[k]||0)+1;});
+  dialogueSaveAdaptive();
+}
+function dialogueAdaptivePriority(w){
+  const s=dialogueAdaptiveWordState(w),now=Date.now();
+  const mastery=Number(dialogueMasteryMap.get(dialogueWordKey(w))?.level||0);
+  const unseen=s.attempts===0?7:0;
+  const wrong=s.wrong*4;
+  const due=s.nextReview&&s.nextReview<=now?6:0;
+  const overdue=s.nextReview&&s.nextReview<now?Math.min(6,(now-s.nextReview)/(24*60*60*1000)):0;
+  const weak=(4-mastery)*2.4;
+  const recent=s.lastSeen&&now-s.lastSeen<10*60*1000?-3:0;
+  return unseen+wrong+due+overdue+weak+recent+Math.random()*1.5;
+}
+function dialogueAdaptiveLevel(){
+  const a=dialogueAdaptiveProfile.sentenceAttempts;
+  const acc=a?dialogueAdaptiveProfile.sentenceSuccess/a:0;
+  if(a>=12&&acc>=.8)return 4;
+  if(a>=7&&acc>=.65)return 3;
+  if(a>=3&&acc>=.5)return 2;
+  return 1;
+}
+function dialogueAdaptiveFocus(){
+  const pool=dialogueGetPool(),now=Date.now();
+  const due=pool.filter(w=>{const s=dialogueAdaptiveWordState(w);return s.nextReview&&s.nextReview<=now}).length;
+  const unseen=pool.filter(w=>dialogueAdaptiveWordState(w).attempts===0).length;
+  if(due>=3)return "REVIEW";
+  if(unseen>Math.max(3,pool.length*.35))return "NEW WORDS";
+  if(dialogueAdaptiveLevel()>=3)return "PRODUCTION";
+  return "CONTEXT";
+}
+function dialogueRenderAdaptive(){
+  const pool=typeof dialogueGetPool==="function"?dialogueGetPool():[],now=Date.now();
+  const due=pool.filter(w=>{const s=dialogueAdaptiveProfile.words[dialogueWordKey(w)];return s&&s.nextReview&&s.nextReview<=now}).length;
+  const attempts=dialogueAdaptiveProfile.sentenceAttempts||0;
+  const acc=attempts?Math.round((dialogueAdaptiveProfile.sentenceSuccess/attempts)*100)+"%":"—";
+  const l=document.getElementById("dialogueAdaptiveLevel"),q=document.getElementById("dialogueReviewQueue"),a=document.getElementById("dialogueSentenceAccuracy"),f=document.getElementById("dialogueAdaptiveFocus"),n=document.getElementById("dialogueAdaptiveNote");
+  if(l)l.textContent="L"+dialogueAdaptiveLevel();
+  if(q)q.textContent=String(due);
+  if(a)a.textContent=acc;
+  if(f)f.textContent=dialogueAdaptiveFocus();
+  if(n){
+    const focus=dialogueAdaptiveFocus();
+    n.textContent=focus==="REVIEW"?"복습 시점이 된 단어를 우선 출제합니다.":focus==="PRODUCTION"?"직접 문장 작성 비중을 높입니다.":focus==="CONTEXT"?"뜻 암기보다 문맥 이해 비중을 높입니다.":"아직 접하지 않은 단어를 우선 소개합니다.";
   }
 }
 
-async function dialogueInvokeAI(message,forcedMode=null){
-  const pool=dialogueGetPool();
-  const mode=forcedMode||dialogueMode;
-  const candidates=pool.map(w=>({
-    word:w.word,meaning:w.meaning,unit:dialogueUnitOf(w),
-    mastery:Number(dialogueMasteryMap.get(dialogueWordKey(w))?.level||0)
-  })).sort((a,b)=>a.mastery-b.mastery||Math.random()-.5).slice(0,24);
-  const payload={
-    mode,message:String(message||""),book:dialogueBookKey(),
-    vocabulary:candidates,
-    target_words:dialogueTargetWords.map(w=>({word:w.word,meaning:w.meaning,unit:dialogueUnitOf(w)})),
-    history:dialogueHistory.slice(-10),
-    learner_name:String(currentProfile?.username||currentUser?.user_metadata?.username||"learner")
-  };
-  try{
-    const {data,error}=await supabaseClient.functions.invoke("matiere-dialogue",{body:payload});
-    if(error)throw error;
-    if(!data||typeof data.reply!=="string")throw new Error("Invalid AI response");
-    dialogueBackendState="online";
-    dialogueAddMessage("ai",data.reply,{activity:data.activity,targetWord:data.target_word});
-    if(data.activity_card?.title||data.activity_card?.body)dialogueAddActivity(data.activity_card.title||"VOCABULARY",data.activity_card.body||"",data.target_word);
-    dialogueRenderCorrection(data.correction);
-    await dialogueApplyMastery(data.mastery_events||[]);
-    if(dialogueStatus)dialogueStatus.textContent="AI tutor connected · 숙련도는 계정별로 저장됩니다.";
-    return true;
-  }catch(e){
-    console.warn("MATIÈRE Dialogue AI unavailable:",e);
-    dialogueBackendState="offline";
-    if(dialogueStatus)dialogueStatus.textContent="AI 서버 미연결 · 현재 QUICK QUIZ 데모 모드로 동작 중";
-    dialogueFallback(mode,message);
-    return false;
+function dialogueBookKey(){return typeof rescueGetBook==="function"&&rescueGetBook()==="black"?"black":"rescue"}
+function dialogueUnitOf(w){return Number(w?.lesson||w?.day||0)||0}
+function dialogueWordKey(w){return `${dialogueBookKey()}|${dialogueUnitOf(w)}|${String(w?.word||"").trim().toLowerCase()}|${String(w?.meaning||"").trim()}`}
+function dialogueGetPool(){return dialogueDayPicker?poolForPicker(dialogueDayPicker,dialogueSelectedDays).filter(w=>w?.word&&w?.meaning):[]}
+function dialogueEsc(s){return escapeHtml(String(s??""))}
+function dialogueClock(){try{return new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit"}).format(new Date())}catch(_){return""}}
+function dialogueNorm(s){return String(s||"").trim().toLowerCase().replace(/[.,!?;:'"()[\]{}]/g," ").replace(/\s+/g," ").trim()}
+function dialogueCap(s){s=String(s||"").trim();return s?s.charAt(0).toUpperCase()+s.slice(1):s}
+function dialoguePick(a){return a[Math.floor(Math.random()*a.length)]}
+function dialogueDelay(ms=220){return new Promise(r=>setTimeout(r,ms))}
+function dialogueSetBusy(on,label=""){dialogueBusy=!!on;if(dialogueSendBtn)dialogueSendBtn.disabled=on;if(dialogueStartBtn)dialogueStartBtn.disabled=on;if(dialogueStatus&&label)dialogueStatus.textContent=label}
+function dialogueScroll(){if(dialogueChat)requestAnimationFrame(()=>dialogueChat.scrollTop=dialogueChat.scrollHeight)}
+function dialogueAddMessage(role,text){if(!dialogueChat)return;dialogueChat.querySelector('.dialogue-empty')?.remove();const row=document.createElement('div');row.className=`dialogue-row ${role==='user'?'user':'ai'}`;if(role!=='user'){const av=document.createElement('span');av.className='dialogue-avatar';row.appendChild(av)}const b=document.createElement('div');b.className='dialogue-bubble';b.textContent=String(text||'');row.appendChild(b);const m=document.createElement('span');m.className='dialogue-meta';m.textContent=dialogueClock();row.appendChild(m);dialogueChat.appendChild(row);dialogueHistory.push({role:role==='user'?'user':'assistant',content:String(text||'')});if(dialogueHistory.length>16)dialogueHistory=dialogueHistory.slice(-16);dialogueScroll()}
+function dialogueAddActivity(title,body,target){const c=document.createElement('div');c.className='dialogue-activity-card';c.innerHTML=`<div class="kicker">${dialogueEsc(title)}</div><b>${dialogueEsc(target?.word||'')}</b><p>${dialogueEsc(body||'')}</p>`;dialogueChat.appendChild(c);dialogueScroll()}
+function dialogueRenderCorrection(c){if(!dialogueCorrection)return;if(!c){dialogueCorrection.className='dialogue-correction-empty';dialogueCorrection.textContent='대화 중 교정할 부분이 생기면 이곳에 표시됩니다.';return}dialogueCorrection.className='';dialogueCorrection.innerHTML=`<div class="dialogue-correction-grid"><span>YOUR</span><p>${dialogueEsc(c.original)}</p><span>BETTER</span><p><b>${dialogueEsc(c.suggested)}</b></p><span>WHY</span><p>${dialogueEsc(c.explanation)}<br><b>Vocabulary ${c.scores.vocab} · Grammar ${c.scores.grammar} · Naturalness ${c.scores.natural}</b></p></div>`}
+function dialoguePickTargets(force=false){const pool=dialogueGetPool();if(!pool.length){dialogueTargetWords=[];dialogueRenderTargets();return}const scored=pool.map(w=>({w,priority:dialogueAdaptivePriority(w)})).sort((a,b)=>b.priority-a.priority);dialogueTargetWords=scored.slice(0,Math.min(5,scored.length)).map(x=>x.w);dialogueRenderTargets();dialogueRenderAdaptive()}
+function dialogueRenderTargets(){if(!dialogueTargets)return;const n=document.getElementById('dialogueTargetCount');if(n)n.textContent=String(dialogueTargetWords.length);const h=dialogueTargetWords.length?dialogueTargetWords.map(w=>`<span title="${dialogueEsc(w.meaning)}">${dialogueEsc(w.word)}</span>`).join(''):'<span>범위를 선택하세요.</span>';dialogueTargets.innerHTML=h;if(dialogueLiveTargets)dialogueLiveTargets.innerHTML=h}
+function dialogueUpdateSetup(){try{refreshDayPickerUI(dialogueDayPicker,dialogueSelectedDays)}catch(_){}const p=dialogueGetPool(),l=document.getElementById('dialoguePoolLabel');if(l)l.textContent=`${p.length.toLocaleString()} words selected`;dialoguePickTargets(true);dialogueRenderMastery();dialogueRenderAdaptive();if(dialogueStartBtn)dialogueStartBtn.disabled=!p.length}
+function dialogueOnDayChange(){dialogueUpdateSetup();dialogueLoadMastery()}
+function dialogueRenderMastery(){const p=dialogueGetPool();let t=0;p.forEach(w=>t+=Math.max(0,Math.min(4,Number(dialogueMasteryMap.get(dialogueWordKey(w))?.level||0))));const pct=p.length?Math.round(t/(p.length*4)*100):0;if(dialogueMasteryFill)dialogueMasteryFill.style.width=pct+'%';if(dialogueMasteryPct)dialogueMasteryPct.textContent=pct+'%'}
+async function dialogueLoadMastery(){if(!currentUser?.id){dialogueMasteryMap=new Map();dialogueRenderMastery();return}try{const {data,error}=await supabaseClient.from('matiere_word_mastery').select('book,unit,word,meaning,level,recognition_hits,context_hits,production_hits').eq('user_id',currentUser.id);if(error)throw error;dialogueMasteryMap=new Map();(data||[]).forEach(r=>dialogueMasteryMap.set(`${r.book}|${Number(r.unit)||0}|${String(r.word||'').trim().toLowerCase()}|${String(r.meaning||'').trim()}`,r))}catch(e){try{dialogueMasteryMap=new Map(Object.entries(JSON.parse(localStorage.getItem('matiere_dialogue_mastery_'+currentUser.id)||'{}')))}catch(_){dialogueMasteryMap=new Map()}}dialogueRenderMastery();dialoguePickTargets(true)}
+async function dialogueApplyMastery(events){const pool=dialogueGetPool(),rows=[];(events||[]).forEach(ev=>{const f=pool.find(w=>String(w.word).toLowerCase()===String(ev.word).toLowerCase());if(!f)return;const k=dialogueWordKey(f),p=dialogueMasteryMap.get(k)||{},n={...p,book:dialogueBookKey(),unit:dialogueUnitOf(f),word:f.word,meaning:f.meaning,level:Math.max(Number(p.level||0),Number(ev.level||0)),recognition_hits:Number(p.recognition_hits||0)+(ev.kind==='recognition'?1:0),context_hits:Number(p.context_hits||0)+(ev.kind==='context'?1:0),production_hits:Number(p.production_hits||0)+(ev.kind==='production'?1:0)};dialogueMasteryMap.set(k,n);rows.push(n)});dialogueRenderMastery();dialoguePickTargets();if(!currentUser?.id)return;try{const db=rows.map(r=>({user_id:currentUser.id,book:r.book,unit:r.unit,word:r.word,meaning:r.meaning,level:r.level,recognition_hits:r.recognition_hits||0,context_hits:r.context_hits||0,production_hits:r.production_hits||0,last_reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString()}));if(db.length){const {error}=await supabaseClient.from('matiere_word_mastery').upsert(db,{onConflict:'user_id,book,unit,word,meaning'});if(error)throw error}}catch(_){try{localStorage.setItem('matiere_dialogue_mastery_'+currentUser.id,JSON.stringify(Object.fromEntries(dialogueMasteryMap)))}catch(__){}}}
+function dialogueSetMode(m){dialogueMode=['auto','talk','quiz','context','sentence'].includes(m)?m:'auto';document.querySelectorAll('[data-dialogue-mode]').forEach(b=>b.classList.toggle('on',b.dataset.dialogueMode===dialogueMode));if(dialogueModeBadge)dialogueModeBadge.textContent=dialogueMode.toUpperCase()}
+document.querySelectorAll('[data-dialogue-mode]').forEach(b=>b.addEventListener('click',()=>dialogueSetMode(b.dataset.dialogueMode)));
+function dialogueNextTarget(){const pool=dialogueTargetWords.length?dialogueTargetWords:dialogueGetPool();if(!pool.length)return null;const arr=(pool.filter(w=>dialogueWordKey(w)!==dialogueLastTargetKey).length?pool.filter(w=>dialogueWordKey(w)!==dialogueLastTargetKey):pool).map(w=>({w,p:dialogueAdaptivePriority(w)})).sort((a,b)=>b.p-a.p);const w=arr[0].w;dialogueLastTargetKey=dialogueWordKey(w);return w}
+function dialogueMeaningMatches(a,m){a=dialogueNorm(a);m=dialogueNorm(m);if(!a||!m)return false;const c=m.split(/[,;/·]/).map(x=>x.trim()).filter(x=>x.length>=2);return a===m||c.some(x=>a.includes(x)||x.includes(a))}
+function dialogueQuizStart(){const pool=dialogueGetPool(),t=dialogueNextTarget();if(!t)return;const other=pool.filter(w=>dialogueWordKey(w)!==dialogueWordKey(t)&&dialogueNorm(w.meaning)!==dialogueNorm(t.meaning)).sort(()=>Math.random()-.5).slice(0,3);dialoguePending={type:'quiz',target:t};dialogueAddMessage('ai',`Quick quiz: What does “${t.word}” mean?`);const card=document.createElement('div');card.className='dialogue-activity-card';card.innerHTML=`<div class="kicker">VOCABULARY QUIZ</div><b>${dialogueEsc(t.word)}</b><div class="dialogue-quiz-options"></div>`;const box=card.querySelector('.dialogue-quiz-options');[t,...other].sort(()=>Math.random()-.5).forEach(o=>{const btn=document.createElement('button');btn.type='button';btn.textContent=o.meaning;btn.addEventListener('click',()=>dialogueEvaluateQuiz(o.meaning,btn,box));box.appendChild(btn)});dialogueChat.appendChild(card);dialogueScroll()}
+async function dialogueEvaluateQuiz(a,btn,box){const p=dialoguePending;if(!p||p.type!=='quiz')return false;const ok=dialogueMeaningMatches(a,p.target.meaning);if(btn){btn.classList.add(ok?'correct':'wrong');[...box.children].forEach(x=>x.disabled=true)}dialogueAddMessage('ai',ok?`Exactly. “${p.target.word}” means ${p.target.meaning}.`:`Not quite. “${p.target.word}” means ${p.target.meaning}.`);dialoguePending=null;dialogueAdaptiveRecord(p.target,ok,'recognition');if(ok)await dialogueApplyMastery([{word:p.target.word,level:1,kind:'recognition'}]);dialoguePickTargets(true);return true}
+function dialogueContextStart(){const t=dialogueNextTarget();if(!t)return;const s=dialoguePick([`The teacher said the word “${t.word}” was important in this situation.`,`Everyone noticed how the word “${t.word}” fit the situation.`,`The article used “${t.word}” to describe what was happening.`]);dialoguePending={type:'context',target:t};dialogueAddActivity('CONTEXT CHECK',s,t);dialogueAddMessage('ai',`In this context, what does “${t.word}” mean? Answer in Korean.`)}
+async function dialogueEvaluateContext(a){const p=dialoguePending;if(!p||p.type!=='context')return false;const ok=dialogueMeaningMatches(a,p.target.meaning);dialogueAddMessage('ai',ok?`Yes. Here “${p.target.word}” means ${p.target.meaning}.`:`The intended meaning is “${p.target.meaning}”.`);dialoguePending=null;dialogueAdaptiveRecord(p.target,ok,'context');if(ok)await dialogueApplyMastery([{word:p.target.word,level:2,kind:'context'}]);dialoguePickTargets(true);return true}
+function dialogueSentenceStart(){const t=dialogueNextTarget();if(!t)return;dialoguePending={type:'sentence',target:t};dialogueAddActivity('USE THE WORD','Write one original English sentence using the target word.',t);dialogueAddMessage('ai',`Make one English sentence using “${t.word}”.`)}
+function dialogueBasicCorrection(text,target=''){let s=String(text||'').trim(),c=s,n=[];if(/^[a-z]/.test(c)){c=dialogueCap(c);n.push('문장 첫 글자는 대문자로 쓰는 것이 자연스럽습니다.')}if(c&&!/[.!?]$/.test(c)){c+='.';n.push('완전한 문장은 문장 부호로 끝내는 것이 좋습니다.')}const reps=[[/\bi am agree\b/gi,'I agree','agree는 보통 be동사 없이 I agree로 씁니다.'],[/\bi very like\b/gi,'I really like','very like보다 really like가 자연스럽습니다.'],[/\bhe have\b/gi,'he has','3인칭 단수 현재형에서는 has를 씁니다.'],[/\bshe have\b/gi,'she has','3인칭 단수 현재형에서는 has를 씁니다.'],[/\bi goed\b/gi,'I went','go의 과거형은 went입니다.'],[/\bmore better\b/gi,'better','better 앞에는 보통 more를 쓰지 않습니다.']];reps.forEach(([r,to,note])=>{if(r.test(c)){c=c.replace(r,to);n.push(note)}});const hasTarget=target?new RegExp(`\\b${target.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i').test(s):true;return{original:s,suggested:c,explanation:n.length?n.join(' '):'뚜렷한 기본 문법 오류는 발견되지 않았습니다.',scores:{vocab:hasTarget?100:45,grammar:Math.max(60,100-n.length*12),natural:Math.max(60,100-n.length*10)},containsTarget:hasTarget}}
+async function dialogueEvaluateSentence(a){const p=dialoguePending;if(!p||p.type!=='sentence')return false;const c=dialogueBasicCorrection(a,p.target.word);dialogueRenderCorrection(c);const enough=dialogueNorm(a).split(' ').length>=4;if(!c.containsTarget){dialogueAdaptiveRecord(p.target,false,'production');dialogueAdaptiveRecordSentence(false,c);dialogueAddMessage('ai',`Try again and include “${p.target.word}”.`);return true}if(!enough){dialogueAdaptiveRecord(p.target,false,'production');dialogueAdaptiveRecordSentence(false,c);dialogueAddMessage('ai','Good start. Make the sentence a little more complete.');return true}dialogueAddMessage('ai',`Nice. You used “${p.target.word}” in a complete sentence. Check the feedback panel.`);dialoguePending=null;const prev=Number(dialogueMasteryMap.get(dialogueWordKey(p.target))?.level||0);const sentenceOk=c.scores.grammar>=70&&c.scores.natural>=70;dialogueAdaptiveRecord(p.target,sentenceOk,'production');dialogueAdaptiveRecordSentence(sentenceOk,c);await dialogueApplyMastery([{word:p.target.word,level:prev>=3?4:3,kind:'production'}]);dialoguePickTargets(true);return true}
+function dialogueTalkReply(text){const t=dialogueNorm(text);if(/\b(hello|hi|hey)\b/.test(t))return dialoguePick(['Hi! How has your day been so far?','Hey! What was the most interesting part of your day?']);if(/\b(tired|exhausted|sleepy)\b/.test(t))return 'That sounds tiring. What made your day so exhausting?';if(/\b(happy|great|good|excited)\b/.test(t))return 'That sounds nice. What happened that made you feel that way?';if(/\b(school|class|teacher|exam|test|study|homework)\b/.test(t))return dialoguePick(['Which class took the most energy today?','What are you studying these days?']);if(/\b(friend|friends)\b/.test(t))return 'What do you usually enjoy doing with your friends?';if(/\b(music|song|songs)\b/.test(t))return 'What kind of music have you been listening to lately?';if(/\b(game|games|gaming)\b/.test(t))return 'What kind of games do you enjoy most, and why?';if(/\b(food|eat|ate|lunch|dinner|breakfast)\b/.test(t))return 'What did you eat, and would you choose it again?';return dialoguePick(['Interesting. Tell me a little more about that.','Why do you think that?','What happened next?','How did you feel about it?','Can you give me a specific example?'])}
+async function dialogueHandleFreeTalk(text){const c=dialogueBasicCorrection(text);if(c.explanation!=='뚜렷한 기본 문법 오류는 발견되지 않았습니다.')dialogueRenderCorrection(c);await dialogueDelay();dialogueAddMessage('ai',dialogueTalkReply(text))}
+async function dialogueHandleInput(text){
+  if(dialoguePending?.type==='quiz')return dialogueEvaluateQuiz(text);
+  if(dialoguePending?.type==='context')return dialogueEvaluateContext(text);
+  if(dialoguePending?.type==='sentence')return dialogueEvaluateSentence(text);
+  if(dialogueMode==='quiz')return dialogueQuizStart();
+  if(dialogueMode==='context')return dialogueContextStart();
+  if(dialogueMode==='sentence')return dialogueSentenceStart();
+
+  await dialogueHandleFreeTalk(text);
+
+  if(dialogueMode==='auto'){
+    dialogueTurnCount++;
+    const level=dialogueAdaptiveLevel();
+    const focus=dialogueAdaptiveFocus();
+    if(dialogueTurnCount%3===0){
+      if(focus==='REVIEW') dialogueQuizStart();
+      else if(level>=3||focus==='PRODUCTION') dialogueSentenceStart();
+      else if(level===2||focus==='CONTEXT') dialogueContextStart();
+      else dialogueQuizStart();
+    }
   }
 }
-
-function dialogueSelectionLabel(){
-  const book=dialogueBookKey()==="black"?"어휘끝 BLACK":"RESCUE";
-  const units=[...dialogueSelectedDays].sort((a,b)=>a-b);
-  let range="선택 없음";
-  if(units.length===1)range=`${dialogueBookKey()==="black"?"강":"DAY"} ${units[0]}`;
-  else if(units.length>1)range=`${dialogueBookKey()==="black"?"강":"DAY"} ${units.join(", ")}`;
-  return {book,range};
-}
-function dialogueEnterPlay(){
-  const info=dialogueSelectionLabel();
-  const bookEl=document.getElementById("dialoguePlayBook");
-  const rangeEl=document.getElementById("dialoguePlayRange");
-  const modeEl=document.getElementById("dialoguePlayMode");
-  if(bookEl)bookEl.textContent=info.book;
-  if(rangeEl)rangeEl.textContent=info.range;
-  if(modeEl)modeEl.textContent=dialogueMode.toUpperCase()+" MODE";
-  if(dialogueSetupScreen)dialogueSetupScreen.style.display="none";
-  if(dialoguePlayScreen)dialoguePlayScreen.style.display="block";
-}
-function dialogueReturnToSetup(){
-  dialogueSessionStarted=false;
-  dialogueBusy=false;
-  dialogueHistory=[];
-  dialogueLocalQuiz=null;
-  if(dialoguePlayScreen)dialoguePlayScreen.style.display="none";
-  if(dialogueSetupScreen)dialogueSetupScreen.style.display="block";
-  dialogueReset();
-  dialogueUpdateSetup();
-  requestAnimationFrame(()=>dialogueSetupScreen?.scrollIntoView({behavior:"smooth",block:"start"}));
-}
-
-async function dialogueStartSession(){
-  const pool=dialogueGetPool();
-  if(!pool.length){alert("먼저 학습할 Day/강을 선택해 주세요.");return;}
-  dialogueSessionStarted=true;dialogueHistory=[];dialogueLocalQuiz=null;
-  dialogueEnterPlay();
-  dialogueChat.innerHTML="";
-  dialoguePickTargets(true);
-  dialogueSetBusy(true,"Matière Tutor가 학습 세션을 준비하는 중…");
-  await dialogueInvokeAI("",dialogueMode);
-  dialogueSetBusy(false,dialogueBackendState==="online"?"대화 준비 완료 · 영어로 자유롭게 말해보세요.":"AI 서버 미연결 · QUICK QUIZ는 바로 사용할 수 있습니다.");
-  dialogueInput?.focus();
-}
-async function dialogueSend(){
-  const text=String(dialogueInput?.value||"").trim();
-  if(!text||dialogueBusy)return;
-  if(!dialogueSessionStarted){await dialogueStartSession();if(!dialogueSessionStarted)return;}
-  dialogueInput.value="";dialogueAddMessage("user",text);
-  dialogueSetBusy(true,"답변을 만드는 중…");
-  await dialogueInvokeAI(text);
-  dialogueSetBusy(false,dialogueBackendState==="online"?"대화를 이어가세요.":"AI 서버 미연결 · QUICK QUIZ는 사용 가능합니다.");
-  dialogueInput?.focus();
-}
-function dialogueReset(){
-  dialogueSessionStarted=false;dialogueHistory=[];dialogueLocalQuiz=null;
-  if(dialogueChat)dialogueChat.innerHTML='<div class="dialogue-empty"><span class="dialogue-avatar large" aria-hidden="true"></span><b>Ready when you are.</b><p>영어로 자유롭게 대화를 시작하세요.</p></div>';
-  dialogueRenderCorrection(null);
-  if(dialogueStatus)dialogueStatus.textContent="대화를 시작하면 선택 단어의 숙련도가 자동으로 추적됩니다.";
-}
-
-if(dialogueDayPicker){
-  const today=Math.max(1,Math.min(DAY_MAX||1,((new Date().getDate()-1)%Math.max(1,DAY_MAX||1))+1));
-  dialogueSelectedDays.add(today);
-  buildDayPicker(dialogueDayPicker,dialogueSelectedDays,dialogueOnDayChange);
-  refreshDayPickerUI(dialogueDayPicker,dialogueSelectedDays);
-  setTimeout(()=>{try{rescueInstallBookSelectors();}catch(_){} dialogueUpdateSetup();dialogueLoadMastery();},0);
-}
-dialogueStartBtn?.addEventListener("click",dialogueStartSession);
-dialogueSendBtn?.addEventListener("click",dialogueSend);
-document.getElementById("dialogueResetBtn")?.addEventListener("click",dialogueReset);
-document.getElementById("dialogueChangeRangeBtn")?.addEventListener("click",dialogueReturnToSetup);
-document.getElementById("dialogueShuffleTargets")?.addEventListener("click",()=>dialoguePickTargets(true));
-dialogueInput?.addEventListener("keydown",e=>{
-  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();dialogueSend();}
-});
-dialogueInput?.addEventListener("input",()=>{
-  dialogueInput.style.height="auto";
-  dialogueInput.style.height=Math.min(120,dialogueInput.scrollHeight)+"px";
-});
-document.querySelectorAll("[data-dialogue-quick]").forEach(btn=>btn.addEventListener("click",async()=>{
-  const mode=btn.dataset.dialogueQuick;
-  if(mode==="quiz"&&dialogueBackendState!=="online"){dialogueLocalQuizStart();return;}
-  if(!dialogueSessionStarted)dialogueSessionStarted=true;
-  dialogueSetBusy(true,"학습 활동을 준비하는 중…");
-  await dialogueInvokeAI("",mode);
-  dialogueSetBusy(false,dialogueBackendState==="online"?"학습 활동 준비 완료":"AI 서버 미연결 · QUICK QUIZ는 사용 가능합니다.");
-}));
+function dialogueSelectionLabel(){const book=dialogueBookKey()==='black'?'어휘끝 BLACK':'RESCUE',u=[...dialogueSelectedDays].sort((a,b)=>a-b);return{book,range:u.length?`${dialogueBookKey()==='black'?'강':'DAY'} ${u.join(', ')}`:'선택 없음'}}
+function dialogueEnterPlay(){const i=dialogueSelectionLabel();document.getElementById('dialoguePlayBook').textContent=i.book;document.getElementById('dialoguePlayRange').textContent=i.range;document.getElementById('dialoguePlayMode').textContent=dialogueMode.toUpperCase()+' MODE';dialogueSetupScreen.style.display='none';dialoguePlayScreen.style.display='block'}
+function dialogueReturnToSetup(){dialogueSessionStarted=false;dialogueHistory=[];dialoguePending=null;dialogueTurnCount=0;dialoguePlayScreen.style.display='none';dialogueSetupScreen.style.display='block';dialogueReset();dialogueUpdateSetup();requestAnimationFrame(()=>dialogueSetupScreen?.scrollIntoView({behavior:'smooth',block:'start'}))}
+async function dialogueStartSession(){if(!dialogueGetPool().length){alert('먼저 학습할 Day/강을 선택해 주세요.');return}dialogueSessionStarted=true;dialogueHistory=[];dialoguePending=null;dialogueTurnCount=0;dialogueAdaptiveProfile.sessions=(dialogueAdaptiveProfile.sessions||0)+1;dialogueAdaptiveProfile.lastSessionAt=Date.now();dialogueSaveAdaptive();dialogueEnterPlay();dialogueChat.innerHTML='';dialoguePickTargets(true);dialogueSetBusy(true,'LOCAL TUTOR가 세션을 준비하는 중…');await dialogueDelay();if(dialogueMode==='quiz')dialogueQuizStart();else if(dialogueMode==='context')dialogueContextStart();else if(dialogueMode==='sentence')dialogueSentenceStart();else dialogueAddMessage('ai',dialoguePick(['Hi! Let’s practice English together. How has your day been?','Good to see you. Tell me one thing that happened today.']));dialogueSetBusy(false,'ADAPTIVE TUTOR · 학습 기록에 따라 다음 문제를 자동 조정합니다.');dialogueInput?.focus()}
+async function dialogueSend(){const text=String(dialogueInput?.value||'').trim();if(!text||dialogueBusy)return;if(!dialogueSessionStarted){await dialogueStartSession();if(!dialogueSessionStarted)return}dialogueInput.value='';dialogueAddMessage('user',text);dialogueSetBusy(true,'답변을 만드는 중…');await dialogueHandleInput(text);dialogueSetBusy(false,'LOCAL TUTOR · 대화를 이어가세요.');dialogueInput?.focus()}
+function dialogueReset(){dialogueHistory=[];dialoguePending=null;dialogueTurnCount=0;if(dialogueChat)dialogueChat.innerHTML='<div class="dialogue-empty"><span class="dialogue-avatar large" aria-hidden="true"></span><b>Ready when you are.</b><p>영어로 자유롭게 대화를 시작하세요.</p></div>';dialogueRenderCorrection(null);if(dialogueStatus)dialogueStatus.textContent='ADAPTIVE TUTOR · 학습 기록에 따라 다음 문제를 자동 조정합니다.'}
+if(dialogueDayPicker){const today=Math.max(1,Math.min(DAY_MAX||1,((new Date().getDate()-1)%Math.max(1,DAY_MAX||1))+1));dialogueSelectedDays.add(today);buildDayPicker(dialogueDayPicker,dialogueSelectedDays,dialogueOnDayChange);refreshDayPickerUI(dialogueDayPicker,dialogueSelectedDays);setTimeout(()=>{try{rescueInstallBookSelectors()}catch(_){}dialogueLoadAdaptive();dialogueUpdateSetup();dialogueLoadMastery()},0)}
+dialogueStartBtn?.addEventListener('click',dialogueStartSession);dialogueSendBtn?.addEventListener('click',dialogueSend);document.getElementById('dialogueResetBtn')?.addEventListener('click',()=>{dialogueChat.innerHTML='';dialoguePending=null;dialogueTurnCount=0;dialogueStartSession()});document.getElementById('dialogueChangeRangeBtn')?.addEventListener('click',dialogueReturnToSetup);document.getElementById('dialogueShuffleTargets')?.addEventListener('click',()=>dialoguePickTargets(true));dialogueInput?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();dialogueSend()}});document.querySelectorAll('[data-dialogue-quick]').forEach(btn=>btn.addEventListener('click',()=>{const m=btn.dataset.dialogueQuick;if(m==='quiz')dialogueQuizStart();else if(m==='context')dialogueContextStart();else if(m==='sentence')dialogueSentenceStart();else dialogueAddMessage('ai','Sure. Let’s just talk. What would you like to talk about?')}));
 </script>
 
 </body>
