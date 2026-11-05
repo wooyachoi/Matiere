@@ -11838,7 +11838,7 @@ body.football-mode{background:#070707!important}
       <section class="sports-screen on" data-sports-screen="home">
         <div class="sports-feature-grid">
           <button type="button" class="sports-feature featured" data-sports-go="baseball">
-            <span class="sports-feature-icon">◉</span><div><small>NOW PLAYING</small><b>BASEBALL</b><p>공통 선수들로 첫 번째 클럽을 구성하세요.</p></div><strong>→</strong>
+            <span class="sports-feature-icon">◉</span><div><small>SPORTS APP · LIVE</small><b>BASEBALL</b><p>독립 야구 게임으로 이동합니다. 공통 선수·얼굴·MP는 그대로 연결됩니다.</p></div><strong>↗</strong>
           </button>
           <button type="button" class="sports-feature" data-sports-go="players">
             <span class="sports-feature-icon">◇</span><div><small>UNIVERSAL ROSTER</small><b>MY PLAYERS</b><p>모든 종목에서 함께 사용하는 선수 카드.</p></div><strong>→</strong>
@@ -22926,5 +22926,17 @@ async function sportsSaveLineup(slot,playerId){
   }catch(e){console.error(e);alert('라인업 저장에 실패했습니다.')}
 }
 </script>
+
+<script id="matiere-v1510-sports-app-router">
+/* V15.10 · SPORTS apps are separate game sites. */
+document.addEventListener("click",(event)=>{
+  const btn=event.target.closest('[data-sports-go="baseball"]');
+  if(!btn)return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  window.location.href="./sports/baseball/";
+},true);
+</script>
+
 </body>
 </html>
