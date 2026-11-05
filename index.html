@@ -10150,6 +10150,13 @@ body.football-mode{background:#070707!important}
 @media(max-width:620px){.matiere-bgm{left:10px;bottom:10px;max-width:calc(100vw - 20px)}}
 </style>
 
+
+<style id="matiere-v1517-sports-polish">
+.sports-dialogue-hero{margin:0!important}
+.sports-disabled-tab,.sports-feature-closed{opacity:.42!important;cursor:not-allowed!important;filter:saturate(.45)}
+.sports-feature-closed:hover{transform:none!important}
+</style>
+
 </head>
 <body>
 
@@ -11107,13 +11114,13 @@ body.football-mode{background:#070707!important}
 
     <!-- ===== MATIÈRE SPORTS · V15 ===== -->
     <div id="view-football" class="sports-view" style="display:none;">
-      <section class="sports-hero">
+      <section class="dialogue-hero module-top-hero sports-dialogue-hero">
         <div>
-          <div class="sports-kicker">SPORTS · LEARN &amp; PLAY</div>
-          <h2>Sports</h2>
+          <div class="dialogue-kicker">SPORTS · LEARN &amp; PLAY</div>
+          <h2>SPORTS</h2>
           <p>하나의 선수 카드로 여러 스포츠를 즐기고, 학습으로 얻은 MP로 나만의 스포츠 세계를 확장하세요.</p>
         </div>
-        <div class="sports-hero-meta"><span>BASEBALL</span><b>FIRST SEASON</b></div>
+        <div class="dialogue-hero-art" aria-hidden="true"></div>
       </section>
 
       <section id="sportsResetBanner" class="sports-reset-banner">
@@ -11130,21 +11137,21 @@ body.football-mode{background:#070707!important}
 
       <div class="sports-nav" id="sportsNav">
         <button type="button" class="on" data-sports-go="home">SPORTS</button>
-        <button type="button" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">BASEBALL</button>
+        <button type="button" data-sports-go="baseball">BASEBALL</button>
         <button type="button" data-sports-go="players">MY PLAYERS</button>
-        <button type="button" data-sports-go="faces">FACE SHOP</button>
+        <button type="button" disabled aria-disabled="true" class="sports-disabled-tab">FACE SHOP · CLOSED</button>
       </div>
 
       <section class="sports-screen on" data-sports-screen="home">
         <div class="sports-feature-grid">
-          <button type="button" class="sports-feature featured" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">
+          <button type="button" class="sports-feature featured" data-sports-go="baseball">
             <span class="sports-feature-icon">◉</span><div><small>SPORTS APP · LIVE</small><b>BASEBALL</b><p>독립 야구 게임으로 이동합니다. 공통 선수·얼굴·MP는 그대로 연결됩니다.</p></div><strong>↗</strong>
           </button>
           <button type="button" class="sports-feature" data-sports-go="players">
             <span class="sports-feature-icon">◇</span><div><small>UNIVERSAL ROSTER</small><b>MY PLAYERS</b><p>모든 종목에서 함께 사용하는 선수 카드.</p></div><strong>→</strong>
           </button>
-          <button type="button" class="sports-feature" data-sports-go="faces">
-            <span class="sports-feature-icon">○</span><div><small>CUSTOMIZE</small><b>FACE SHOP</b><p>성능과 무관한 캐릭터 얼굴을 구매하고 장착합니다.</p></div><strong>→</strong>
+          <button type="button" class="sports-feature sports-feature-closed" disabled aria-disabled="true">
+            <span class="sports-feature-icon">○</span><div><small>COMING LATER</small><b>FACE SHOP</b><p>캐릭터 얼굴 커스터마이징은 추후 다시 오픈합니다.</p></div><strong>—</strong>
           </button>
         </div>
         <div class="sports-coming-row">
@@ -11181,13 +11188,10 @@ body.football-mode{background:#070707!important}
         <div id="sportsPlayerGrid" class="sports-player-grid"><div class="sports-empty">선수 정보를 불러오는 중입니다.</div></div>
       </section>
 
-      <section class="sports-screen" data-sports-screen="faces">
-        <div class="sports-section-head"><div><span>CHARACTER CUSTOMIZATION</span><h3>Face Shop</h3><p>남성 10종 · 여성 10종, 모든 얼굴은 400 MP입니다. 구매한 얼굴은 모든 선수와 모든 종목에서 자유롭게 사용할 수 있습니다.</p></div><div class="baseball-wallet"><small>MY MP</small><b id="sportsFaceMpBalance">0 MP</b></div></div>
-        <div id="sportsFaceGrid" class="sports-face-grid"></div>
-      </section>
+      <section class="sports-screen" data-sports-screen="faces" style="display:none!important;"></section>
 
       <section class="sports-screen" data-sports-screen="lineup">
-        <div class="sports-section-head"><div><span>BASEBALL · STARTING NINE</span><h3>Lineup</h3><p>공통 선수 중 9명을 선택해 야구 선발 라인업을 구성합니다.</p></div><button type="button" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">← BASEBALL</button></div>
+        <div class="sports-section-head"><div><span>BASEBALL · STARTING NINE</span><h3>Lineup</h3><p>공통 선수 중 9명을 선택해 야구 선발 라인업을 구성합니다.</p></div><button type="button" data-sports-go="baseball">← BASEBALL</button></div>
         <div class="baseball-lineup-layout">
           <div class="baseball-diamond" aria-hidden="true"><i class="base"></i><span class="pos p-cf">CF</span><span class="pos p-lf">LF</span><span class="pos p-rf">RF</span><span class="pos p-ss">SS</span><span class="pos p-2b">2B</span><span class="pos p-3b">3B</span><span class="pos p-1b">1B</span><span class="pos p-p">P</span><span class="pos p-c">C</span></div>
           <div id="sportsLineupEditor" class="sports-lineup-editor"></div>
@@ -11195,12 +11199,12 @@ body.football-mode{background:#070707!important}
       </section>
 
       <section class="sports-screen" data-sports-screen="game">
-        <div class="sports-section-head"><div><span>BASEBALL · GAME ENGINE</span><h3>Play Ball</h3><p>단순 결과 뽑기가 아닌 직접 타격·투구하는 경기 엔진을 이 공간에 구축합니다.</p></div><button type="button" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">← BASEBALL</button></div>
+        <div class="sports-section-head"><div><span>BASEBALL · GAME ENGINE</span><h3>Play Ball</h3><p>단순 결과 뽑기가 아닌 직접 타격·투구하는 경기 엔진을 이 공간에 구축합니다.</p></div><button type="button" data-sports-go="baseball">← BASEBALL</button></div>
         <div class="baseball-engine-placeholder"><span>PRE-SEASON BUILD</span><b>Batting · Pitching · Fielding</b><p>팀·선수 시스템을 먼저 완성한 뒤 실제 조작 기반 경기 엔진을 연결합니다.</p></div>
       </section>
 
       <section class="sports-screen" data-sports-screen="season">
-        <div class="sports-section-head"><div><span>BASEBALL · SEASON</span><h3>Season</h3><p>정규 시즌과 개인 기록은 실제 경기 엔진 완성 후 이곳에서 집계됩니다.</p></div><button type="button" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">← BASEBALL</button></div>
+        <div class="sports-section-head"><div><span>BASEBALL · SEASON</span><h3>Season</h3><p>정규 시즌과 개인 기록은 실제 경기 엔진 완성 후 이곳에서 집계됩니다.</p></div><button type="button" data-sports-go="baseball">← BASEBALL</button></div>
         <div class="sports-season-card"><small>SEASON 01</small><b>PRE-SEASON</b><span>0 W · 0 L</span></div>
       </section>
     </div>
@@ -20720,14 +20724,13 @@ async function sportsSaveLineup(slot,playerId){
 }
 </script>
 
-<script id="matiere-v1510-sports-app-router">
-/* V15.10 · SPORTS apps are separate game sites. */
+<script id="matiere-v1517-sports-app-router">
 document.addEventListener("click",(event)=>{
-  const btn=event.target.closest('[data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;"]');
-  if(!btn)return;
+  const target=event.target.closest('[data-sports-go="baseball"]');
+  if(!target)return;
   event.preventDefault();
   event.stopImmediatePropagation();
-  window.location.href="./sports/baseball/";
+  window.location.assign(new URL("./sports/baseball/index.html", document.baseURI).href);
 },true);
 </script>
 
@@ -20736,7 +20739,7 @@ document.addEventListener("click",(event)=>{
   <button type="button" id="bgmNext" aria-label="Next track">›</button>
   <div class="matiere-bgm-main">
     <div class="matiere-bgm-kicker">MATIÈRE · BGM</div>
-    <div class="matiere-bgm-title" id="bgmTitle">FRESH MORNING</div>
+    <div class="matiere-bgm-title" id="bgmTitle" style="display:none!important;" aria-hidden="true"></div>
     <div class="matiere-bgm-focus-badge">FOCUS MODE · MUSIC PAUSED</div>
   </div>
   <input class="matiere-bgm-volume" id="bgmVolume" type="range" min="0" max="1" step="0.01" value="0.28" aria-label="Music volume">
