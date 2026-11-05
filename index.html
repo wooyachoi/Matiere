@@ -10706,6 +10706,28 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
 }
 </style>
 
+
+<style id="matiere-v1481-penalty-v2">
+.penalty-v2-dialog{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#030402;color:#f5efe5;overflow:hidden}
+.penalty-v2-dialog::backdrop{background:#000}
+.pv2-shell{height:100dvh;display:grid;grid-template-rows:auto auto 1fr auto;background:radial-gradient(circle at 50% 20%,#172419 0%,#0a100b 34%,#020302 100%)}
+.pv2-topbar{height:56px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 20px;border-bottom:1px solid rgba(220,183,104,.25);background:rgba(4,5,4,.92);z-index:4}
+.pv2-brand{font-size:9px;letter-spacing:.13em;font-weight:900;color:#b7aa96}.pv2-brand span{color:#d7b467}
+.pv2-round{font:700 12px Georgia,serif;color:#e6d9c8;letter-spacing:.08em}
+.pv2-close{justify-self:end;width:35px;height:35px;border-radius:50%;border:1px solid rgba(221,183,105,.26);background:#12120f;color:#d0b16f;font-size:20px}
+.pv2-scoreboard{height:78px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding:0 5vw;background:linear-gradient(180deg,rgba(7,8,7,.96),rgba(7,8,7,.72));border-bottom:1px solid rgba(220,183,104,.15);z-index:3}
+.pv2-team{min-width:0}.pv2-team.away{text-align:right}.pv2-team b{display:block;font:700 13px Georgia,serif;color:#eee5d8}.pv2-score{font:700 25px Georgia,serif;color:#e2bd71;min-width:78px;text-align:center}
+.pv2-dots{display:flex;gap:5px;margin-top:7px}.pv2-team.away .pv2-dots{justify-content:flex-end}.pv2-dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(227,194,128,.42);background:#171713}.pv2-dot.goal{background:#d5b15f;border-color:#f0d99e;box-shadow:0 0 8px rgba(213,177,95,.35)}.pv2-dot.miss{background:#3b2725;border-color:#9b5c53}.pv2-dot.pending{background:#171713}
+.pv2-stage-wrap{position:relative;min-height:0;overflow:hidden;touch-action:none;background:linear-gradient(#07100a,#102417 44%,#1b4a29 45%,#12331e 100%)}
+#penaltyV2Canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+.pv2-instruction{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:min(620px,88vw);padding:12px 17px;text-align:center;border:1px solid rgba(221,184,106,.28);border-radius:12px;background:rgba(5,6,5,.72);backdrop-filter:blur(8px);pointer-events:none;transition:opacity .2s}
+.pv2-instruction span{display:block;font-size:8px;font-weight:950;letter-spacing:.22em;color:#d0a95e}.pv2-instruction b{display:block;margin-top:4px;font-size:12px}.pv2-instruction small{display:block;margin-top:4px;color:#928879;font-size:8px}
+.pv2-result{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.12);opacity:0;pointer-events:none;transition:opacity .16s}.pv2-result.show{opacity:1}.pv2-result strong{font:italic 800 clamp(54px,9vw,104px)/.9 Georgia,serif;color:#f2e8d8;text-shadow:0 4px 35px rgba(0,0,0,.8)}.pv2-result small{margin-top:10px;color:#d4b46f;font-size:10px;letter-spacing:.12em;font-weight:900}
+.pv2-start{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);min-width:190px;min-height:54px;border-radius:999px;border:1px solid #ead297;background:linear-gradient(135deg,#e7c77d,#a97734);color:#171109;font-weight:950;letter-spacing:.08em;box-shadow:0 15px 40px rgba(0,0,0,.35)}
+.pv2-footer{height:32px;display:flex;align-items:center;justify-content:center;gap:28px;background:#070807;border-top:1px solid rgba(220,183,104,.16);font-size:7px;letter-spacing:.12em;color:#756c60;font-weight:900}
+@media(max-width:700px){.pv2-topbar{padding:0 12px}.pv2-brand{font-size:7px}.pv2-scoreboard{height:68px;padding:0 14px}.pv2-footer{gap:10px;font-size:6px}.pv2-instruction{bottom:14px}}
+</style>
+
 </head>
 <body>
 
@@ -11223,9 +11245,9 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
 
       <section class="dialogue-hero module-top-hero">
         <div>
-          <div class="dialogue-kicker">FLASHCARD</div>
+          <div class="dialogue-kicker">VOCABULARY REVIEW · ACTIVE RECALL</div>
           <h2>Flashcard</h2>
-          <p>Tap a card to flip it and review the meaning at your own pace.</p>
+          <p>카드를 넘기며 단어와 뜻을 반복해서 복습합니다.</p>
         </div>
         <div class="dialogue-hero-art" aria-hidden="true"></div>
       </section>
@@ -11270,9 +11292,9 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
 
       <section class="dialogue-hero module-top-hero">
         <div>
-          <div class="dialogue-kicker">WORD</div>
+          <div class="dialogue-kicker">VOCABULARY STUDY · WORD MEANING</div>
           <h2>Word</h2>
-          <p>Browse each word with its Korean meaning and mark unfamiliar words for later review.</p>
+          <p>선택한 단어의 뜻을 확인하고 모르는 단어를 표시하며 학습합니다.</p>
         </div>
         <div class="dialogue-hero-art" aria-hidden="true"></div>
       </section>
@@ -11331,9 +11353,9 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
 
       <section class="dialogue-hero module-top-hero">
         <div>
-          <div class="dialogue-kicker">QUIZ</div>
+          <div class="dialogue-kicker">VOCABULARY TEST · PRACTICE</div>
           <h2>Quiz</h2>
-          <p>Choose a quiz mode and build your accuracy through repeated practice.</p>
+          <p>선택한 범위의 단어를 문제로 풀며 실력을 점검합니다.</p>
         </div>
         <div class="dialogue-hero-art" aria-hidden="true"></div>
       </section>
@@ -11417,9 +11439,9 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
     <div id="view-game">
       <section class="dialogue-hero module-top-hero">
         <div>
-          <div class="dialogue-kicker">GAME</div>
-          <h2>Vocabulary Games</h2>
-          <p>Practice vocabulary through Word Search, Hangman, and AERIS Expedition.</p>
+          <div class="dialogue-kicker">VOCABULARY GAME · PRACTICE</div>
+          <h2>Game</h2>
+          <p>Word Search, Hangman, AERIS를 통해 단어를 게임으로 연습합니다.</p>
         </div>
         <div class="dialogue-hero-art" aria-hidden="true"></div>
       </section>
@@ -12114,6 +12136,35 @@ radial-gradient(circle at 88% 40%,rgba(211,167,86,.24),transparent 22%),#070707}
           </aside>
         </section>
       </main>
+    </div>
+  </dialog>
+
+
+  <dialog class="penalty-v2-dialog" id="penaltyV2Dialog" aria-label="Penalty Shootout V2">
+    <div class="pv2-shell">
+      <header class="pv2-topbar">
+        <div class="pv2-brand"><span>MATIÈRE</span> · PENALTY SHOOTOUT</div>
+        <div class="pv2-round" id="pv2RoundLabel">ROUND 1</div>
+        <button type="button" class="pv2-close" id="pv2CloseBtn" aria-label="닫기">×</button>
+      </header>
+      <div class="pv2-scoreboard">
+        <div class="pv2-team"><b id="pv2HomeName">YOU</b><div class="pv2-dots" id="pv2HomeDots"></div></div>
+        <div class="pv2-score" id="pv2Score">0 : 0</div>
+        <div class="pv2-team away"><b>MATIÈRE AI</b><div class="pv2-dots" id="pv2AwayDots"></div></div>
+      </div>
+      <main class="pv2-stage-wrap">
+        <canvas id="penaltyV2Canvas"></canvas>
+        <div class="pv2-instruction" id="pv2Instruction">
+          <span id="pv2Role">SHOOT</span>
+          <b id="pv2InstructionTitle">공에서 골대 방향으로 스와이프</b>
+          <small id="pv2InstructionSub">방향과 속도가 슛의 위치와 파워를 결정합니다.</small>
+        </div>
+        <div class="pv2-result" id="pv2Result"><strong id="pv2ResultBig">GOAL</strong><small id="pv2ResultSub"></small></div>
+        <button type="button" class="pv2-start" id="pv2StartBtn">KICK OFF</button>
+      </main>
+      <footer class="pv2-footer">
+        <span>SWIPE CONTROL</span><span>5 KICKS + SUDDEN DEATH</span><span>PLAYER RATINGS OFF</span>
+      </footer>
     </div>
   </dialog>
 
@@ -19373,7 +19424,7 @@ function rescueAiSubmitShot(shot){
   rescueAiResolveTurn(st,shot,keeper);
   return true;
 }
-document.getElementById("penaltyAiBtn")?.addEventListener("click",rescueStartAiPenalty);
+document.getElementById("penaltyAiBtn")?.addEventListener("click",rescueStartPenaltyV2);
 
 const _rescuePenaltyHubRender = rescueRenderPenaltyDirectory;
 rescueRenderPenaltyDirectory=function(){
@@ -22541,6 +22592,95 @@ document.querySelectorAll("[data-quotes-filter]").forEach(btn=>btn.addEventListe
     </div>
   </div>
 </div>
+
+
+<script id="matiere-v1481-penalty-v2-js">
+const pv2={
+  active:false,phase:"idle",round:1,turn:"shoot",home:0,away:0,homeKicks:[],awayKicks:[],
+  dragging:false,start:null,current:null,anim:null,keeperDive:null,aiShot:null,locked:false
+};
+const pv2Canvas=document.getElementById("penaltyV2Canvas");
+const pv2Ctx=pv2Canvas?.getContext("2d");
+let pv2Size={w:0,h:0,dpr:1};
+function pv2Resize(){
+  if(!pv2Canvas)return; const r=pv2Canvas.getBoundingClientRect(); const d=Math.min(devicePixelRatio||1,2);
+  pv2Size={w:r.width,h:r.height,dpr:d}; pv2Canvas.width=Math.max(1,Math.round(r.width*d));pv2Canvas.height=Math.max(1,Math.round(r.height*d));pv2Ctx.setTransform(d,0,0,d,0,0);pv2Draw();
+}
+function pv2Goal(){const w=pv2Size.w,h=pv2Size.h;return {x:w*.18,y:h*.14,w:w*.64,h:h*.31};}
+function pv2Ball(){const w=pv2Size.w,h=pv2Size.h;return {x:w*.5,y:h*.79,r:Math.max(8,Math.min(14,w*.012))};}
+function pv2Draw(){
+  if(!pv2Ctx)return;const c=pv2Ctx,w=pv2Size.w,h=pv2Size.h,g=pv2Goal();c.clearRect(0,0,w,h);
+  // stadium gradient
+  let sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,"#07100a");sky.addColorStop(.45,"#102418");sky.addColorStop(.46,"#1a4628");sky.addColorStop(1,"#0e2e1b");c.fillStyle=sky;c.fillRect(0,0,w,h);
+  // stadium lights
+  c.fillStyle="rgba(235,205,146,.13)";for(let i=0;i<18;i++){let x=(i/17)*w;c.fillRect(x,4,2,18)}
+  // pitch stripes
+  for(let i=0;i<8;i++){c.fillStyle=i%2?"rgba(255,255,255,.018)":"rgba(0,0,0,.035)";c.fillRect(0,h*.46+i*h*.07,w,h*.07)}
+  // penalty area perspective
+  c.strokeStyle="rgba(238,238,220,.45)";c.lineWidth=1.3;c.beginPath();c.moveTo(w*.28,h);c.lineTo(w*.39,h*.46);c.lineTo(w*.61,h*.46);c.lineTo(w*.72,h);c.stroke();
+  // goal/net
+  c.strokeStyle="rgba(248,244,229,.9)";c.lineWidth=4;c.strokeRect(g.x,g.y,g.w,g.h);
+  c.strokeStyle="rgba(230,224,205,.14)";c.lineWidth=1;for(let i=1;i<10;i++){let x=g.x+g.w*i/10;c.beginPath();c.moveTo(x,g.y);c.lineTo(x,g.y+g.h);c.stroke()}for(let j=1;j<6;j++){let y=g.y+g.h*j/6;c.beginPath();c.moveTo(g.x,y);c.lineTo(g.x+g.w,y);c.stroke()}
+  // keeper
+  let k=pv2KeeperScreenPos();c.strokeStyle="#e1c06f";c.lineWidth=8;c.lineCap="round";c.beginPath();c.moveTo(k.x,k.y-28);c.lineTo(k.x,k.y+12);c.moveTo(k.x-25,k.y-5);c.lineTo(k.x+25,k.y-5);c.moveTo(k.x,k.y+10);c.lineTo(k.x-14,k.y+34);c.moveTo(k.x,k.y+10);c.lineTo(k.x+14,k.y+34);c.stroke();c.fillStyle="#dec47e";c.beginPath();c.arc(k.x,k.y-39,9,0,Math.PI*2);c.fill();
+  // ball
+  const bp=pv2AnimatedBallPos()||pv2Ball();c.fillStyle="#f5f3ea";c.beginPath();c.arc(bp.x,bp.y,bp.r||10,0,Math.PI*2);c.fill();c.strokeStyle="#2c2b29";c.lineWidth=2;c.stroke();
+  if(pv2.dragging&&pv2.start&&pv2.current){c.strokeStyle="rgba(222,185,104,.7)";c.lineWidth=3;c.beginPath();c.moveTo(pv2.start.x,pv2.start.y);c.lineTo(pv2.current.x,pv2.current.y);c.stroke();}
+}
+function pv2KeeperScreenPos(){
+  const g=pv2Goal();if(pv2.anim?.keeper){let q=pv2.anim.keeper;return{x:g.x+g.w*q.x,y:g.y+g.h*q.y};}
+  return{x:g.x+g.w*.5,y:g.y+g.h*.62};
+}
+function pv2AnimatedBallPos(){
+  if(!pv2.anim?.ball)return null;let a=pv2.anim.ball;return{x:a.x,y:a.y,r:a.r};
+}
+function pv2SetInstruction(role,title,sub){document.getElementById("pv2Role").textContent=role;document.getElementById("pv2InstructionTitle").textContent=title;document.getElementById("pv2InstructionSub").textContent=sub;}
+function pv2Dots(arr){return Array.from({length:Math.max(5,arr.length)},(_,i)=>`<span class="pv2-dot ${i<arr.length?(arr[i]?"goal":"miss"):"pending"}"></span>`).join("");}
+function pv2RenderScore(){
+  document.getElementById("pv2Score").textContent=`${pv2.home} : ${pv2.away}`;document.getElementById("pv2HomeDots").innerHTML=pv2Dots(pv2.homeKicks);document.getElementById("pv2AwayDots").innerHTML=pv2Dots(pv2.awayKicks);document.getElementById("pv2RoundLabel").textContent=pv2.round<=5?`ROUND ${pv2.round}`:`SUDDEN DEATH ${pv2.round-5}`;
+}
+function pv2ShowResult(big,sub){const r=document.getElementById("pv2Result");document.getElementById("pv2ResultBig").textContent=big;document.getElementById("pv2ResultSub").textContent=sub||"";r.classList.add("show");setTimeout(()=>r.classList.remove("show"),900);}
+function pv2Outcome(target,keeper,power){
+  if(target.x<.01||target.x>.99||target.y<.02||target.y>.98)return {goal:false,label:"MISS"};
+  if(target.x<.035||target.x>.965||target.y<.045)return {goal:false,label:"POST"};
+  const dx=(target.x-keeper.x)*1.05,dy=(target.y-keeper.y)*.85,dist=Math.hypot(dx,dy);const saveRadius=.18+(1-power)*.04;
+  return dist<saveRadius?{goal:false,label:"SAVE"}:{goal:true,label:"GOAL"};
+}
+function pv2AnimateShot(target,keeper,power,cb){
+  const b=pv2Ball(),g=pv2Goal();const tx=g.x+g.w*target.x,ty=g.y+g.h*target.y;const kx=g.x+g.w*keeper.x,ky=g.y+g.h*keeper.y;const start=performance.now(),dur=470-(power*.14*300);
+  pv2.anim={ball:{x:b.x,y:b.y,r:b.r},keeper:{x:.5,y:.62}};
+  function step(t){let p=Math.min(1,(t-start)/dur),e=1-Math.pow(1-p,3);pv2.anim.ball.x=b.x+(tx-b.x)*e;pv2.anim.ball.y=b.y+(ty-b.y)*e;pv2.anim.ball.r=b.r*(1-.34*e);let kd=Math.min(1,p*1.25);pv2.anim.keeper.x=.5+(keeper.x-.5)*kd;pv2.anim.keeper.y=.62+(keeper.y-.62)*kd;pv2Draw();if(p<1)requestAnimationFrame(step);else{setTimeout(()=>{pv2.anim=null;pv2Draw();cb();},120)}}requestAnimationFrame(step);
+}
+function pv2CheckMatchEnd(){
+  const a=pv2.homeKicks.length,b=pv2.awayKicks.length;
+  if(a<5||b<5){const remA=5-a,remB=5-b;if(pv2.home>pv2.away+remB)return "home";if(pv2.away>pv2.home+remA)return "away";return null}
+  if(a===b&&pv2.home!==pv2.away)return pv2.home>pv2.away?"home":"away";return null;
+}
+function pv2NextTurn(){
+  pv2RenderScore();const win=pv2CheckMatchEnd();if(win){pv2.phase="finished";pv2SetInstruction("MATCH COMPLETE",win==="home"?"승리했습니다":"MATIÈRE AI 승리","다시 경기하려면 KICK OFF를 누르세요.");pv2ShowResult(win==="home"?"WIN":"LOSE",`${pv2.home} : ${pv2.away}`);const s=document.getElementById("pv2StartBtn");s.textContent="PLAY AGAIN";s.style.display="block";return}
+  if(pv2.turn==="shoot"){pv2.turn="keeper";pv2.phase="keeper";pv2SetInstruction("GOALKEEPER","키커의 움직임을 보고 방향으로 스와이프","왼쪽·오른쪽·상단 방향으로 빠르게 다이빙하세요.");pv2PrepareAiShot();}
+  else{pv2.turn="shoot";pv2.round++;pv2.phase="shoot";pv2SetInstruction("SHOOT","공에서 골대 방향으로 스와이프","방향과 속도가 슛의 위치와 파워를 결정합니다.")}
+  pv2.locked=false;pv2Draw();
+}
+function pv2PrepareAiShot(){pv2.aiShot={x:.10+Math.random()*.80,y:.12+Math.random()*.74,power:.55+Math.random()*.4};}
+function pv2UserShot(end){
+  const b=pv2Ball(),dx=end.x-b.x,dy=end.y-b.y,dist=Math.hypot(dx,dy);if(dist<70)return;const g=pv2Goal();let x=.5+dx/(pv2Size.w*.72),y=.68+dy/(pv2Size.h*.63);x=Math.max(-.15,Math.min(1.15,x));y=Math.max(-.12,Math.min(1.12,y));const power=Math.max(.25,Math.min(1,dist/(pv2Size.h*.56)));const keeper={x:.10+Math.random()*.80,y:.18+Math.random()*.67};const out=pv2Outcome({x,y},keeper,power);pv2.locked=true;pv2AnimateShot({x,y},keeper,power,()=>{pv2.homeKicks.push(out.goal);if(out.goal)pv2.home++;pv2ShowResult(out.label,`POWER ${Math.round(power*100)}%`);setTimeout(pv2NextTurn,850)});
+}
+function pv2UserKeeper(end){
+  const b=pv2Ball(),dx=end.x-b.x,dy=end.y-b.y,dist=Math.hypot(dx,dy);if(dist<50)return;let kx=.5+dx/(pv2Size.w*.70),ky=.62+dy/(pv2Size.h*.58);kx=Math.max(.05,Math.min(.95,kx));ky=Math.max(.10,Math.min(.92,ky));const shot=pv2.aiShot||{x:.5,y:.5,power:.7};const out=pv2Outcome(shot,{x:kx,y:ky},shot.power);pv2.locked=true;pv2AnimateShot(shot,{x:kx,y:ky},shot.power,()=>{pv2.awayKicks.push(out.goal);if(out.goal)pv2.away++;pv2ShowResult(out.label,out.goal?"AI SCORES":"YOUR SAVE");setTimeout(pv2NextTurn,850)});
+}
+function pv2Point(e){const r=pv2Canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+pv2Canvas?.addEventListener("pointerdown",e=>{if(!pv2.active||pv2.locked||!["shoot","keeper"].includes(pv2.phase))return;pv2.dragging=true;pv2.start=pv2.phase==="shoot"?pv2Ball():pv2Point(e);pv2.current=pv2Point(e);pv2Canvas.setPointerCapture?.(e.pointerId);pv2Draw()});
+pv2Canvas?.addEventListener("pointermove",e=>{if(!pv2.dragging)return;pv2.current=pv2Point(e);pv2Draw()});
+pv2Canvas?.addEventListener("pointerup",e=>{if(!pv2.dragging)return;pv2.dragging=false;const end=pv2Point(e);pv2.current=null;pv2Draw();if(pv2.phase==="shoot")pv2UserShot(end);else pv2UserKeeper(end)});
+function rescueStartPenaltyV2(){
+  if(!currentUser?.id){alert("로그인 후 이용할 수 있습니다.");return}rescueCloseDialog("penaltyHubDialog");const d=document.getElementById("penaltyV2Dialog");if(!d.open)d.showModal();pv2.active=true;document.getElementById("pv2HomeName").textContent=currentProfile?.username||"YOU";pv2Reset();setTimeout(pv2Resize,60);
+}
+function pv2Reset(){Object.assign(pv2,{phase:"idle",round:1,turn:"shoot",home:0,away:0,homeKicks:[],awayKicks:[],dragging:false,start:null,current:null,anim:null,keeperDive:null,aiShot:null,locked:true});pv2RenderScore();pv2SetInstruction("PENALTY SHOOTOUT","스와이프로 직접 슈팅하고 선방하세요.","5번씩 찬 뒤 동점이면 서든데스로 진행됩니다.");const s=document.getElementById("pv2StartBtn");s.textContent="KICK OFF";s.style.display="block";pv2Draw();}
+document.getElementById("pv2StartBtn")?.addEventListener("click",()=>{pv2.phase="shoot";pv2.turn="shoot";pv2.locked=false;document.getElementById("pv2StartBtn").style.display="none";pv2SetInstruction("SHOOT","공에서 골대 방향으로 스와이프","방향과 속도가 슛의 위치와 파워를 결정합니다.");pv2Draw()});
+document.getElementById("pv2CloseBtn")?.addEventListener("click",()=>{pv2.active=false;document.getElementById("penaltyV2Dialog")?.close()});
+window.addEventListener("resize",()=>{if(document.getElementById("penaltyV2Dialog")?.open)pv2Resize()});
+</script>
 
 </body>
 </html>
