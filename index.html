@@ -11830,14 +11830,14 @@ body.football-mode{background:#070707!important}
 
       <div class="sports-nav" id="sportsNav">
         <button type="button" class="on" data-sports-go="home">SPORTS</button>
-        <button type="button" data-sports-go="baseball">BASEBALL</button>
+        <button type="button" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">BASEBALL</button>
         <button type="button" data-sports-go="players">MY PLAYERS</button>
         <button type="button" data-sports-go="faces">FACE SHOP</button>
       </div>
 
       <section class="sports-screen on" data-sports-screen="home">
         <div class="sports-feature-grid">
-          <button type="button" class="sports-feature featured" data-sports-go="baseball">
+          <button type="button" class="sports-feature featured" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">
             <span class="sports-feature-icon">◉</span><div><small>SPORTS APP · LIVE</small><b>BASEBALL</b><p>독립 야구 게임으로 이동합니다. 공통 선수·얼굴·MP는 그대로 연결됩니다.</p></div><strong>↗</strong>
           </button>
           <button type="button" class="sports-feature" data-sports-go="players">
@@ -11887,7 +11887,7 @@ body.football-mode{background:#070707!important}
       </section>
 
       <section class="sports-screen" data-sports-screen="lineup">
-        <div class="sports-section-head"><div><span>BASEBALL · STARTING NINE</span><h3>Lineup</h3><p>공통 선수 중 9명을 선택해 야구 선발 라인업을 구성합니다.</p></div><button type="button" data-sports-go="baseball">← BASEBALL</button></div>
+        <div class="sports-section-head"><div><span>BASEBALL · STARTING NINE</span><h3>Lineup</h3><p>공통 선수 중 9명을 선택해 야구 선발 라인업을 구성합니다.</p></div><button type="button" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">← BASEBALL</button></div>
         <div class="baseball-lineup-layout">
           <div class="baseball-diamond" aria-hidden="true"><i class="base"></i><span class="pos p-cf">CF</span><span class="pos p-lf">LF</span><span class="pos p-rf">RF</span><span class="pos p-ss">SS</span><span class="pos p-2b">2B</span><span class="pos p-3b">3B</span><span class="pos p-1b">1B</span><span class="pos p-p">P</span><span class="pos p-c">C</span></div>
           <div id="sportsLineupEditor" class="sports-lineup-editor"></div>
@@ -11895,12 +11895,12 @@ body.football-mode{background:#070707!important}
       </section>
 
       <section class="sports-screen" data-sports-screen="game">
-        <div class="sports-section-head"><div><span>BASEBALL · GAME ENGINE</span><h3>Play Ball</h3><p>단순 결과 뽑기가 아닌 직접 타격·투구하는 경기 엔진을 이 공간에 구축합니다.</p></div><button type="button" data-sports-go="baseball">← BASEBALL</button></div>
+        <div class="sports-section-head"><div><span>BASEBALL · GAME ENGINE</span><h3>Play Ball</h3><p>단순 결과 뽑기가 아닌 직접 타격·투구하는 경기 엔진을 이 공간에 구축합니다.</p></div><button type="button" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">← BASEBALL</button></div>
         <div class="baseball-engine-placeholder"><span>PRE-SEASON BUILD</span><b>Batting · Pitching · Fielding</b><p>팀·선수 시스템을 먼저 완성한 뒤 실제 조작 기반 경기 엔진을 연결합니다.</p></div>
       </section>
 
       <section class="sports-screen" data-sports-screen="season">
-        <div class="sports-section-head"><div><span>BASEBALL · SEASON</span><h3>Season</h3><p>정규 시즌과 개인 기록은 실제 경기 엔진 완성 후 이곳에서 집계됩니다.</p></div><button type="button" data-sports-go="baseball">← BASEBALL</button></div>
+        <div class="sports-section-head"><div><span>BASEBALL · SEASON</span><h3>Season</h3><p>정규 시즌과 개인 기록은 실제 경기 엔진 완성 후 이곳에서 집계됩니다.</p></div><button type="button" data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;">← BASEBALL</button></div>
         <div class="sports-season-card"><small>SEASON 01</small><b>PRE-SEASON</b><span>0 W · 0 L</span></div>
       </section>
     </div>
@@ -22930,7 +22930,7 @@ async function sportsSaveLineup(slot,playerId){
 <script id="matiere-v1510-sports-app-router">
 /* V15.10 · SPORTS apps are separate game sites. */
 document.addEventListener("click",(event)=>{
-  const btn=event.target.closest('[data-sports-go="baseball"]');
+  const btn=event.target.closest('[data-sports-go="baseball" onclick="window.location.href=\'./sports/baseball/index.html\';return false;"]');
   if(!btn)return;
   event.preventDefault();
   event.stopImmediatePropagation();
