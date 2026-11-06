@@ -78,15 +78,49 @@ body{min-height:100vh;background:
 @media(max-width:650px){.topbar{padding:0 14px}.shell{padding:14px 10px 30px}.hero{min-height:170px;padding:24px 18px}.account-card{display:none}.roster{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:1fr}.field{min-height:360px;aspect-ratio:auto}.zone{width:180px;height:230px}.swing-area{height:120px}.swing-area button{min-width:145px}.big-action{align-items:flex-start;flex-direction:column}.diamond{min-height:400px}}
 </style>
 <style id="matiere-v1515-bgm-css">.matiere-bgm{position:fixed;right:14px;bottom:14px;z-index:99999;display:flex;align-items:center;gap:8px;padding:8px 9px;border:1px solid rgba(196,154,84,.36);border-radius:999px;background:rgba(8,8,7,.90);backdrop-filter:blur(12px)}.matiere-bgm button{width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:#d5b16c;font-weight:900}.matiere-bgm-main{width:140px;min-width:0}.matiere-bgm-kicker{font-size:6.5px;letter-spacing:.16em;color:#796d5e}.matiere-bgm-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:italic 700 11px Georgia,serif;color:#e8ddcc}.matiere-bgm-volume{width:66px;accent-color:#c59b55}@media(max-width:620px){.matiere-bgm{right:9px;bottom:9px}.matiere-bgm-main{width:105px}.matiere-bgm-volume{display:none}}</style>
+
+<style id="matiere-v1518-baseball-engine">
+.baseball-dialogue-hero{min-height:210px!important;position:relative!important;background-image:linear-gradient(90deg,rgba(4,4,4,.95) 0%,rgba(4,4,4,.82) 42%,rgba(4,4,4,.12) 76%,rgba(4,4,4,.03) 100%),url("./assets/dialogue-hero.jpeg")!important;background-size:cover!important;background-position:center!important;border:1px solid rgba(205,162,82,.30)!important}
+.baseball-dialogue-hero:after{display:none!important}.baseball-dialogue-hero h1{font:italic 700 clamp(44px,6vw,72px)/.92 Georgia,serif!important;letter-spacing:-.02em!important;text-transform:uppercase}
+.batting-console{height:auto!important;min-height:132px!important;display:none!important;grid-template-columns:1fr 160px 150px!important;gap:10px!important;align-items:stretch!important;padding:15px!important}.batting-console[style*="flex"]{display:grid!important}.bat-mode-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.bat-mode{border:1px solid rgba(205,162,82,.25);border-radius:9px;background:#11100e;color:#8b8174;font-size:8px;font-weight:900}.bat-mode.on{border-color:#d3ab62;color:#e7c67e;background:#17130e}.bat-aim{position:relative;border:1px solid rgba(205,162,82,.30);border-radius:9px;background:linear-gradient(#0e0d0b,#090908);touch-action:none}.bat-aim:before,.bat-aim:after{content:"";position:absolute;background:rgba(210,173,104,.12)}.bat-aim:before{left:50%;top:0;bottom:0;width:1px}.bat-aim:after{top:50%;left:0;right:0;height:1px}.bat-aim-dot{position:absolute;width:18px;height:18px;border-radius:50%;border:2px solid #d8b36a;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(216,179,106,.22)}.swing-main{border:1px solid #e0bd72;border-radius:10px;background:linear-gradient(135deg,#dfba6b,#9c6a2b);color:#171109;font-size:10px;font-weight:950}.field{background:linear-gradient(rgba(6,9,7,.12),rgba(5,8,6,.42)),radial-gradient(ellipse at 50% 100%,#6e4930 0 25%,transparent 26%),repeating-linear-gradient(90deg,#1b3f25 0 74px,#20482a 74px 148px)!important}.field:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,30,43,.75) 0 24%,rgba(15,15,14,.45) 24% 34%,transparent 34%);pointer-events:none}.pitch-ball{z-index:5}.zone{z-index:2}.bat{z-index:3}.pitch-types{grid-template-columns:repeat(5,1fr)!important}.result-pop{position:absolute;left:50%;top:22%;transform:translate(-50%,-50%);z-index:20;font:italic 700 34px Georgia,serif;color:#efe0c5;text-shadow:0 5px 20px #000;opacity:0;pointer-events:none}.result-pop.show{animation:baseballResult .7s ease both}@keyframes baseballResult{0%{opacity:0;transform:translate(-50%,-40%) scale(.92)}25%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-70%) scale(1.03)}}
+@media(max-width:720px){.batting-console[style*="flex"]{grid-template-columns:1fr!important}.bat-aim{height:82px}.swing-main{height:52px}.pitch-types{grid-template-columns:repeat(2,1fr)!important}}
+</style>
+
+<style id="matiere-v1521-baseball-header">
+.matiere-global-top{height:64px;padding:0 24px;background:rgba(5,5,5,.97);border-bottom:1px solid rgba(205,164,88,.22);position:sticky;top:0;z-index:80}
+.matiere-global-inner{max-width:1328px;height:100%;margin:auto;display:flex;align-items:center;justify-content:space-between;position:relative;gap:12px}
+.matiere-header-logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:30px;width:auto;max-width:180px;object-fit:contain}
+.matiere-bgm{display:flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid rgba(196,154,84,.28);border-radius:999px;background:rgba(8,8,7,.62);position:relative}
+.matiere-bgm>button{width:28px;height:28px;border-radius:50%;border:1px solid rgba(201,162,92,.32);background:#0d0c0a;color:#c9a45f}
+.matiere-bgm input[type=range]{width:58px;accent-color:#b68c4d}
+.matiere-bgm-settings{display:none;position:absolute;top:39px;left:0;width:260px;padding:12px;border:1px solid rgba(196,153,80,.38);border-radius:12px;background:#0b0a09;z-index:1000}
+.matiere-bgm-settings.open{display:block}.matiere-bgm-settings small{display:block;font-size:7px;color:#a8864c}.matiere-bgm-settings b{display:block;margin:2px 0 10px;font:700 14px Georgia,serif}.matiere-bgm-settings label{display:flex;justify-content:space-between;gap:10px;font-size:8px;color:#bcb09f;margin-bottom:10px}
+.matiere-user-bar{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:8px;color:#d5c7b4}.matiere-user-bar a{border:1px solid rgba(205,164,88,.28);color:#b9a98f;text-decoration:none;border-radius:999px;padding:8px 11px;font-size:7px;font-weight:950}
+@media(max-width:720px){.matiere-global-top{padding:0 10px}.matiere-header-logo{height:24px;max-width:120px}.matiere-bgm input[type=range]{width:42px}.matiere-bgm>button{width:25px;height:25px}.matiere-user-bar span{display:none}}
+</style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">Matière <small>SPORTS / BASEBALL</small></div>
-  <div class="top-actions"><a href="../../">← MATIÈRE</a><button type="button" id="accountName">ACCOUNT</button></div>
+<header class="matiere-global-top">
+  <div class="matiere-global-inner">
+    <div class="matiere-bgm" id="matiereBgm">
+      <button type="button" id="bgmPrev" aria-label="Previous track">‹</button>
+      <button type="button" id="bgmNext" aria-label="Next track">›</button>
+      <input id="bgmVolume" type="range" min="0" max="1" step="0.01" value="0.28" aria-label="Music volume">
+      <button type="button" id="bgmSettingsBtn" aria-label="Music settings">⚙</button>
+      <div class="matiere-bgm-settings" id="bgmSettingsPanel">
+        <div><small>BACKGROUND MUSIC</small><b>Settings</b></div>
+        <label><span>학습 중 BGM 자동 정지</span><input type="checkbox" id="bgmFocusPause" checked></label>
+        <button type="button" id="bgmSettingsClose">CLOSE</button>
+      </div>
+      <audio id="bgmAudio" preload="metadata"></audio>
+    </div>
+    <img class="matiere-header-logo" src="../../assets/brand/matiere-logo-white.png" alt="Matière">
+    <div class="matiere-user-bar"><span id="userIdLabel">PLAYER</span><a href="../../">MATIÈRE</a></div>
+  </div>
 </header>
 <main class="shell">
-  <section class="hero">
-    <div class="hero-copy"><div class="kicker">MATIÈRE SPORTS · REAL GAME ENGINE</div><h1>Baseball</h1><p>공통 선수로 라인업을 구성하고, 타격과 투구를 직접 조작하는 3이닝 야구 게임입니다. 종목 전용 데이터만 이 앱에서 불러옵니다.</p></div>
+  <section class="hero baseball-dialogue-hero">
+    <div class="hero-copy"><div class="kicker">SPORTS · BASEBALL SIMULATION</div><h1>BASEBALL</h1><p>공통 선수로 라인업을 구성하고 타격과 투구를 직접 조작합니다. 9이닝 경기, 구종별 궤적, 타격 타이밍과 코스, 주루와 수비 결과를 실제 야구 흐름으로 계산합니다.</p></div>
     <div class="account-card"><small>MY MP</small><b data-balance>0 MP</b></div>
   </section>
 
@@ -100,7 +134,7 @@ body{min-height:100vh;background:
   <section class="screen on" data-screen="home">
     <div class="dashboard">
       <article class="card primary big-action">
-        <div><div class="kicker">QUICK GAME · 3 INNINGS</div><h2>Play Ball</h2><p>투수일 때는 구종·목표점·릴리스 타이밍을 직접 결정하고, 타자일 때는 실제 공의 도착 타이밍을 보고 스윙합니다.</p></div>
+        <div><div class="kicker">FULL GAME · 9 INNINGS</div><h2>Play Ball</h2><p>투수일 때는 구종·목표점·릴리스 타이밍을 직접 결정하고, 타자일 때는 실제 공의 도착 타이밍을 보고 스윙합니다.</p></div>
         <button id="playNowBtn" type="button">START GAME →</button>
       </article>
       <article class="card">
@@ -108,11 +142,11 @@ body{min-height:100vh;background:
         <div class="stats">
           <div><small>PLAYERS</small><b data-player-count>0</b></div>
           <div><small>MP</small><b data-balance>0 MP</b></div>
-          <div><small>FORMAT</small><b>3 INN</b></div>
+          <div><small>FORMAT</small><b>9 INN</b></div>
         </div>
       </article>
     </div>
-    <div class="notice" style="margin-top:12px">V1 엔진은 타격 타이밍, 구종별 속도/무브먼트, 투구 정확도, 볼·스트라이크, 삼진·볼넷·안타·장타·아웃·이닝 전환을 직접 계산합니다. 선수 능력치는 다음 단계에서 연결합니다.</div>
+    <div class="notice" style="margin-top:12px">V2 경기 엔진은 9이닝 규칙, 타격 방식 선택, 타격 코스 조준, 5개 구종의 속도와 무브먼트, 투구 정확도, 타구 결과·주자 진루·아웃·볼카운트를 직접 계산합니다. 선수 능력치와 수비 조작은 다음 단계에서 연결합니다.</div>
   </section>
 
   <section class="screen" data-screen="lineup">
@@ -132,19 +166,27 @@ body{min-height:100vh;background:
         <div class="score-team away">MATIÈRE</div>
       </div>
       <div class="field" id="field">
-        <div class="batter-view">
+        <div class="batter-view"><div class="result-pop" id="resultPop"></div>
           <div class="zone" id="strikeZone"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
           <div class="pitch-ball" id="pitchBall"></div>
           <div class="bat" id="bat"></div>
         </div>
-        <div class="swing-area" id="batControls" style="display:none"><button type="button" id="swingBtn">SWING</button><small>공이 홈플레이트에 들어오는 순간을 보고 스윙하세요.</small></div>
+        <div class="swing-area batting-console" id="batControls" style="display:none">
+          <div class="bat-mode-row">
+            <button type="button" class="bat-mode on" data-bat-mode="CONTACT">CONTACT</button>
+            <button type="button" class="bat-mode" data-bat-mode="POWER">POWER</button>
+            <button type="button" class="bat-mode" data-bat-mode="BUNT">BUNT</button>
+          </div>
+          <div class="bat-aim" id="batAim"><span class="bat-aim-dot" id="batAimDot"></span></div>
+          <button type="button" class="swing-main" id="swingBtn">SWING</button>
+        </div>
       </div>
       <div class="pitcher-panel">
         <section class="pitch-controls" id="pitchControls">
           <div class="kicker">PITCHING · <span id="roleText">PITCHING</span></div>
           <div class="pitch-types">
             <button type="button" class="on" data-pitch="4SEAM">4-SEAM</button>
-            <button type="button" data-pitch="SLIDER">SLIDER</button>
+            <button type="button" data-pitch="2SEAM">2-SEAM</button><button type="button" data-pitch="SLIDER">SLIDER</button>
             <button type="button" data-pitch="CURVE">CURVE</button>
             <button type="button" data-pitch="CHANGEUP">CHANGEUP</button>
           </div>
@@ -180,7 +222,7 @@ let screen="home";
 const G={
   inning:1, half:"TOP", home:0, away:0, balls:0, strikes:0, outs:0,
   bases:[false,false,false], mode:"BAT", running:false,
-  pitchType:"4SEAM", target:{x:.5,y:.5}, pitchActive:false, swingLocked:false,
+  pitchType:"4SEAM", batMode:"CONTACT", batAim:{x:.5,y:.55}, target:{x:.5,y:.5}, pitchActive:false, swingLocked:false,
   pitchStart:0,pitchDuration:900,pitchPath:null,meterRAF:null,meterValue:0,meterDir:1,
   log:[]
 };
@@ -200,7 +242,7 @@ async function boot(){
   const {data:{session}}=await sb.auth.getSession();
   if(!session){location.href="../../";return}
   currentUser=session.user;
-  document.getElementById("accountName").textContent=session.user.email?.split("@")[0]||"PLAYER";
+  document.getElementById("userIdLabel").textContent=session.user.email?.split("@")[0]||"PLAYER";
   await Promise.all([loadPlayers(),loadWallet(),loadLineup()]);
   renderAll();
 }
@@ -256,6 +298,7 @@ function renderLineup(){
   }));
 }
 
+function showResultPop(text){const el=document.getElementById("resultPop");if(!el)return;el.textContent=text;el.classList.remove("show");void el.offsetWidth;el.classList.add("show");}
 function addLog(msg){
   G.log.unshift(msg);G.log=G.log.slice(0,30);
   document.getElementById("gameLog").innerHTML=G.log.map(x=>`<div>${x}</div>`).join("");
@@ -292,7 +335,7 @@ function changeHalf(){
   G.outs=0;G.balls=0;G.strikes=0;G.bases=[false,false,false];
   if(G.half==="TOP"){G.half="BOTTOM";G.mode="BAT";addLog(`<b>공수 교대</b> · ${G.inning}회말, MATIÈRE 공격`)}
   else{G.half="TOP";G.mode="PITCH";G.inning++;addLog(`<b>공수 교대</b> · ${G.inning}회초, RIVALS 공격`)}
-  if(G.inning>3)finishGame();
+  if(G.inning>9)finishGame();
   updateModeUI();
 }
 function finishGame(){
@@ -304,7 +347,7 @@ function finishGame(){
 async function saveGameResult(result){
   if(!currentUser)return;
   await sb.from("baseball_games").insert({
-    user_id:currentUser.id,innings:3,runs_for:G.home,runs_against:G.away,result
+    user_id:currentUser.id,innings:9,runs_for:G.home,runs_against:G.away,result
   });
 }
 function updateModeUI(){
@@ -315,11 +358,12 @@ function updateModeUI(){
 }
 function startGame(){
   G.inning=1;G.half="TOP";G.home=0;G.away=0;G.balls=0;G.strikes=0;G.outs=0;G.bases=[false,false,false];G.mode="PITCH";G.running=true;G.log=[];
-  addLog("<b>PLAY BALL</b> · 3이닝 경기를 시작합니다.");renderScore();updateModeUI();setScreen("game");
+  addLog("<b>PLAY BALL</b> · 9이닝 경기를 시작합니다.");renderScore();updateModeUI();setScreen("game");
 }
 
 const ball=document.getElementById("pitchBall"), bat=document.getElementById("bat");
 function pitchCurve(type,t){
+  if(type==="2SEAM")return Math.sin(t*Math.PI)*-.055;
   if(type==="SLIDER")return Math.sin(t*Math.PI)*.13;
   if(type==="CURVE")return Math.sin(t*Math.PI)*-.07;
   if(type==="CHANGEUP")return Math.sin(t*Math.PI)*.025;
@@ -346,7 +390,7 @@ function launchPitch(opts){
 }
 function resolveTakenPitch(x,y){
   const strike=x>.08&&x<.92&&y>.08&&y<.92;
-  if(strike){G.strikes++;addLog("루킹 스트라이크")}else{G.balls++;addLog("볼")}
+  if(strike){G.strikes++;showResultPop("STRIKE");addLog("루킹 스트라이크")}else{G.balls++;showResultPop("BALL");addLog("볼")}
   afterCount();
 }
 function afterCount(){
@@ -357,23 +401,28 @@ function afterCount(){
 }
 function cpuPitch(){
   if(!G.running||G.mode!=="BAT"||G.pitchActive)return;
-  const types=["4SEAM","SLIDER","CURVE","CHANGEUP"];
+  const types=["4SEAM","2SEAM","SLIDER","CURVE","CHANGEUP"];
   const type=types[Math.floor(Math.random()*types.length)];
   const x=.12+Math.random()*.76,y=.12+Math.random()*.76;
-  const duration={"4SEAM":720,"SLIDER":860,"CURVE":980,"CHANGEUP":1030}[type];
+  const duration={"4SEAM":690,"2SEAM":740,"SLIDER":845,"CURVE":980,"CHANGEUP":1020}[type];
   launchPitch({x,y,type,duration});
 }
+document.querySelectorAll("[data-bat-mode]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-bat-mode]").forEach(x=>x.classList.remove("on"));b.classList.add("on");G.batMode=b.dataset.batMode;}));
+const batAim=document.getElementById("batAim"),batAimDot=document.getElementById("batAimDot");
+batAim.addEventListener("pointerdown",e=>{const r=batAim.getBoundingClientRect();G.batAim.x=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));G.batAim.y=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));batAimDot.style.left=G.batAim.x*100+"%";batAimDot.style.top=G.batAim.y*100+"%";});
 document.getElementById("swingBtn").addEventListener("click",()=>{
   if(!G.pitchActive||G.swingLocked)return;
   G.swingLocked=true;
   bat.animate([{transform:"rotate(-22deg)"},{transform:"rotate(34deg)"},{transform:"rotate(-22deg)"}],{duration:260,easing:"ease-out"});
   const t=Number(ball.dataset.t||0),x=Number(ball.dataset.x||.5),y=Number(ball.dataset.y||.5);
   const timing=Math.abs(t-.82);
-  const plate=Math.abs(x-.5)*.7+Math.abs(y-.55)*.45;
-  const quality=1-(timing*2.5+plate*.5)+Math.random()*.12;
-  if(quality>.78){const r=Math.random();if(r>.86){addLog("<b>HOME RUN!</b>");advanceRunners(4)}else if(r>.56){addLog("<b>2루타</b>");advanceRunners(2)}else{addLog("<b>안타</b>");advanceRunners(1)}nextBatter()}
-  else if(quality>.45){if(Math.random()>.52){addLog("파울");if(G.strikes<2)G.strikes++}else{addLog("인플레이 · 아웃");recordOut()}}
-  else{G.strikes++;addLog("헛스윙 스트라이크")}
+  const mode=G.batMode==="POWER"?{tol:.22,pow:1.18}:G.batMode==="BUNT"?{tol:.38,pow:.34}:{tol:.31,pow:.82};
+  const aim=Math.hypot(x-G.batAim.x,y-G.batAim.y);
+  const quality=1-(timing*2.8+aim/mode.tol*.52)+Math.random()*.10;
+  if(quality>.84&&G.batMode!=="BUNT"){showResultPop("PERFECT");const r=Math.random();if(r>.80){addLog("<b>HOME RUN!</b>");advanceRunners(4)}else if(r>.48){addLog("<b>2루타</b>");advanceRunners(2)}else{addLog("<b>안타</b>");advanceRunners(1)}nextBatter()}
+  else if(quality>.62){showResultPop("IN PLAY");const r=Math.random();if(G.batMode==="BUNT"&&r>.42){addLog("<b>번트 안타</b>");advanceRunners(1);nextBatter()}else if(r>.48){addLog("<b>안타</b>");advanceRunners(1);nextBatter()}else{addLog("타구 아웃");recordOut()}}
+  else if(quality>.34){if(Math.random()>.46){showResultPop("FOUL");addLog("파울");if(G.strikes<2)G.strikes++}else{showResultPop("OUT");addLog("인플레이 · 아웃");recordOut()}}
+  else{showResultPop("SWING");G.strikes++;addLog("헛스윙 스트라이크")}
   G.pitchActive=false;ball.style.opacity=0;afterCount();renderScore();
 });
 
@@ -383,7 +432,7 @@ tz.addEventListener("pointerdown",e=>{
   const r=tz.getBoundingClientRect();G.target.x=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));G.target.y=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));td.style.left=(G.target.x*100)+"%";td.style.top=(G.target.y*100)+"%";
 });
 function meterLoop(){
-  if(!G.running||G.mode!=="PITCH")return;
+  if(!G.running||G.mode!=="PITCH"){G.meterRAF=requestAnimationFrame(meterLoop);return;}
   G.meterValue+=.012*G.meterDir;if(G.meterValue>=1||G.meterValue<=0)G.meterDir*=-1;
   document.getElementById("meterLine").style.left=`calc(${G.meterValue*100}% - 3px)`;
   G.meterRAF=requestAnimationFrame(meterLoop);
@@ -397,8 +446,9 @@ document.getElementById("pitchBtn").addEventListener("click",()=>{
   const cpuSwing=Math.random()<(.58+(G.strikes===2?.12:0));
   const inZone=x>.08&&x<.92&&y>.08&&y<.92;
   if(cpuSwing){
-    const contact=Math.random()*.65+accuracy*.28-(G.pitchType==="SLIDER"?0.08:0);
-    if(contact>.72){if(Math.random()>.72){addLog("RIVALS · 안타");advanceRunners(1)}else{addLog("RIVALS · 타구 아웃");recordOut()}}
+    const movementPenalty=G.pitchType==="SLIDER"?0.09:G.pitchType==="CURVE"?0.08:G.pitchType==="2SEAM"?0.05:0;
+    const contact=Math.random()*.65+accuracy*.28-movementPenalty;
+    if(contact>.78&&Math.random()>.88){showResultPop("HOME RUN");addLog("<b>RIVALS · HOME RUN</b>");advanceRunners(4);nextBatter()}else if(contact>.70){if(Math.random()>.68){showResultPop("HIT");addLog("RIVALS · 안타");advanceRunners(Math.random()>.84?2:1);nextBatter()}else{showResultPop("OUT");addLog("RIVALS · 타구 아웃");recordOut()}}
     else{G.strikes++;addLog("RIVALS · 헛스윙")}
   }else{if(inZone){G.strikes++;addLog("RIVALS · 스트라이크")}else{G.balls++;addLog("RIVALS · 볼")}}
   if(G.strikes>=3){addLog("<b>삼진!</b>");recordOut()}else if(G.balls>=4){addLog("RIVALS · 볼넷");advanceRunners(1);nextBatter()}else renderScore();
@@ -411,4 +461,22 @@ window.addEventListener("load",()=>{boot();meterLoop()});
 </script>
 <div class="matiere-bgm" aria-label="Background music player"><button type="button" id="bgmPrev">‹</button><button type="button" id="bgmToggle">▶</button><button type="button" id="bgmNext">›</button><div class="matiere-bgm-main"><div class="matiere-bgm-kicker">MATIÈRE · BGM</div><div class="matiere-bgm-title" id="bgmTitle">FRESH MORNING</div></div><input class="matiere-bgm-volume" id="bgmVolume" type="range" min="0" max="1" step="0.01" value="0.28"><audio id="bgmAudio" preload="metadata"></audio></div>
 <script id="matiere-v1515-bgm-js">(()=>{const T=[{title:"FRESH MORNING",src:"../../assets/audio/fresh-morning.mp3"},{title:"CHRISTMAS",src:"../../assets/audio/christmas.mp3"}],a=document.getElementById("bgmAudio"),b=document.getElementById("bgmToggle"),t=document.getElementById("bgmTitle"),v=document.getElementById("bgmVolume"),p=document.getElementById("bgmPrev"),n=document.getElementById("bgmNext");if(!a||!b)return;const K="matiere_bgm_v1515";let s={index:0,volume:.28,playing:false,time:0};try{s={...s,...JSON.parse(localStorage.getItem(K)||"{}")} }catch(_){};s.index=Math.max(0,Math.min(T.length-1,Number(s.index)||0));s.volume=Math.max(0,Math.min(1,Number(s.volume)||.28));const save=()=>{try{localStorage.setItem(K,JSON.stringify({index:s.index,volume:a.volume,playing:!a.paused,time:a.currentTime||0}))}catch(_){}};function load(i,r=0){s.index=(i+T.length)%T.length;a.src=T[s.index].src;t.textContent=T[s.index].title;a.volume=s.volume;v.value=s.volume;a.addEventListener("loadedmetadata",()=>{if(r>0&&r<a.duration-2)a.currentTime=r},{once:true});save()}function sync(){b.textContent=a.paused?"▶":"Ⅱ"}async function play(){try{await a.play();sync();save()}catch(_){sync()}}load(s.index,s.time||0);sync();b.onclick=()=>a.paused?play():a.pause();a.onplay=sync;a.onpause=()=>{sync();save()};a.onended=()=>{load(s.index+1);play()};n.onclick=()=>{const w=!a.paused;load(s.index+1);if(w)play()};p.onclick=()=>{const w=!a.paused;load(s.index-1);if(w)play()};v.oninput=()=>{s.volume=Number(v.value);a.volume=s.volume;save()};setInterval(()=>{if(!a.paused)save()},5000);window.addEventListener("pagehide",save);if(s.playing){const r=()=>{play();document.removeEventListener("pointerdown",r,true);document.removeEventListener("keydown",r,true)};document.addEventListener("pointerdown",r,true);document.addEventListener("keydown",r,true)}})();</script>
+
+<script id="matiere-v1521-baseball-bgm">
+(()=>{
+ const tracks=["../../assets/audio/fresh-morning.mp3","../../assets/audio/christmas.mp3"], KEY="matiere_bgm_v1516";
+ const a=document.getElementById("bgmAudio"),v=document.getElementById("bgmVolume"),prev=document.getElementById("bgmPrev"),next=document.getElementById("bgmNext"),btn=document.getElementById("bgmSettingsBtn"),panel=document.getElementById("bgmSettingsPanel"),close=document.getElementById("bgmSettingsClose"),focus=document.getElementById("bgmFocusPause");
+ if(!a)return; let s={index:0,volume:.28,time:0,focusPause:true}; try{s={...s,...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(_){}
+ s.index=Math.max(0,Math.min(tracks.length-1,Number(s.index)||0)); s.volume=Math.max(0,Math.min(1,Number(s.volume)||.28)); focus.checked=s.focusPause!==false;
+ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({index:s.index,volume:a.volume,time:a.currentTime||0,focusPause:focus.checked}))}catch(_){}};
+ const load=(i,t=0)=>{s.index=(i+tracks.length)%tracks.length;a.src=tracks[s.index];a.volume=s.volume;v.value=s.volume;a.addEventListener("loadedmetadata",()=>{if(t>0&&t<a.duration-2)a.currentTime=t},{once:true});save()};
+ const play=async()=>{try{await a.play();save()}catch(_){}};
+ document.addEventListener("pointerdown",play,{once:true,capture:true});
+ next.onclick=()=>{load(s.index+1);play()}; prev.onclick=()=>{load(s.index-1);play()};
+ v.oninput=()=>{s.volume=Number(v.value);a.volume=s.volume;save()}; a.onended=()=>{load(s.index+1);play()};
+ btn.onclick=e=>{e.stopPropagation();panel.classList.toggle("open")}; close.onclick=()=>panel.classList.remove("open");
+ document.addEventListener("click",e=>{if(!panel.contains(e.target)&&e.target!==btn)panel.classList.remove("open")});
+ focus.onchange=save; load(s.index,s.time||0); setInterval(save,5000); addEventListener("pagehide",save);
+})();
+</script>
 </body></html>
